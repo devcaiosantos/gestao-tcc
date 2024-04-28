@@ -1,17 +1,25 @@
 import { Module } from "@nestjs/common";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
+import { AdministradorController } from "./administrador/administrador.controller";
+import { AdministradorService } from "./administrador/administrador.service";
+import { PrismaService } from "./prisma.service";
 import { ConfigModule } from "@nestjs/config";
-import { ApiModule } from "./api/api.module";
+import { RouterModule } from "@nestjs/core";
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: ".env ",
       isGlobal: true,
     }),
-    ApiModule,
+    RouterModule.register([
+      {
+        path: "/api",
+        module: AppModule,
+      },
+    ]),
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, AdministradorController],
+  providers: [AppService, AdministradorService, PrismaService],
 })
 export class AppModule {}

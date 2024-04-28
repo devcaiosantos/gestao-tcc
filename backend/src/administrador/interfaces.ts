@@ -3,3 +3,7 @@ export interface createAdministradorProps {
   email: string;
   senha: string;
 }
+export interface resetPasswordProps {
+  senha: string;
+  novaSenha: string;
+}
