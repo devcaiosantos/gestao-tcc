@@ -15,6 +15,8 @@ export class AdministradorService {
         nome: string().required(),
         email: string().email().required(),
         senha: string().min(8).required(),
+        email_sistema: string().email().required(),
+        senha_email_sistema: string().required(),
       });
       await createAdministradorSchema.validate(administrador);
     } catch (error) {
@@ -36,8 +38,7 @@ export class AdministradorService {
         message: "Email já cadastrado",
       };
     }
-
-    const salt = 21;
+    const salt = 10;
     const hash = await bcrypt.hash(administrador.senha, salt);
 
     const createdAdministrador = await this.prisma.administrador.create({
@@ -45,9 +46,10 @@ export class AdministradorService {
         nome: administrador.nome,
         email: administrador.email,
         senha: hash,
+        email_sistema: administrador.email_sistema,
+        senha_email_sistema: administrador.senha_email_sistema,
       },
     });
-
     if (!createdAdministrador) {
       throw {
         statusCode: 500,
@@ -88,6 +90,8 @@ export class AdministradorService {
       const updateAdministradorSchema = object().shape({
         nome: string().required(),
         email: string().email().required(),
+        email_sistema: string().email().required(),
+        senha_email_sistema: string().required(),
       });
       await updateAdministradorSchema.validate(newAdministrador);
     } catch (error) {
@@ -99,7 +103,12 @@ export class AdministradorService {
 
     const updatedAdministrador = await this.prisma.administrador.update({
       where: { id },
-      data: newAdministrador,
+      data: {
+        nome: newAdministrador.nome,
+        email: newAdministrador.email,
+        email_sistema: newAdministrador.email_sistema,
+        senha_email_sistema: newAdministrador.senha_email_sistema,
+      },
     });
 
     if (!updatedAdministrador) {
@@ -113,6 +122,8 @@ export class AdministradorService {
       id: updatedAdministrador.id,
       nome: updatedAdministrador.nome,
       email: updatedAdministrador.email,
+      email_sistema: updatedAdministrador.email_sistema,
+      senha_email_sistema: updatedAdministrador.senha_email_sistema,
     };
   }
 
@@ -127,8 +138,8 @@ export class AdministradorService {
         message: "Administrador não encontrado",
       };
     }
-
-    if (existingAdministrador.senha !== senha) {
+    const isMatch = await bcrypt.compare(senha, existingAdministrador.senha);
+    if (!isMatch) {
       throw {
         statusCode: 400,
         message: "Senha incorreta",
@@ -148,10 +159,13 @@ export class AdministradorService {
       };
     }
 
+    const salt = 10;
+    const hash = await bcrypt.hash(novaSenha, salt);
+
     try {
       const updatedAdministrador = await this.prisma.administrador.update({
         where: { id },
-        data: { senha: novaSenha },
+        data: { senha: hash },
       });
 
       return {
@@ -169,9 +183,15 @@ export class AdministradorService {
 
   async remove(id: number) {
     try {
-      return await this.prisma.administrador.delete({
+      const deletedAdministrador = await this.prisma.administrador.delete({
         where: { id },
       });
+
+      return {
+        id: deletedAdministrador.id,
+        nome: deletedAdministrador.nome,
+        email: deletedAdministrador.email,
+      };
     } catch (error) {
       throw {
         statusCode: 500,
