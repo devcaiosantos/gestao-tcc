@@ -1,10 +1,12 @@
 import { Controller, Post, Body, Patch, Param, Delete } from "@nestjs/common";
 import { AdministradorService } from "./administrador.service";
 import { createAdministradorProps, resetPasswordProps } from "./interfaces";
+import { Public } from "src/auth/constants";
+
 @Controller("administrador")
 export class AdministradorController {
   constructor(private readonly administradorService: AdministradorService) {}
-
+  @Public()
   @Post()
   create(@Body() adminstrador: createAdministradorProps) {
     return this.administradorService.create(adminstrador);
