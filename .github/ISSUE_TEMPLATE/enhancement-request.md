@@ -1,5 +1,5 @@
 ---
-name: Feature request
+name: Enhancement request
 about: Suggest an idea for this project
 title: ''
 labels: ''
@@ -28,6 +28,3 @@ Qual é o objetivo geral desta issue? Explique por que essa tarefa é importante
 
 **Observações (opcional):**
 Qualquer outra informação que você deseja adicionar à issue.
-
-**Additional context**
-Add any other context or screenshots about the feature request here.
