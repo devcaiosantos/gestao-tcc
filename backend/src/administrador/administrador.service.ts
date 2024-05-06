@@ -15,8 +15,8 @@ export class AdministradorService {
         nome: string().required(),
         email: string().email().required(),
         senha: string().min(8).required(),
-        email_sistema: string().email().required(),
-        senha_email_sistema: string().required(),
+        email_sistema: string().email(),
+        senha_email_sistema: string(),
       });
       await createAdministradorSchema.validate(administrador);
     } catch (error) {
@@ -90,8 +90,8 @@ export class AdministradorService {
       const updateAdministradorSchema = object().shape({
         nome: string().required(),
         email: string().email().required(),
-        email_sistema: string().email().required(),
-        senha_email_sistema: string().required(),
+        email_sistema: string().email(),
+        senha_email_sistema: string(),
       });
       await updateAdministradorSchema.validate(newAdministrador);
     } catch (error) {
