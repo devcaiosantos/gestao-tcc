@@ -2,7 +2,8 @@ import {NextResponse } from "next/server";
 import parseJwt from "./utils/parseJwt";
 import { NextRequest } from "next/server";
 export default async function middleware(request: NextRequest){
-    const token = request.cookies.get("gestao-token")?.value
+    const tokenName = "tcc-token"
+    const token = request.cookies.get(tokenName)?.value
     const baseURL = request.nextUrl.origin
     const signInURL = new URL ('/login', baseURL)
     const dashboardURL = new URL ('/dashboard', baseURL)
@@ -18,10 +19,9 @@ export default async function middleware(request: NextRequest){
     }
     
     const jwtDecoded = parseJwt(token);
-    
     if(!jwtDecoded){
         const response = NextResponse.redirect(signInURL)
-        response.cookies.delete('gestao-token')
+        response.cookies.delete(tokenName)
         return response
     }
     
@@ -30,7 +30,7 @@ export default async function middleware(request: NextRequest){
     const expDate = new Date(exp * 1000)
     if(now > expDate){
         const response = NextResponse.redirect(signInURL);
-        response.cookies.delete('gestao-token');
+        response.cookies.delete(tokenName);
         return response;
     }
     return NextResponse.next()

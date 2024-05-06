@@ -17,8 +17,12 @@ export const Form = styled.div`
   background-color: transparent;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 1);
   flex-direction: column;
+
+  @media (max-width: 768px) {
+    width: 90%;
+  }
 `;
 
 export const Input = styled.input`
@@ -38,17 +42,23 @@ export const Input = styled.input`
 
 export const Button = styled.button`
   width: 100%;
+  height: 45px;
   padding: 10px;
   background-color: ${colors.primary};
   color: ${colors.light};
   border: none;
   border-radius: 4px;
-
+  font-size: 1.1rem;
+  font-weight: 600;
   cursor: pointer;
   transition: background-color 0.3s ease;
 
   &:hover {
     opacity: 0.9;
+  }
+  &:disabled {
+    background-color: ${colors.secondary};
+    cursor: not-allowed;
   }
 `;
 
@@ -60,7 +70,7 @@ export const Label = styled.label`
   color: ${colors.light};
   margin: 5px;
   font-size: 1.0rem;
-  font-weight: 500;
+  font-weight: 600;
 `;
 
 export const ErrorMessage = styled.p`
