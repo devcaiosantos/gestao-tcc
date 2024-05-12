@@ -1,9 +1,11 @@
 interface IJwt{
     exp: number;
     iat: number;
+    email_sistema: string;
+    senha_email_sistema: string;
     nome: string;
     email: string;
-    id: string;
+    id: number;
 }
 function parseJwt (token:string): IJwt | null {
     if(token != null || token != undefined){

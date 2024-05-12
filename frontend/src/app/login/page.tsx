@@ -16,8 +16,10 @@ import { useToast } from '@chakra-ui/react'
 import { object, string, ValidationError  } from "yup";
 import {setCookie} from "@/utils/cookies";
 import { useRouter } from "next/navigation";
+import useAuthContext from "@/hooks/useAuthContext";
 
 export default function Login() {
+    const {registerAdmin} = useAuthContext();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -57,6 +59,13 @@ export default function Login() {
         }
         
         if(response.status === "success" && response.data?.access_token){
+          registerAdmin({
+            id: response.data.id,
+            name: response.data.nome,
+            email: response.data.email,
+            email_system: response.data.email_sistema,
+            password_email_system: response.data.senha_email_sistema
+          });
           setCookie({
             name: "tcc-token",
             value: response.data.access_token,
@@ -79,7 +88,6 @@ export default function Login() {
             id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required
           />
           <Label htmlFor="password">
             <PasswordIcon />
@@ -90,7 +98,11 @@ export default function Login() {
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            required
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleLogin().then(() => setIsLoading(false));
+              }}
+            }
           />
           <Button 
             type="button"

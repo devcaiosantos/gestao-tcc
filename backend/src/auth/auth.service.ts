@@ -43,6 +43,8 @@ export class AuthService {
       email: administrador.email,
       nome: administrador.nome,
       id: administrador.id,
+      email_sistema: administrador.email_sistema,
+      senha_email_sistema: administrador.senha_email_sistema,
     };
 
     const jwt = await this.jwtService.signAsync(payload, {
@@ -50,6 +52,11 @@ export class AuthService {
       expiresIn: process.env.JWT_EXPIRES,
     });
     return {
+      id: administrador.id,
+      email: administrador.email,
+      nome: administrador.nome,
+      email_sistema: administrador.email_sistema,
+      senha_email_sistema: administrador.senha_email_sistema,
       access_token: jwt,
       expires_in: Number(process.env.JWT_EXPIRES),
     };
