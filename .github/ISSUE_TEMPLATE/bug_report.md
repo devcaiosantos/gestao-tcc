@@ -1,3 +1,12 @@
+---
+name: Bug report
+about: Create a report to help us improve
+title: ''
+labels: ''
+assignees: ''
+
+---
+
 **Descrição:**
 
 Descreva detalhadamente o bug, incluindo passos para reproduzi-lo e o comportamento esperado

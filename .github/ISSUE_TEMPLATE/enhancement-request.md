@@ -1,3 +1,12 @@
+---
+name: Enhancement request
+about: Suggest an idea for this project
+title: ''
+labels: ''
+assignees: ''
+
+---
+
 **Descrição:**
 Uma breve descrição do problema, nova funcionalidade ou tarefa a ser tratada nesta issue.
 

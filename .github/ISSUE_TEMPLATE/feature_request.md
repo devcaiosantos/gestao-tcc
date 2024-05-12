@@ -1,3 +1,12 @@
+---
+name: Feature request
+about: Suggest an idea for this project
+title: ''
+labels: ''
+assignees: ''
+
+---
+
 **Descrição:**
 Uma breve descrição do problema, nova funcionalidade ou tarefa a ser tratada nesta issue.
 
@@ -19,3 +28,6 @@ Qual é o objetivo geral desta issue? Explique por que essa tarefa é importante
 
 **Observações (opcional):**
 Qualquer outra informação que você deseja adicionar à issue.
+
+**Additional context**
+Add any other context or screenshots about the feature request here.
