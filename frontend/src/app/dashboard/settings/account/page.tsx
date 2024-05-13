@@ -17,9 +17,12 @@ import { TitlePage } from "../../style";
 import useAuthContext from "@/hooks/useAuthContext";
 import { object, number, string, ValidationError } from "yup";
 import { useToast } from "@chakra-ui/react";
+import updateAdminInfo from "@/services/administrator/updateAdminInfo";
+import ModalResetPassword from "@/components/ModalResetPassword";
+
 export default function Account() {
 
-    const { admin } = useAuthContext(); 
+    const { admin, registerAdmin } = useAuthContext(); 
     const [tempData, setTempData] = useState(admin);
     const toast = useToast();
 
@@ -32,11 +35,14 @@ export default function Account() {
     }
 
     async function handleSaveChanges(){
+        if(!tempData){
+            return;
+        }
         const scheme = object().shape({
             name: string().required("Nome de usuário é obrigatório"),
             email: string().email("E-mail inválido").required("E-mail é obrigatório"),
-            email_system: string().email("E-mail inválido").required("E-mail é obrigatório"),
-            password_email_system: string().required("Senha é obrigatória")
+            email_system: string().email("E-mail inválido"),
+            password_email_system: string()
         });
 
         try	{
@@ -53,10 +59,35 @@ export default function Account() {
                 )
             }
         }
+
+        const response = await updateAdminInfo(tempData);
+        toast(
+            {
+                title: response.message,
+                status: response.status,
+                duration: 5000,
+                isClosable: true
+            }
+        )
+        
+        if(response.status=="success" && response.data){
+            const formattedData = {
+                id: response.data.id,
+                name: response.data.nome,
+                email: response.data.email,
+                email_system: response.data.email_sistema,
+                password_email_system: response.data.senha_email_sistema
+           }
+           registerAdmin(formattedData);
+        }
     }
 
     function handleUndoChanges(){
         setTempData(admin);
+    }
+
+    async function handleResetPassword(){
+        
     }
 
     return (
@@ -110,7 +141,7 @@ export default function Account() {
                     onChange={handleChange} 
                     name="password_email_system" />
             </InputWrapper>
-            <SaveChangesWrapper>
+            <SaveChangesWrapper display={tempData!=admin?"inherit":"none"}>
                 <Button
                     colorScheme="red"
                     variant="solid"
@@ -129,12 +160,7 @@ export default function Account() {
             <Divider mb={"10px"}/>
             <ChangePasswordWrapper>
                 Deseja alterar sua senha de acesso?
-                <Button
-                    colorScheme="red"
-                    variant="outline"
-                >
-                    Alterar Senha
-                </Button>
+                <ModalResetPassword/>
             </ChangePasswordWrapper>
         </Container>
     );

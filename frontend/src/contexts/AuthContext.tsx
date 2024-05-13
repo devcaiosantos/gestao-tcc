@@ -2,6 +2,7 @@ import { createContext, useState, ReactNode, useContext, useEffect } from "react
 import { IAdmin } from "../interfaces";
 import { getCookie } from "@/utils/cookies";
 import parseJwt from "@/utils/parseJwt";
+import getAdminInfo from "@/services/administrator/getAdminInfo";
 
 interface AuthContextType {
     registerAdmin: (admin: IAdmin) => void;
@@ -30,19 +31,25 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         if(!token){
             return;
         }
-
         const decodedJwt = parseJwt(token);
-        if(decodedJwt){
-            registerAdmin({
-                id: decodedJwt.id,
-                name: decodedJwt.nome,
-                email: decodedJwt.email,
-                email_system: decodedJwt.email_sistema,
-                password_email_system: decodedJwt.senha_email_sistema
-            });
+        const fetchAdmin = async () => {
+            if(decodedJwt){
+                const response = await getAdminInfo(decodedJwt.id);
+                if(response.status === "success" && response.data){
+                    registerAdmin({
+                        id: response.data.id,
+                        name: response.data.nome,
+                        email: response.data.email,
+                        email_system: response.data.email_sistema,
+                        password_email_system: response.data.senha_email_sistema
+                    });
+                }
+            }
         }
-
+        fetchAdmin();
     }, []);
+
+
 
     function registerAdmin(admin: IAdmin) {
         setAdmin({
