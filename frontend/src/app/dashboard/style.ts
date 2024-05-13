@@ -15,4 +15,15 @@ export const WelcomeTitle = styled.h1`
     margin-bottom: 1rem;
 `;
 
+export const TitlePage = styled.h1`
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    @media (max-width: 768px) {
+        font-size: 1.5rem;
+    }
+`;
 

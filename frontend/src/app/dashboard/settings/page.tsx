@@ -1,6 +1,7 @@
 "use client"
 import { Divider } from "@chakra-ui/react";
-import { Container, Title, Item } from "./style";
+import { Container, Item } from "./style";
+import { TitlePage } from "../style";
 import { FiSettings } from "react-icons/fi";
 import { FaChalkboardTeacher, FaUser, FaBookOpen } from "react-icons/fa";
 import { useRouter } from "next/navigation";
@@ -10,10 +11,10 @@ export default function Settings() {
     const basePath = "/dashboard/settings";
     return (
         <Container>
-            <Title>
+            <TitlePage>
                 <FiSettings/>
                 Configurações
-            </Title>
+            </TitlePage>
             <Divider/>
             <Item onClick={()=>router.push(basePath+"/account")}>
                 <FaUser/>
