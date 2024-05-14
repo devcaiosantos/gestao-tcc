@@ -68,10 +68,25 @@ export class AdministradorService {
     return this.prisma.administrador.findMany();
   }
 
-  findOne(id: number): Promise<Administrador | null> {
-    return this.prisma.administrador.findUnique({
+  async findOne(id: number) {
+    const existingAdministrador = await this.prisma.administrador.findUnique({
       where: { id },
     });
+
+    if (!existingAdministrador) {
+      throw {
+        statusCode: 404,
+        message: "Administrador não encontrado",
+      };
+    }
+
+    return {
+      id: existingAdministrador.id,
+      nome: existingAdministrador.nome,
+      email: existingAdministrador.email,
+      email_sistema: existingAdministrador.email_sistema,
+      senha_email_sistema: existingAdministrador.senha_email_sistema,
+    };
   }
 
   async update(id: number, newAdministrador: createAdministradorProps) {
