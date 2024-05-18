@@ -45,3 +45,17 @@ model Professor {
   departamento Departamento
   @@map("professor")
 }
+
+enum TipoTexto {
+  ATA
+  EMAIL
+  DECLARACAO
+}
+
+model ModeloTexto {
+  id Int  @id @default(autoincrement())
+  titulo String @unique
+  conteudo String
+  tipo TipoTexto
+  @@map("modelo-texto")
+}

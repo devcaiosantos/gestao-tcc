@@ -12,6 +12,7 @@ import { APP_GUARD } from "@nestjs/core";
 import { AuthGuard } from "./auth/auth.guard";
 import { ProfessorModule } from "./professor/professor.module";
 import { AdministradorModule } from "./administrador/administrador.module";
+import { ModeloTextoModule } from "./modelo-texto/modelo-texto.module";
 
 @Module({
   imports: [
@@ -32,6 +33,10 @@ import { AdministradorModule } from "./administrador/administrador.module";
             path: "/",
             module: ProfessorModule,
           },
+          {
+            path: "/",
+            module: ModeloTextoModule,
+          },
         ],
       },
     ]),
@@ -41,6 +46,7 @@ import { AdministradorModule } from "./administrador/administrador.module";
     }),
     ProfessorModule,
     AdministradorModule,
+    ModeloTextoModule,
   ],
   controllers: [AppController, AuthController],
   providers: [
