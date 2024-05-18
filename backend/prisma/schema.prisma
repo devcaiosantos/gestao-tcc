@@ -22,3 +22,26 @@ model Administrador {
   senha_email_sistema String?
   @@map("administrador")
 }
+
+enum Departamento {
+  DACOM
+  DAAMB
+  DACOC
+  DAELN
+  DAAEQ
+  DAQUI
+  DABIC
+  DAFIS
+  DAGEE
+  DAHUM
+  DAMAT
+  OUTRO
+}
+
+model Professor {
+  id Int  @id @default(autoincrement())
+  nome String
+  email String @unique
+  departamento Departamento
+  @@map("professor")
+}

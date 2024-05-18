@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../prisma.service";
+import { PrismaService } from "../prisma/prisma.service";
 import { Administrador } from "@prisma/client";
 import { createAdministradorProps, resetPasswordProps } from "./interfaces";
 import { object, string } from "yup";

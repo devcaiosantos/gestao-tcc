@@ -1,2 +1,8 @@
-npx prisma migrate dev --name added_job_title
-npx prisma migrate deploy
+
+Para criar migration no projeto:
+    npx prisma migrate dev --name added_job_title
+Para adicionar ao database:
+    npx prisma migrate deploy
+
+Para gerar automaticamente o esqueleto de controller, service e etc das entidades:
+    nest g resource users
