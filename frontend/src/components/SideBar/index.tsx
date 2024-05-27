@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect } from "react";
+import React, { ReactNode } from "react";
 import {
   IconButton,
   Avatar,
@@ -20,14 +20,9 @@ import {
   MenuDivider,
   MenuItem,
   MenuList,
-  useColorMode,
-  Switch
 } from "@chakra-ui/react";
 import {
   FiHome,
-  FiTrendingUp,
-  FiCompass,
-  FiStar,
   FiSettings,
   FiMenu,
   FiBell,
@@ -36,7 +31,7 @@ import {
 import { IconType } from "react-icons";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/hooks/useAuthContext";
-
+import { deleteCookie } from "@/utils/cookies";
 interface LinkItemProps {
   name: string;
   icon: IconType;
@@ -151,7 +146,14 @@ interface MobileProps extends FlexProps {
 }
 const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
   const router = useRouter();
-  const { admin } = useAuthContext();
+  const { admin, clearAdmin } = useAuthContext();
+
+  function handleLogout() {
+    deleteCookie("tcc-token");
+    clearAdmin();
+    router.push("/");
+  }
+
   return (
     <Flex
       ml={{ base: 0, md: 60 }}
@@ -218,7 +220,9 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
                 Configurações
               </MenuItem>
               <MenuDivider />
-              <MenuItem>Sair</MenuItem>
+              <MenuItem onClick={()=>handleLogout()}>
+                Sair
+              </MenuItem>
             </MenuList>
           </Menu>
         </Flex>

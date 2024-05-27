@@ -21,3 +21,7 @@ export function setCookie({name, value, days}: ISetCookieProps) {
     let expires = "expires="+ d.toUTCString();
     document.cookie = name + "=" + value + ";" + expires + ";path=/";
 }
+
+export function deleteCookie(name: string) {
+    document.cookie = name+'=; Max-Age=-99999999;';
+}
