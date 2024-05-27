@@ -1,0 +1,72 @@
+import axios from 'axios';
+import { getCookie } from '@/utils/cookies';
+import { ITeacher } from '@/interfaces';
+
+interface Professor {
+    id: number;
+    nome: string;
+    email: string;
+    departamento: string;
+}
+
+interface IGetAllTeachersResponse {
+    status: "success" | "error";
+    message: string;
+    data?: ITeacher[];
+}
+
+export type Status = "success" | "error";
+
+const getAllTeachers = async (): Promise<IGetAllTeachersResponse> => {
+    const URL = process.env.NEXT_PUBLIC_API_URL;
+    if (!URL) {
+        throw new Error('Variável de ambiente não configurada');
+    }
+
+    const config = {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${getCookie("tcc-token")}`
+        },
+        url: URL + `/professor`,
+        method: 'get'
+    };
+
+    try {
+        const response = await axios<Professor[]>(config);
+
+        const formattedData = response.data.map((teacher) => {
+            return {
+                id: teacher.id,
+                name: teacher.nome,
+                email: teacher.email,
+                department: teacher.departamento
+            };
+        })
+
+        const status: Status = "success";
+        return {
+            status: status,
+            message: "Administrador encontrado com sucesso",
+            data: formattedData
+        };
+    } catch (error) {
+        let message = "Uma falha inesperada ocorreu";
+
+        if (error instanceof Error) {
+            message = error.message;
+        }
+
+        if (axios.isAxiosError(error)) {
+            message = error.response?.data.message || "O servidor pode estar fora do ar, tente novamente mais tarde";
+        }
+
+        const status: Status = "error";
+        return {
+            status: status,
+            message: message
+        };
+    }
+};
+
+export default getAllTeachers;

@@ -86,10 +86,6 @@ export default function Account() {
         setTempData(admin);
     }
 
-    async function handleResetPassword(){
-        
-    }
-
     return (
         <Container>
             <TitlePage>
