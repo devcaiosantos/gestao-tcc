@@ -17,21 +17,22 @@ import {
 import { useToast } from '@chakra-ui/react'
 import { Container } from './style';
 import { ITeacher } from '@/interfaces';
-import { object, string, number, ValidationError } from 'yup';
-
+import { object, string, ValidationError } from 'yup';
+import createTeacher from '@/services/teacher/create';
+import updateTeacher from '@/services/teacher/update';
 interface ModalTeacherProps {
     children: React.ReactNode;
     data?: ITeacher
     isOpen: boolean;
     setIsOpen: (value: boolean) => void;
+    fetchTeachers: () => void;
 }
-export default function ModalTeacher({children, data, isOpen, setIsOpen}: ModalTeacherProps) {
+export default function ModalCreateUpdateTeacher({children, data, isOpen, setIsOpen, fetchTeachers}: ModalTeacherProps) {
 
     const [tempData, setTempData] = useState({
-        id: data?.id || '',
         name: data?.name || '',
         email: data?.email || '',
-        departament: data?.department || ''
+        department: data?.department || ''
     });
     const toast = useToast();
     const departaments = [
@@ -52,12 +53,13 @@ export default function ModalTeacher({children, data, isOpen, setIsOpen}: ModalT
     function handleChange(key:string, value:string){
         setTempData({...tempData, [key]: value});
     }
+    
 
     async function handleSubmit(){
         const schema = object().shape({
             name: string().required("Nome é obrigatório"),
             email: string().email("Email inválido").required("Email é obrigatório"),
-            department: string().required("Departamento é obrigatório")
+            department: string().required("Selecione um departamento válido")
         });
 
         try{
@@ -67,9 +69,48 @@ export default function ModalTeacher({children, data, isOpen, setIsOpen}: ModalT
                 return toast({
                     title: error.message,
                     status: "error",
+                    position: "top",
                     duration: 5000,
                     isClosable: true
                 });
+            }
+        }
+
+        if(data && data.id){
+            handleUpdateTeacher();
+            return;
+        }
+        handleCreateTeacher();
+    }
+
+    async function handleCreateTeacher(){
+        const response = await createTeacher(tempData);
+        toast({
+            title: response.message,
+            status: response.status,
+            position: "top",
+            duration: 5000,
+            isClosable: true
+        });
+        if(response.status === "success"){
+            fetchTeachers();
+            setIsOpen(false);
+        }
+    }
+
+    async function handleUpdateTeacher(){
+        if(data && data.id){
+            const response = await updateTeacher({...tempData, id: data.id});
+            toast({
+                title: response.message,
+                status: response.status,
+                position: "top",
+                duration: 5000,
+                isClosable: true
+            });
+            if(response.status === "success"){
+                fetchTeachers();
+                setIsOpen(false);
             }
         }
     }
@@ -88,7 +129,7 @@ export default function ModalTeacher({children, data, isOpen, setIsOpen}: ModalT
                     <Box> 
                         <FormLabel>Nome Completo</FormLabel>
                         <Input 
-                            value={data?.name} 
+                            value={tempData?.name} 
                             onChange={(e) =>handleChange("name", e.target.value)} 
                             placeholder="Digite o nome completo do professor" 
                         />
@@ -96,7 +137,7 @@ export default function ModalTeacher({children, data, isOpen, setIsOpen}: ModalT
                     <Box> 
                         <FormLabel>Email</FormLabel>
                         <Input 
-                            value={data?.email} 
+                            value={tempData?.email} 
                             onChange={(e) => handleChange("email", e.target.value)}
                             placeholder="Digite o email do professor" 
                         />
@@ -104,7 +145,7 @@ export default function ModalTeacher({children, data, isOpen, setIsOpen}: ModalT
                     <Box> 
                         <FormLabel>Departamento</FormLabel>
                         <Select
-                            value={data?.department}
+                            value={tempData?.department}
                             onChange={(e) => handleChange("department", e.target.value)}
                             placeholder="Selecione o departamento"
                         >
@@ -128,7 +169,9 @@ export default function ModalTeacher({children, data, isOpen, setIsOpen}: ModalT
                   variant='ghost'
                   onClick={handleSubmit}
                 >
-                  Cadastrar
+                  {
+                    data && data.id? "Atualizar" : "Cadastrar"
+                  }
                 </Button>
               </ModalFooter>
             </ModalContent>

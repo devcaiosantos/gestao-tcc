@@ -48,12 +48,16 @@ export const TableHeader = styled(Th)`
   background-color: gray.700;
   color: white;
 `;
-
-export const TableRow = styled.tr`
+interface TableRowProps {
+  selected?: boolean;
+}
+export const TableRow = styled.tr<TableRowProps>`
+  background: ${(props) => (props.selected ? '#1a202c' : 'transparent')};
+  color: ${(props) => (props.selected ? 'white' : 'inherit')};
+  cursor: pointer;
   &:hover {
     background: #1a202c;
     color: white;
-    cursor: pointer;
   }
 `;
 
@@ -80,3 +84,10 @@ export const AddTeacherButtonContainer = styled.div`
     max-width: 200px;
   }
 `;
+
+export const ActionButtonsContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;  
+`

@@ -2,26 +2,32 @@ import axios from 'axios';
 import { getCookie } from '@/utils/cookies';
 import { ITeacher } from '@/interfaces';
 
-interface Professor {
-    id: number;
-    nome: string;
-    email: string;
-    departamento: string;
-}
+type Status = "success" | "error";
 
-interface IGetAllTeachersResponse {
-    status: "success" | "error";
+interface ICreateTeacherResponse {
+    status: Status;
     message: string;
-    data?: ITeacher[];
+    data?: ITeacher;
 }
 
-export type Status = "success" | "error";
+interface ICreateTeacherProps {
+    name: string;
+    email: string;
+    department: string;
+}
 
-const getAllTeachers = async (): Promise<IGetAllTeachersResponse> => {
+const createTeacher = async (data: ICreateTeacherProps): Promise<ICreateTeacherResponse> => {
+    
     const URL = process.env.NEXT_PUBLIC_API_URL;
     if (!URL) {
         throw new Error('Variável de ambiente não configurada');
     }
+
+    const formattedData = {
+        nome: data.name,
+        email: data.email,
+        departamento: data.department
+    };
 
     const config = {
         headers: {
@@ -29,26 +35,18 @@ const getAllTeachers = async (): Promise<IGetAllTeachersResponse> => {
             'Authorization': `Bearer ${getCookie("tcc-token")}`
         },
         url: URL + `/professor`,
-        method: 'get'
+        method: 'post',
+        data: formattedData
     };
 
     try {
-        const response = await axios<Professor[]>(config);
-
-        const formattedData = response.data.map((teacher) => {
-            return {
-                id: teacher.id,
-                name: teacher.nome,
-                email: teacher.email,
-                department: teacher.departamento
-            };
-        })
+        const response = await axios<ITeacher>(config);
 
         const status: Status = "success";
         return {
             status: status,
-            message: "Administrador encontrado com sucesso",
-            data: formattedData
+            message: "Professor cadastrado com sucesso",
+            data: response.data
         };
     } catch (error) {
         let message = "Uma falha inesperada ocorreu";
@@ -69,4 +67,4 @@ const getAllTeachers = async (): Promise<IGetAllTeachersResponse> => {
     }
 };
 
-export default getAllTeachers;
+export default createTeacher;

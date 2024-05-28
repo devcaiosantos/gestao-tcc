@@ -13,12 +13,13 @@ import {
     Tr,
     Td,
     useDisclosure,
-    Button
+    Button,
+    Flex
 } from "@chakra-ui/react";
 import { TitlePage } from "../../style";
-import { Container } from "./style";
+import { Container, ActionButtonsContainer } from "./style";
 import { FaChalkboardTeacher } from "react-icons/fa";
-import getAllTeachers from "@/services/teacher/getAllTeachers";
+import getAllTeachers from "@/services/teacher/findAll";
 import { ITeacher } from "@/interfaces";
 import {
     PaginationContainer,
@@ -31,38 +32,40 @@ import {
     EmailInfo,
     AddTeacherButtonContainer
 } from "./style"
-import ModalTeacher from "@/components/ModalTeacher";
-import { FaUserPlus } from "react-icons/fa";
+import ModalCreateUpdateTeacher from "@/components/ModalTeacher/CreateUpdate";
+import ModalDeleteTeacher from "@/components/ModalTeacher/Delete";
+import { FaUserPlus, FaUserEdit } from "react-icons/fa";
 
 export default function Teachers() {
     const [teachers, setTeachers] = useState<ITeacher[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const toast = useToast();
-    const [isOpenAddTeacherModal, setIsOpenAddTeacherModal] = useState(false);
+    const [isOpenModalTeacher, setIsOpenModalTeacher] = useState(false);
 
     useEffect(() => {
-        async function fetchTeachers() {
-            const response = await getAllTeachers();  
-            if(response.status == "error"){
-                toast({
-                    title: response.message,
-                    status: "error",
-                    duration: 5000,
-                    isClosable: true
-                });
-                return;
-            }
-            if(response.data){
-                setTeachers(response.data)
-            }
-        }
         fetchTeachers();
-    }, [toast]);
+    }, []);
 
     useEffect(() => {
         setTotalPages(Math.ceil(teachers.length / 10));
     }, [teachers]);
+
+    async function fetchTeachers() {
+        const response = await getAllTeachers();  
+        if(response.status == "error"){
+            toast({
+                title: response.message,
+                status: "error",
+                duration: 5000,
+                isClosable: true
+            });
+            return;
+        }
+        if(response.data){
+            setTeachers(response.data)
+        }
+    }
 
     return (
         <Container>
@@ -71,22 +74,28 @@ export default function Teachers() {
                 Professores
             </TitlePage>
             <Divider mb={"10px"}/>
-            <ModalTeacher 
-                isOpen={isOpenAddTeacherModal} 
-                setIsOpen={setIsOpenAddTeacherModal}
+            <ModalCreateUpdateTeacher 
+                isOpen={isOpenModalTeacher} 
+                setIsOpen={setIsOpenModalTeacher}
+                fetchTeachers={fetchTeachers}
             >
                 <AddTeacherButtonContainer>
                     <Button
                     colorScheme="blue"
                     variant="solid"
-                    onClick={()=>setIsOpenAddTeacherModal(true)}
+                    onClick={()=>setIsOpenModalTeacher(true)}
                     leftIcon={<FaUserPlus/>}
                     >
                         Cadastrar Professor
                     </Button>
                 </AddTeacherButtonContainer>
-            </ModalTeacher>
-            <TeachersTable teachers={teachers}/>
+            </ModalCreateUpdateTeacher>
+            <TeachersTable 
+                teachers={teachers}
+                isOpenModalTeacher={isOpenModalTeacher} 
+                setIsOpenModalTeacher={setIsOpenModalTeacher}
+                fetchTeachers={fetchTeachers}
+            />
             <Pagination
                 currentPage={currentPage}
                 setCurrentPage={setCurrentPage}
@@ -97,8 +106,13 @@ export default function Teachers() {
     );
 }
 
-const TeachersTable = ({ teachers }: { teachers: ITeacher[] }) => {
-    
+const TeachersTable = ({ teachers, isOpenModalTeacher, setIsOpenModalTeacher, fetchTeachers }: { 
+    teachers: ITeacher[],
+    isOpenModalTeacher: boolean,
+    setIsOpenModalTeacher: (value: boolean) => void,
+    fetchTeachers: () => void
+}) => {
+    const [selectedTeacher, setSelectedTeacher] = useState<ITeacher | null>(null);
     return ( 
         <TableContainer>
             <Table>
@@ -113,27 +127,59 @@ const TeachersTable = ({ teachers }: { teachers: ITeacher[] }) => {
                     <TableHeader>
                         Departamento
                     </TableHeader>
+                    <TableHeader>
+                    </TableHeader>
                 </Tr>
             </Thead>
             <Tbody>
             {teachers && teachers.length > 0 ? (
                 teachers.map((teacher) => {
                   return (
-                    <TableRow 
-                    // onClick={()=>{setIsOpenMessageModal(true),setSelectedMessage(message)}}
+                    <TableRow
+                    selected={selectedTeacher?.id === teacher.id? true : false}
+                    onClick={()=>{setSelectedTeacher(teacher)}}
                     key={teacher.id} 
                     >
-                      <Td>
+                        
+                        <Td>
                         <NameInfo>
-                          {teacher.name}
+                            {teacher.name}
                         </NameInfo>
-                      </Td>
-                      <Td>
+                        </Td>
+                        <Td>
                         <EmailInfo>
-                          {teacher.email}
+                            {teacher.email}
                         </EmailInfo>
-                      </Td>
-                      <Td>{teacher.department}</Td>
+                        </Td>
+                        <Td>{teacher.department}</Td>
+                        <Td>
+                            {
+                                (selectedTeacher && selectedTeacher?.id == teacher.id)
+                                && 
+                                (
+                                    <ActionButtonsContainer>
+                                        <ModalCreateUpdateTeacher
+                                        isOpen={isOpenModalTeacher} 
+                                        setIsOpen={setIsOpenModalTeacher}
+                                        fetchTeachers={fetchTeachers}
+                                        data={teacher}
+                                        >
+                                            <Button
+                                            colorScheme="blue"
+                                            leftIcon={<FaUserEdit/>}
+                                            onClick={()=>setIsOpenModalTeacher(true)}
+                                            >
+                                                Editar
+                                            </Button>
+                                        </ModalCreateUpdateTeacher>
+                                        <ModalDeleteTeacher
+                                            data={teacher}
+                                            fetchTeachers={fetchTeachers}
+                                        />
+                                    </ActionButtonsContainer>
+                                )
+                            }
+                        </Td>
                     </TableRow>
                   );
                 })
