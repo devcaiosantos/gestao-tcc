@@ -1,5 +1,8 @@
 import styled from "styled-components";
-import { NumberInput, Th, Text, Button } from '@chakra-ui/react';
+import { NumberInput, Th, Text, Td } from '@chakra-ui/react';
+import theme from "@/style/theme";
+const { colors } = theme;
+
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -7,7 +10,6 @@ export const Container = styled.div`
   width: 100%;
   height: 100%;
 `;
-
 
 export const PaginationContainer = styled.div`
   display: flex;
@@ -28,8 +30,6 @@ export const NumberInputStyled = styled(NumberInput)`
 `;
 
 export const TableContainer = styled.div`
-    /* overflowY={'auto'}
-    maxHeight={isSmallerThan800?'400px':'700px'} */
     overflow-y: auto;
     max-height: 700px;
     @media (max-width: 800px) {
@@ -38,40 +38,40 @@ export const TableContainer = styled.div`
 `;
 
 export const TableHeader = styled(Th)`
-  /* position={"sticky"}
-  top={"0"}
-  bg={"gray.700"}
-  color={"white"}
-  fontFamily={"Roboto,sans-serif"} */
   position: sticky;
   top: 0;
-  background-color: gray.700;
+  background-color: ${colors.dark700};
   color: white;
 `;
 interface TableRowProps {
   selected?: boolean;
 }
 export const TableRow = styled.tr<TableRowProps>`
-  background: ${(props) => (props.selected ? '#1a202c' : 'transparent')};
+  background: ${(props) => (props.selected ? colors.dark600 : 'transparent')};
   color: ${(props) => (props.selected ? 'white' : 'inherit')};
   cursor: pointer;
   &:hover {
-    background: #1a202c;
+    background: ${colors.dark800};
     color: white;
   }
+
 `;
 
 export const NameInfo  = styled(Text)`
+  height: 40px;
   width: 150px;
-  font-size: 1rem;
+  font-size: 1.2rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 `;
 
 export const EmailInfo = styled(Text)`
+  display: flex;
+  align-items: center;
+  height: 40px;
   width: 150px;
-  font-size: 1rem;
+  font-size: 1.2rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -80,12 +80,15 @@ export const EmailInfo = styled(Text)`
 export const AddTeacherButtonContainer = styled.div`
   display: flex;
   justify-content: flex-end;
+  margin-bottom: 10px;
   Button {
     max-width: 200px;
   }
+
 `;
 
 export const ActionButtonsContainer = styled.div`
+  height: 40px;
   display: flex;
   justify-content: center;
   align-items: center;

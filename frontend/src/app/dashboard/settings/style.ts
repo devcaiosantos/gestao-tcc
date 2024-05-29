@@ -1,5 +1,9 @@
 import styled from "styled-components";
 import { Box } from "@chakra-ui/react";
+import theme from "@/style/theme";
+
+const { colors } = theme;
+
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -27,7 +31,7 @@ export const Item = styled(Box)`
     width: 100%;
     cursor: pointer;
     &:hover {
-        background-color: rgb(26, 32, 44);
+        background-color: ${colors.dark800};
     }
     svg {
         font-size: 1.5rem;
