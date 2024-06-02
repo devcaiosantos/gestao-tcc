@@ -88,27 +88,18 @@ export default function Teachers() {
             </ModalCreateUpdateTeacher>
             <TeachersTable 
                 teachers={teachers}
-                isOpenModalTeacher={isOpenModalTeacher} 
-                setIsOpenModalTeacher={setIsOpenModalTeacher}
                 fetchTeachers={fetchTeachers}
             />
-            <Pagination
-                currentPage={currentPage}
-                setCurrentPage={setCurrentPage}
-                totalPages={totalPages}
-            >
-            </Pagination>
         </Container>
     );
 }
 
-const TeachersTable = ({ teachers, isOpenModalTeacher, setIsOpenModalTeacher, fetchTeachers }: { 
+const TeachersTable = ({ teachers, fetchTeachers }: { 
     teachers: ITeacher[],
-    isOpenModalTeacher: boolean,
-    setIsOpenModalTeacher: (value: boolean) => void,
     fetchTeachers: () => void
 }) => {
     const [selectedTeacher, setSelectedTeacher] = useState<ITeacher | null>(null);
+    const [isOpenModalTeacher, setIsOpenModalTeacher] = useState(false);
     return ( 
         <TableContainer>
             <Table>

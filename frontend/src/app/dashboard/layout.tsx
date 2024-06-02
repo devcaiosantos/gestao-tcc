@@ -17,7 +17,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     function handleLogout() {
         deleteCookie("tcc-token");
         clearAdmin();
-        router.push("/");
+        router.refresh();
     }
 
     if (connectionError.message) {

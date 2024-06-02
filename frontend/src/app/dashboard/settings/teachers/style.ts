@@ -6,7 +6,6 @@ const { colors } = theme;
 export const Container = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 20px;
   width: 100%;
   height: 100%;
 `;
@@ -31,9 +30,12 @@ export const NumberInputStyled = styled(NumberInput)`
 
 export const TableContainer = styled.div`
     overflow-y: auto;
-    max-height: 700px;
+    max-height: 550px;
     @media (max-width: 800px) {
         max-height: 400px;
+    }
+    @media (max-width: 600px) {
+        max-height: 300px;
     }
 `;
 

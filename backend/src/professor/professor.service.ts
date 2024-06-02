@@ -49,7 +49,6 @@ export class ProfessorService {
         message: "Email já cadastrado",
       };
     }
-    console.log(professor);
     const createdProfessor = await this.prisma.professor.create({
       data: {
         nome: professor.nome,
@@ -75,7 +74,11 @@ export class ProfessorService {
   }
 
   findAll() {
-    return this.prisma.professor.findMany();
+    return this.prisma.professor.findMany({
+      orderBy: {
+        nome: "asc",
+      },
+    });
   }
 
   findOne(id: number) {
@@ -88,6 +91,7 @@ export class ProfessorService {
         nome: string().required(),
         email: string().email().required(),
         departamento: mixed().oneOf(departamentos),
+        ativo: boolean().required(),
       });
       await updateAdministradorSchema.validate(updateProfessorProps);
     } catch (error) {
@@ -114,6 +118,7 @@ export class ProfessorService {
         nome: updateProfessorProps.nome,
         email: updateProfessorProps.email,
         departamento: updateProfessorProps.departamento,
+        ativo: updateProfessorProps.ativo,
       },
     });
 
@@ -129,6 +134,7 @@ export class ProfessorService {
       nome: updatedProfessor.nome,
       email: updatedProfessor.email,
       departamento: updatedProfessor.departamento,
+      ativo: updatedProfessor.ativo,
     };
   }
 

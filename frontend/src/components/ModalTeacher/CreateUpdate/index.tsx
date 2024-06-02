@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     Button,
     Modal,
@@ -28,7 +28,7 @@ interface ModalTeacherProps {
     fetchTeachers: () => void;
 }
 export default function ModalCreateUpdateTeacher({children, data, isOpen, setIsOpen, fetchTeachers}: ModalTeacherProps) {
-
+    
     const [tempData, setTempData] = useState({
         name: data?.name || '',
         email: data?.email || '',
@@ -51,10 +51,20 @@ export default function ModalCreateUpdateTeacher({children, data, isOpen, setIsO
         "OUTRO"
     ];
 
+    useEffect(() => {
+        if(!isOpen && !data){
+            setTempData({
+                name: '',
+                email: '',
+                department: '',
+                active: true
+            });
+        }
+    }, [isOpen,data]);
+
     function handleChange(key:string, value:string | boolean){
         setTempData({...tempData, [key]: value});
     }
-    
 
     async function handleSubmit(){
         const schema = object().shape({
