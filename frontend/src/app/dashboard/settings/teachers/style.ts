@@ -59,7 +59,7 @@ export const TableRow = styled.tr<TableRowProps>`
 
 export const NameInfo  = styled(Text)`
   height: 40px;
-  width: 150px;
+  width: 200px;
   font-size: 1.2rem;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -70,7 +70,7 @@ export const EmailInfo = styled(Text)`
   display: flex;
   align-items: center;
   height: 40px;
-  width: 150px;
+  width: 200px;
   font-size: 1.2rem;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -89,6 +89,7 @@ export const AddTeacherButtonContainer = styled.div`
 
 export const ActionButtonsContainer = styled.div`
   height: 40px;
+  width: 250px;
   display: flex;
   justify-content: center;
   align-items: center;

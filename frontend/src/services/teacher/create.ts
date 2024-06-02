@@ -14,6 +14,7 @@ interface ICreateTeacherProps {
     name: string;
     email: string;
     department: string;
+    active: boolean;
 }
 
 const createTeacher = async (data: ICreateTeacherProps): Promise<ICreateTeacherResponse> => {
@@ -26,7 +27,8 @@ const createTeacher = async (data: ICreateTeacherProps): Promise<ICreateTeacherR
     const formattedData = {
         nome: data.name,
         email: data.email,
-        departamento: data.department
+        departamento: data.department,
+        ativo:data.active
     };
 
     const config = {

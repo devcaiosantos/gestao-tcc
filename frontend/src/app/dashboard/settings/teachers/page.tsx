@@ -39,17 +39,13 @@ import { FaUserPlus, FaUserEdit } from "react-icons/fa";
 export default function Teachers() {
     const [teachers, setTeachers] = useState<ITeacher[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(0);
+    const totalPages = Math.ceil(teachers.length / 10) || 1;
     const toast = useToast();
     const [isOpenModalTeacher, setIsOpenModalTeacher] = useState(false);
 
     useEffect(() => {
         fetchTeachers();
     }, []);
-
-    useEffect(() => {
-        setTotalPages(Math.ceil(teachers.length / 10));
-    }, [teachers]);
 
     async function fetchTeachers() {
         const response = await getAllTeachers();  
@@ -128,6 +124,10 @@ const TeachersTable = ({ teachers, isOpenModalTeacher, setIsOpenModalTeacher, fe
                         Departamento
                     </TableHeader>
                     <TableHeader>
+                        Status
+                    </TableHeader>
+                    <TableHeader>
+                        
                     </TableHeader>
                 </Tr>
             </Thead>
@@ -152,6 +152,9 @@ const TeachersTable = ({ teachers, isOpenModalTeacher, setIsOpenModalTeacher, fe
                         </EmailInfo>
                         </Td>
                         <Td>{teacher.department}</Td>
+                        <Td>
+                            {teacher.active ? "Ativo" : "Inativo"}
+                        </Td>
                         <Td>
                             {
                                 (selectedTeacher && selectedTeacher?.id == teacher.id)
@@ -180,6 +183,7 @@ const TeachersTable = ({ teachers, isOpenModalTeacher, setIsOpenModalTeacher, fe
                                 )
                             }
                         </Td>
+                        
                     </TableRow>
                   );
                 })

@@ -7,6 +7,7 @@ interface Professor {
     nome: string;
     email: string;
     departamento: string;
+    ativo: boolean;
 }
 
 interface IGetAllTeachersResponse {
@@ -35,12 +36,13 @@ const findAllTeachers = async (): Promise<IGetAllTeachersResponse> => {
     try {
         const response = await axios<Professor[]>(config);
 
-        const formattedData = response.data.map((teacher) => {
+        const formattedData = response.data.map((professor) => {
             return {
-                id: teacher.id,
-                name: teacher.nome,
-                email: teacher.email,
-                department: teacher.departamento
+                id: professor.id,
+                name: professor.nome,
+                email: professor.email,
+                department: professor.departamento,
+                active: professor.ativo
             };
         })
 

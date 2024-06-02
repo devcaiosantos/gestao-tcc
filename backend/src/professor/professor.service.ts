@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { createProfessorProps } from "./interfaces";
-import { object, string, mixed } from "yup";
+import { object, string, mixed, boolean } from "yup";
 
 const departamentos = [
   "DACOM",
@@ -27,6 +27,7 @@ export class ProfessorService {
         nome: string().required(),
         email: string().email().required(),
         departamento: mixed().oneOf(departamentos),
+        ativo: boolean().required(),
       });
       await createAdministradorSchema.validate(professor);
     } catch (error) {
@@ -48,12 +49,13 @@ export class ProfessorService {
         message: "Email já cadastrado",
       };
     }
-
+    console.log(professor);
     const createdProfessor = await this.prisma.professor.create({
       data: {
         nome: professor.nome,
         email: professor.email,
         departamento: professor.departamento,
+        ativo: professor.ativo,
       },
     });
     if (!createdProfessor) {
@@ -68,6 +70,7 @@ export class ProfessorService {
       nome: createdProfessor.nome,
       email: createdProfessor.email,
       departamento: createdProfessor.departamento,
+      ativo: createdProfessor.ativo,
     };
   }
 

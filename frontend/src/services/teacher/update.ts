@@ -10,7 +10,7 @@ interface IUpdateTeacherResponse {
     data?: ITeacher;
 }
 
-const createTeacher = async (data: ITeacher): Promise<IUpdateTeacherResponse> => {
+const updateTeacher = async (data: ITeacher): Promise<IUpdateTeacherResponse> => {
     
     const URL = process.env.NEXT_PUBLIC_API_URL;
     if (!URL) {
@@ -20,7 +20,8 @@ const createTeacher = async (data: ITeacher): Promise<IUpdateTeacherResponse> =>
     const formattedData = {
         nome: data.name,
         email: data.email,
-        departamento: data.department
+        departamento: data.department,
+        ativo:data.active
     };
 
     const config = {
@@ -61,4 +62,4 @@ const createTeacher = async (data: ITeacher): Promise<IUpdateTeacherResponse> =>
     }
 };
 
-export default createTeacher;
+export default updateTeacher;

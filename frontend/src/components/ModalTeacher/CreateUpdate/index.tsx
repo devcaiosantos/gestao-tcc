@@ -12,12 +12,12 @@ import {
     Input,
     Select,
     Box,
-    useDisclosure
+    Checkbox
 } from '@chakra-ui/react'
 import { useToast } from '@chakra-ui/react'
 import { Container } from './style';
 import { ITeacher } from '@/interfaces';
-import { object, string, ValidationError } from 'yup';
+import { boolean, object, string, ValidationError } from 'yup';
 import createTeacher from '@/services/teacher/create';
 import updateTeacher from '@/services/teacher/update';
 interface ModalTeacherProps {
@@ -32,7 +32,8 @@ export default function ModalCreateUpdateTeacher({children, data, isOpen, setIsO
     const [tempData, setTempData] = useState({
         name: data?.name || '',
         email: data?.email || '',
-        department: data?.department || ''
+        department: data?.department || '',
+        active: data?.active || true
     });
     const toast = useToast();
     const departaments = [
@@ -50,7 +51,7 @@ export default function ModalCreateUpdateTeacher({children, data, isOpen, setIsO
         "OUTRO"
     ];
 
-    function handleChange(key:string, value:string){
+    function handleChange(key:string, value:string | boolean){
         setTempData({...tempData, [key]: value});
     }
     
@@ -59,7 +60,8 @@ export default function ModalCreateUpdateTeacher({children, data, isOpen, setIsO
         const schema = object().shape({
             name: string().required("Nome é obrigatório"),
             email: string().email("Email inválido").required("Email é obrigatório"),
-            department: string().required("Selecione um departamento válido")
+            department: string().required("Selecione um departamento válido"),
+            active: boolean().required("Selecione um status válido")
         });
 
         try{
@@ -155,6 +157,14 @@ export default function ModalCreateUpdateTeacher({children, data, isOpen, setIsO
                                 </option>
                             ))} 
                         </Select>
+                    </Box>
+                    <Box> 
+                        {/* Check box */}
+                        <Checkbox 
+                        isChecked={tempData.active}
+                        onChange={(e) => handleChange("active", e.target.checked)}>
+                        Ativo
+                        </Checkbox>
                     </Box>
 
                  </Container>

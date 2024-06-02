@@ -43,6 +43,7 @@ model Professor {
   nome String
   email String @unique
   departamento Departamento
+  ativo Boolean @default(true)
   @@map("professor")
 }
 
