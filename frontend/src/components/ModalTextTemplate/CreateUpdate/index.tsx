@@ -1,0 +1,163 @@
+import { useEffect, useState } from 'react';
+import {
+    Button,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalFooter,
+    ModalBody,
+    ModalCloseButton,
+    FormLabel,
+    Input,
+    Select,
+    Box,
+    Text,
+} from '@chakra-ui/react';
+import { useToast, Textarea } from '@chakra-ui/react';
+import { Container } from './style';
+import { ITextTemplate } from '@/interfaces'; 
+import { string, object, ValidationError } from 'yup';
+import createTextTemplate from '@/services/text-template/create'; 
+import updateTextTemplate from '@/services/text-template/update'; 
+
+interface ModalTextTemplateProps {
+    children: React.ReactNode;
+    data?: ITextTemplate;
+    isOpen: boolean;
+    setIsOpen: (value: boolean) => void;
+    fetchTextTemplates: () => void;
+}
+
+export default function ModalCreateUpdateTextTemplate({ children, data, isOpen, setIsOpen, fetchTextTemplates }: ModalTextTemplateProps) {
+    const [tempData, setTempData] = useState({
+        title: data?.title || '',
+        content: data?.content || '',
+        type: data?.type || ''
+    });
+    const toast = useToast();
+
+    useEffect(() => {
+        if (!isOpen && !data) {
+            setTempData({
+                title: '',
+                content: '',
+                type: ''
+            });
+        }
+    }, [isOpen, data]);
+
+    function handleChange(key: keyof ITextTemplate, value: string) {
+        setTempData({ ...tempData, [key]: value });
+    }
+
+    async function handleSubmit() {
+        const schema = object().shape({
+            title: string().required('Título é obrigatório'),
+            content: string().required('Conteúdo é obrigatório'),
+            type: string().required('Tipo é obrigatório'),
+        });
+
+        try {
+            await schema.validate(tempData);
+        } catch (error) {
+            if (error instanceof ValidationError) {
+                return toast({
+                    title: error.message,
+                    status: 'error',
+                    position: 'top',
+                    duration: 5000,
+                    isClosable: true,
+                });
+            }
+        }
+
+        if (data && data.id) {
+            handleUpdateTextTemplate();
+        } else {
+            handleCreateTextTemplate();
+        }
+    }
+
+    async function handleCreateTextTemplate() {
+        const response = await createTextTemplate(tempData);
+        toast({
+            title: response.message,
+            status: response.status,
+            position: 'top',
+            duration: 5000,
+            isClosable: true,
+        });
+        if (response.status === 'success') {
+            fetchTextTemplates();
+            setIsOpen(false);
+        }
+    }
+
+    async function handleUpdateTextTemplate() {
+        if (data && data.id) {
+            const response = await updateTextTemplate({...tempData, id: data.id});
+            toast({
+                title: response.message,
+                status: response.status,
+                position: 'top',
+                duration: 5000,
+                isClosable: true,
+            });
+            if (response.status === 'success') {
+                fetchTextTemplates();
+                setIsOpen(false);
+            }
+        }
+    }
+
+    return (
+        <>
+            {children}
+            <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+                <ModalOverlay />
+                <ModalContent>
+                    <ModalHeader>{data && data.id ? 'Editar Template de Texto' : 'Criar Novo Template de Texto'}</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody>
+                        <Container>
+                            <Box>
+                                <FormLabel>Título</FormLabel>
+                                <Input
+                                    value={tempData.title}
+                                    onChange={(e) => handleChange('title', e.target.value)}
+                                    placeholder="Digite o título do template"
+                                />
+                            </Box>
+                            <Box>
+                                <FormLabel>Conteúdo</FormLabel>
+                                <Textarea
+                                    value={tempData.content}
+                                    onChange={(e) => handleChange('content', e.target.value)}
+                                    placeholder="Digite o conteúdo do template"
+                                />
+                            </Box>
+                            <Box>
+                                <FormLabel>Tipo</FormLabel>
+                                <Input
+                                    value={tempData.type}
+                                    onChange={(e) => handleChange('type', e.target.value)}
+                                    placeholder="Digite o tipo do template"
+                                />
+                            </Box>
+                          
+                        </Container>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button colorScheme="red" mr={3} onClick={() => setIsOpen(false)}>
+                            Cancelar
+                        </Button>
+                        <Button colorScheme="green" onClick={handleSubmit}>
+                            {data && data.id ? 'Atualizar' : 'Cadastrar'}
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
+        </>
+    );
+}

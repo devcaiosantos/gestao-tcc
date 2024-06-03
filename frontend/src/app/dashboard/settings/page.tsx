@@ -24,7 +24,7 @@ export default function Settings() {
                 <FaChalkboardTeacher/>
                 Professores
             </Item>
-            <Item onClick={()=>router.push(basePath+"/texts")}>
+            <Item onClick={()=>router.push(basePath+"/text-templates")}>
                 <FaBookOpen/>
                 Textos Padrão
             </Item>

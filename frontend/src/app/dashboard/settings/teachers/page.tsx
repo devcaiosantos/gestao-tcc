@@ -31,12 +31,14 @@ import ModalCreateUpdateTeacher from "@/components/ModalTeacher/CreateUpdate";
 import ModalDeleteTeacher from "@/components/ModalTeacher/Delete";
 import { FaUserPlus, FaUserEdit, FaChalkboardTeacher, FaSearch  } from "react-icons/fa";
 import searchTeachersByTerm from "@/services/teacher/search";
+import useDebounce from "@/hooks/useDebounce";
 
 export default function Teachers() {
     const [teachers, setTeachers] = useState<ITeacher[]>([]);
     const toast = useToast();
     const [isOpenModalTeacher, setIsOpenModalTeacher] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
+    const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
     useEffect(() => {
         fetchTeachers();
@@ -44,7 +46,7 @@ export default function Teachers() {
 
     useEffect(() => {
         searchTeachers();
-    }, [searchTerm]);
+    }, [debouncedSearchTerm]);
 
     async function fetchTeachers() {
         const response = await getAllTeachers();  

@@ -83,3 +83,5 @@ const updateTextTemplate = async (data: IUpdateTextTemplateProps): Promise<IUpda
         };
     }
 };
+
+export default updateTextTemplate;
