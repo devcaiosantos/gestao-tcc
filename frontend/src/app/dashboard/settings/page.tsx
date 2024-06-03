@@ -3,7 +3,7 @@ import { Divider } from "@chakra-ui/react";
 import { Container, Item } from "./style";
 import { TitlePage } from "../style";
 import { FiSettings } from "react-icons/fi";
-import { FaChalkboardTeacher, FaUser, FaBookOpen } from "react-icons/fa";
+import { FaChalkboardTeacher, FaUser,  FaFileAlt } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 
 export default function Settings() {
@@ -25,8 +25,8 @@ export default function Settings() {
                 Professores
             </Item>
             <Item onClick={()=>router.push(basePath+"/text-templates")}>
-                <FaBookOpen/>
-                Textos Padrão
+                <FaFileAlt/>
+                Modelos de Texto
             </Item>
         </Container>
        

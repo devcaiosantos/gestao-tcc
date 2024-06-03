@@ -10,20 +10,20 @@ import {
     useDisclosure,
     useToast
 } from '@chakra-ui/react'
-import { ITeacher } from '@/interfaces';
+import { ITextTemplate } from '@/interfaces';
 import { FaTrash} from 'react-icons/fa';
-import deleteTeacher from '@/services/teacher/delete';
+import deleteTextTemplate from '@/services/text-template/delete';
 
-interface ModalTeacherProps {
-    data?: ITeacher
-    fetchTeachers: () => void;
+interface ModalTextTemplateProps {
+    data?: ITextTemplate
+    fetchTextTemplates: () => void;
 }
-export default function ModalDeleteTeacher({data, fetchTeachers}: ModalTeacherProps) {
+export default function ModalDeleteTextTemplate({data, fetchTextTemplates}: ModalTextTemplateProps) {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const toast = useToast();
     async function handleDelete(){
       if(data){
-        const response = await deleteTeacher(data.id);
+        const response = await deleteTextTemplate(data.id);
         toast({
             title: response.message,
             status: response.status,
@@ -31,7 +31,7 @@ export default function ModalDeleteTeacher({data, fetchTeachers}: ModalTeacherPr
             isClosable: true
         });
         if(response.status === "success"){
-          fetchTeachers();
+            fetchTextTemplates();
           onClose();
         }
       }
@@ -50,7 +50,7 @@ export default function ModalDeleteTeacher({data, fetchTeachers}: ModalTeacherPr
           <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
             <ModalContent>
-              <ModalHeader>Deseja mesmo excluir professor?</ModalHeader>
+              <ModalHeader>Deseja excluir Modelo de Textos?</ModalHeader>
               <ModalCloseButton />
               <ModalBody>
                  Não será possível reverter essa ação.

@@ -139,11 +139,15 @@ export default function ModalCreateUpdateTextTemplate({ children, data, isOpen, 
                             </Box>
                             <Box>
                                 <FormLabel>Tipo</FormLabel>
-                                <Input
+                                <Select
+                                    placeholder="Selecione o tipo"
                                     value={tempData.type}
                                     onChange={(e) => handleChange('type', e.target.value)}
-                                    placeholder="Digite o tipo do template"
-                                />
+                                >
+                                    <option value="EMAIL">E-MAIL</option>
+                                    <option value="ATA">ATA</option>
+                                    <option value="DECLARACAO">DECLARAÇÃO</option>
+                                </Select>
                             </Box>
                           
                         </Container>

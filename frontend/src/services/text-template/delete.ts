@@ -30,7 +30,7 @@ const deleteTextTemplate = async (id: number): Promise<IDeleteTextTemplateRespon
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${getCookie("tcc-token")}`
         },
-        url: URL + `/text-template/${id}`,
+        url: URL + `/modelo-texto/${id}`,
         method: 'delete'
     };
 
@@ -68,3 +68,5 @@ const deleteTextTemplate = async (id: number): Promise<IDeleteTextTemplateRespon
         };
     }
 };
+
+export default deleteTextTemplate;

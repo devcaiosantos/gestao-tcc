@@ -30,7 +30,7 @@ const findAllTextTemplates = async (): Promise<IGetAllTextTemplatesResponse> => 
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${getCookie("tcc-token")}`
         },
-        url: URL + `/text-template`,
+        url: URL + `/modelo-texto`,
         method: 'get'
     };
 

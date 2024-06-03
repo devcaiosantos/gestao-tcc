@@ -44,7 +44,7 @@ const updateTextTemplate = async (data: IUpdateTextTemplateProps): Promise<IUpda
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${getCookie("tcc-token")}`
         },
-        url: URL + `/text-template/${data.id}`,
+        url: URL + `/modelo-texto/${data.id}`,
         method: 'patch',
         data: formattedData
     };

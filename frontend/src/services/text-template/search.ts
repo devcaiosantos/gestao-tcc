@@ -32,7 +32,7 @@ const searchTextTemplates = async (term: string): Promise<ISearchTextTemplatesBy
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${getCookie("tcc-token")}`
         },
-        url: URL + `/text-template/search?term=${term}`,
+        url: URL + `/modelo-texto/search?term=${term}`,
         method: 'get'
     };
 
@@ -67,7 +67,11 @@ const searchTextTemplates = async (term: string): Promise<ISearchTextTemplatesBy
             message = error.response?.data.message || 'O servidor pode estar fora do ar, tente novamente mais tarde';
         }
 
-        throw new Error(message);
+        const status: Status = "error";
+        return {
+            status: status,
+            message: message
+        };
     }
 };
 
