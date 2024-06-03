@@ -5,10 +5,18 @@ const { colors, fonts } = theme;
 
 export const Container = styled.div`
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 100vh;
   background-color: ${colors.dark};
+`;
+
+export const Title = styled.h1`
+  color: ${colors.light};
+  font-size: 2.5rem;
+  font-weight: 600;
+  margin-bottom: 20px;
 `;
 
 export const Form = styled.div`

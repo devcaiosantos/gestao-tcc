@@ -16,4 +16,5 @@ export interface createProfessorProps {
   nome: string;
   email: string;
   departamento: Departamento;
+  ativo: boolean;
 }

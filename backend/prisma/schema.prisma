@@ -20,6 +20,8 @@ model Administrador {
   senha String
   email_sistema String?
   senha_email_sistema String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   @@map("administrador")
 }
 
@@ -43,6 +45,9 @@ model Professor {
   nome String
   email String @unique
   departamento Departamento
+  ativo Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   @@map("professor")
 }
 
@@ -57,5 +62,7 @@ model ModeloTexto {
   titulo String @unique
   conteudo String
   tipo TipoTexto
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   @@map("modelo-texto")
 }

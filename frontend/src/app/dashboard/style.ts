@@ -27,3 +27,17 @@ export const TitlePage = styled.h1`
     }
 `;
 
+export const FailedConnectionBox = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    p {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+`
+
+

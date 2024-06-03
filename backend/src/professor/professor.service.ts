@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { createProfessorProps } from "./interfaces";
-import { object, string, mixed } from "yup";
+import { object, string, mixed, boolean } from "yup";
 
 const departamentos = [
   "DACOM",
@@ -27,6 +27,7 @@ export class ProfessorService {
         nome: string().required(),
         email: string().email().required(),
         departamento: mixed().oneOf(departamentos),
+        ativo: boolean().required(),
       });
       await createAdministradorSchema.validate(professor);
     } catch (error) {
@@ -48,12 +49,12 @@ export class ProfessorService {
         message: "Email já cadastrado",
       };
     }
-
     const createdProfessor = await this.prisma.professor.create({
       data: {
         nome: professor.nome,
         email: professor.email,
         departamento: professor.departamento,
+        ativo: professor.ativo,
       },
     });
     if (!createdProfessor) {
@@ -68,11 +69,16 @@ export class ProfessorService {
       nome: createdProfessor.nome,
       email: createdProfessor.email,
       departamento: createdProfessor.departamento,
+      ativo: createdProfessor.ativo,
     };
   }
 
   findAll() {
-    return this.prisma.professor.findMany();
+    return this.prisma.professor.findMany({
+      orderBy: {
+        nome: "asc",
+      },
+    });
   }
 
   findOne(id: number) {
@@ -85,6 +91,7 @@ export class ProfessorService {
         nome: string().required(),
         email: string().email().required(),
         departamento: mixed().oneOf(departamentos),
+        ativo: boolean().required(),
       });
       await updateAdministradorSchema.validate(updateProfessorProps);
     } catch (error) {
@@ -111,6 +118,7 @@ export class ProfessorService {
         nome: updateProfessorProps.nome,
         email: updateProfessorProps.email,
         departamento: updateProfessorProps.departamento,
+        ativo: updateProfessorProps.ativo,
       },
     });
 
@@ -126,6 +134,7 @@ export class ProfessorService {
       nome: updatedProfessor.nome,
       email: updatedProfessor.email,
       departamento: updatedProfessor.departamento,
+      ativo: updatedProfessor.ativo,
     };
   }
 
@@ -140,5 +149,29 @@ export class ProfessorService {
         message: "Erro ao deletar professor",
       };
     }
+  }
+
+  async search(term: string) {
+    return this.prisma.professor.findMany({
+      where: {
+        OR: [
+          {
+            nome: {
+              contains: term,
+              mode: "insensitive",
+            },
+          },
+          {
+            email: {
+              contains: term,
+              mode: "insensitive",
+            },
+          },
+        ],
+      },
+      orderBy: {
+        nome: "asc",
+      },
+    });
   }
 }

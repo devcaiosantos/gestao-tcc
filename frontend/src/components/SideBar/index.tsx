@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect } from "react";
+import React, { ReactNode } from "react";
 import {
   IconButton,
   Avatar,
@@ -20,14 +20,9 @@ import {
   MenuDivider,
   MenuItem,
   MenuList,
-  useColorMode,
-  Switch
 } from "@chakra-ui/react";
 import {
   FiHome,
-  FiTrendingUp,
-  FiCompass,
-  FiStar,
   FiSettings,
   FiMenu,
   FiBell,
@@ -36,7 +31,9 @@ import {
 import { IconType } from "react-icons";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/hooks/useAuthContext";
-
+import { deleteCookie } from "@/utils/cookies";
+import theme from "@/style/theme";
+const { colors } = theme;
 interface LinkItemProps {
   name: string;
   icon: IconType;
@@ -54,7 +51,7 @@ export default function Sidebar({
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
-    <Box minH="100vh" bg={"gray.900"}>
+    <Box minH="100vh" bg={colors.dark}>
       <SidebarContent
         onClose={() => onClose}
         display={{ base: "none", md: "block" }}
@@ -88,9 +85,9 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
   return (
     <Box
       transition="3s ease"
-      bg={"gray.900"}
+      bg={colors.dark}
       borderRight="1px"
-      borderRightColor={"gray.700"}
+      borderRightColor={colors.dark700}
       w={{ base: "full", md: 60 }}
       pos="fixed"
       h="full"
@@ -126,7 +123,7 @@ const NavItem = ({ icon, path, children, ...rest }: NavItemProps) => {
         role="group"
         cursor="pointer"
         _hover={{
-          bg: "gray.800",
+          bg: colors.dark800,
           color: "white",
         }}
         {...rest}>
@@ -151,16 +148,23 @@ interface MobileProps extends FlexProps {
 }
 const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
   const router = useRouter();
-  const { admin } = useAuthContext();
+  const { admin, clearAdmin } = useAuthContext();
+
+  function handleLogout() {
+    deleteCookie("tcc-token");
+    clearAdmin();
+    router.push("/");
+  }
+
   return (
     <Flex
       ml={{ base: 0, md: 60 }}
       px={{ base: 4, md: 4 }}
       height="20"
       alignItems="center"
-      bg={"gray.900"}
+      bg={colors.dark}
       borderBottomWidth="1px"
-      borderBottomColor={"gray.700"}
+      borderBottomColor={colors.dark700}
       justifyContent={{ base: "space-between", md: "flex-end" }}
       {...rest}>
       <IconButton
@@ -202,7 +206,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
                   spacing="1px"
                   ml="2">
                   <Text fontSize="sm">{admin?.name || ""}</Text>
-                  <Text fontSize="xs" color="gray.600">
+                  <Text fontSize="xs" color={colors.dark600}>
                     Admin
                   </Text>
                 </VStack>
@@ -212,13 +216,15 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
               </HStack>
             </MenuButton>
             <MenuList
-              bg={"gray.900"}
-              borderColor={"gray.700"}>
+              bg={colors.dark}
+              borderColor={colors.dark700}>
               <MenuItem bg="transparent" onClick={()=>router.push("/dashboard/settings")}>
                 Configurações
               </MenuItem>
               <MenuDivider />
-              <MenuItem>Sair</MenuItem>
+              <MenuItem onClick={()=>handleLogout()}>
+                Sair
+              </MenuItem>
             </MenuList>
           </Menu>
         </Flex>

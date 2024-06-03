@@ -4,10 +4,14 @@ import { getCookie } from "@/utils/cookies";
 import parseJwt from "@/utils/parseJwt";
 import getAdminInfo from "@/services/administrator/getAdminInfo";
 
+interface ConnectionError {
+    message?: string;
+}
 interface AuthContextType {
     registerAdmin: (admin: IAdmin) => void;
     clearAdmin: () => void;
     admin: IAdmin | null;
+    connectionError: ConnectionError
 }
 
 // Criando o contexto
@@ -15,6 +19,7 @@ export const AuthContext = createContext<AuthContextType>({
     registerAdmin: () => {},
     clearAdmin: () => {},
     admin: null,
+    connectionError: {}
 });
 
 
@@ -25,7 +30,7 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
     const [admin, setAdmin] = useState<IAdmin | null>(null);
-
+    const [connectionError, setConnectionError] = useState({});
     useEffect(() => {
         const token = getCookie("tcc-token");
         if(!token){
@@ -35,7 +40,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         const fetchAdmin = async () => {
             if(decodedJwt){
                 const response = await getAdminInfo(decodedJwt.id);
+
+                if(response.status === "error"){
+                    setConnectionError({ message: response.message });
+                    return;
+                }
+
                 if(response.status === "success" && response.data){
+                    setConnectionError({});
                     registerAdmin({
                         id: response.data.id,
                         name: response.data.nome,
@@ -71,6 +83,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 registerAdmin,
                 clearAdmin,
                 admin,
+                connectionError
             }}
         >
             {children}

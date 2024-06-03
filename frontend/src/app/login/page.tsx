@@ -9,7 +9,8 @@ import {
     Button,
     ErrorMessage,
     MailIcon,
-    PasswordIcon
+    PasswordIcon,
+    Title
 }from "./style";
 import Loader from "@/components/LoadingBouncingBalls";
 import { useToast } from '@chakra-ui/react'
@@ -78,6 +79,7 @@ export default function Login() {
   
     return (
       <Container>
+        <Title>GESTÃO TCC</Title>
         <Form>
           <Label htmlFor="email">
             <MailIcon />

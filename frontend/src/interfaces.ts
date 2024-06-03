@@ -5,3 +5,11 @@ export interface IAdmin {
     email_system?: string;
     password_email_system?: string
 }
+
+export interface ITeacher {
+    id: number;
+    name: string;
+    email: string;
+    department: string;
+    active: boolean;
+}
