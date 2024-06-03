@@ -150,4 +150,28 @@ export class ProfessorService {
       };
     }
   }
+
+  async search(term: string) {
+    return this.prisma.professor.findMany({
+      where: {
+        OR: [
+          {
+            nome: {
+              contains: term,
+              mode: "insensitive",
+            },
+          },
+          {
+            email: {
+              contains: term,
+              mode: "insensitive",
+            },
+          },
+        ],
+      },
+      orderBy: {
+        nome: "asc",
+      },
+    });
+  }
 }

@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { NumberInput, Th, Text, Td } from '@chakra-ui/react';
+import { Th, Text, Input } from '@chakra-ui/react';
 import theme from "@/style/theme";
 const { colors } = theme;
 
@@ -10,23 +10,12 @@ export const Container = styled.div`
   height: 100%;
 `;
 
-export const PaginationContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 20px;
-  width: 100%;
-`;
-
 export const FlexBox = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
 `;
 
-export const NumberInputStyled = styled(NumberInput)`
-  width: 100px;
-`;
 
 export const TableContainer = styled.div`
     overflow-y: auto;
@@ -37,6 +26,20 @@ export const TableContainer = styled.div`
     @media (max-width: 600px) {
         max-height: 300px;
     }
+    /* add style to dragbar */
+    &::-webkit-scrollbar {
+        width: 10px;
+    }
+    &::-webkit-scrollbar-track {
+        background: ${colors.dark800};
+    }
+    &::-webkit-scrollbar-thumb {
+        background: ${colors.dark700};
+    }
+    &::-webkit-scrollbar-thumb:hover {
+        background: ${colors.dark600};
+    }
+    
 `;
 
 export const TableHeader = styled(Th)`
@@ -97,3 +100,20 @@ export const ActionButtonsContainer = styled.div`
   align-items: center;
   gap: 10px;  
 `
+
+export const Toolbar = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  @media (max-width: 600px) {
+    align-items: flex-start ;
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+`;
+
+export const SearchInput = styled(Input)`
+  max-width: 300px;
+  border-left: 0;
+
+`;

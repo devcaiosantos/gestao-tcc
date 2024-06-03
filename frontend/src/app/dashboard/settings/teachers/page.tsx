@@ -3,52 +3,67 @@ import { useState, useEffect } from "react";
 import { 
     Divider, 
     useToast,
-    NumberDecrementStepper, 
-    NumberIncrementStepper, 
-    NumberInputField, 
-    NumberInputStepper,
     Table,
     Thead,
     Tbody,
     Tr,
     Td,
-    useDisclosure,
     Button,
-    Flex
+    InputGroup,
+    InputLeftElement
 } from "@chakra-ui/react";
 import { TitlePage } from "../../style";
 import { Container, ActionButtonsContainer } from "./style";
-import { FaChalkboardTeacher } from "react-icons/fa";
 import getAllTeachers from "@/services/teacher/findAll";
 import { ITeacher } from "@/interfaces";
 import {
-    PaginationContainer,
     FlexBox,
-    NumberInputStyled,
     TableContainer,
     TableHeader,
     TableRow,
     NameInfo,
     EmailInfo,
-    AddTeacherButtonContainer
+    AddTeacherButtonContainer,
+    SearchInput,
+    Toolbar
 } from "./style"
 import ModalCreateUpdateTeacher from "@/components/ModalTeacher/CreateUpdate";
 import ModalDeleteTeacher from "@/components/ModalTeacher/Delete";
-import { FaUserPlus, FaUserEdit } from "react-icons/fa";
+import { FaUserPlus, FaUserEdit, FaChalkboardTeacher, FaSearch  } from "react-icons/fa";
+import searchTeachersByTerm from "@/services/teacher/search";
 
 export default function Teachers() {
     const [teachers, setTeachers] = useState<ITeacher[]>([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const totalPages = Math.ceil(teachers.length / 10) || 1;
     const toast = useToast();
     const [isOpenModalTeacher, setIsOpenModalTeacher] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
         fetchTeachers();
     }, []);
 
+    useEffect(() => {
+        searchTeachers();
+    }, [searchTerm]);
+
     async function fetchTeachers() {
         const response = await getAllTeachers();  
+        if(response.status == "error"){
+            toast({
+                title: response.message,
+                status: "error",
+                duration: 5000,
+                isClosable: true
+            });
+            return;
+        }
+        if(response.data){
+            setTeachers(response.data)
+        }
+    }
+
+    async function searchTeachers(){
+        const response = await searchTeachersByTerm(searchTerm); 
         if(response.status == "error"){
             toast({
                 title: response.message,
@@ -70,22 +85,35 @@ export default function Teachers() {
                 Professores
             </TitlePage>
             <Divider mb={"10px"}/>
-            <ModalCreateUpdateTeacher 
-                isOpen={isOpenModalTeacher} 
-                setIsOpen={setIsOpenModalTeacher}
-                fetchTeachers={fetchTeachers}
-            >
-                <AddTeacherButtonContainer>
-                    <Button
-                    colorScheme="blue"
-                    variant="solid"
-                    onClick={()=>setIsOpenModalTeacher(true)}
-                    leftIcon={<FaUserPlus/>}
-                    >
-                        Cadastrar Professor
-                    </Button>
-                </AddTeacherButtonContainer>
-            </ModalCreateUpdateTeacher>
+            <Toolbar>
+            <InputGroup>
+                <InputLeftElement pointerEvents='none'>
+                    <FaSearch/>
+                </InputLeftElement>
+                <SearchInput 
+                    value={searchTerm}
+                    onChange={(e)=>setSearchTerm(e.target.value)}
+                    placeholder="Pesquisar por nome ou e-mail"
+                />
+            </InputGroup>
+                
+                <ModalCreateUpdateTeacher 
+                    isOpen={isOpenModalTeacher} 
+                    setIsOpen={setIsOpenModalTeacher}
+                    fetchTeachers={fetchTeachers}
+                >
+                    <AddTeacherButtonContainer>
+                        <Button
+                        colorScheme="blue"
+                        variant="solid"
+                        onClick={()=>setIsOpenModalTeacher(true)}
+                        leftIcon={<FaUserPlus/>}
+                        >
+                            Cadastrar Professor
+                        </Button>
+                    </AddTeacherButtonContainer>
+                </ModalCreateUpdateTeacher>
+            </Toolbar>
             <TeachersTable 
                 teachers={teachers}
                 fetchTeachers={fetchTeachers}
@@ -189,25 +217,4 @@ const TeachersTable = ({ teachers, fetchTeachers }: {
     );
 }
 
-interface PaginationProps {
-    currentPage: number;
-    setCurrentPage: (value: number) => void;
-    totalPages: number;
-}
-export const Pagination = ({ currentPage, setCurrentPage, totalPages }:PaginationProps) => (
-    <PaginationContainer>
-        <FlexBox>
-            Página
-            <NumberInputStyled value={currentPage} onChange={(value) => setCurrentPage(Number(value))} min={1} max={totalPages}>
-                <NumberInputField />
-                <NumberInputStepper>
-                <NumberIncrementStepper />
-                <NumberDecrementStepper />
-                </NumberInputStepper>
-            </NumberInputStyled>
-            de {totalPages}
-            </FlexBox>
-            <FlexBox>
-        </FlexBox>
-  </PaginationContainer>
-  );
+

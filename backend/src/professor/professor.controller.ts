@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from "@nestjs/common";
 import { ProfessorService } from "./professor.service";
 import { createProfessorProps } from "./interfaces";
@@ -34,5 +35,10 @@ export class ProfessorController {
   @Delete(":id")
   remove(@Param("id") id: string) {
     return this.professorService.remove(+id);
+  }
+
+  @Get("search")
+  search(@Query("term") term: string) {
+    return this.professorService.search(term);
   }
 }
