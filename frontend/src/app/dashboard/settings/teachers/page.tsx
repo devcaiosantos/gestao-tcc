@@ -177,32 +177,26 @@ const TeachersTable = ({ teachers, fetchTeachers }: {
                             {teacher.active ? "Ativo" : "Inativo"}
                         </Td>
                         <Td>
-                            {
-                                (selectedTeacher && selectedTeacher?.id == teacher.id)
-                                && 
-                                (
-                                    <ActionButtonsContainer>
-                                        <ModalCreateUpdateTeacher
-                                        isOpen={isOpenModalTeacher} 
-                                        setIsOpen={setIsOpenModalTeacher}
-                                        fetchTeachers={fetchTeachers}
-                                        data={teacher}
-                                        >
-                                            <Button
-                                            colorScheme="blue"
-                                            leftIcon={<FaUserEdit/>}
-                                            onClick={()=>setIsOpenModalTeacher(true)}
-                                            >
-                                                Editar
-                                            </Button>
-                                        </ModalCreateUpdateTeacher>
-                                        <ModalDeleteTeacher
-                                            data={teacher}
-                                            fetchTeachers={fetchTeachers}
-                                        />
-                                    </ActionButtonsContainer>
-                                )
-                            }
+                            <ActionButtonsContainer>
+                                <ModalCreateUpdateTeacher
+                                isOpen={isOpenModalTeacher} 
+                                setIsOpen={setIsOpenModalTeacher}
+                                fetchTeachers={fetchTeachers}
+                                data={teacher}
+                                >
+                                    <Button
+                                    variant={"outline"}
+                                    colorScheme="blue"
+                                    onClick={()=>setIsOpenModalTeacher(true)}
+                                    >
+                                        <FaUserEdit/>
+                                    </Button>
+                                </ModalCreateUpdateTeacher>
+                                <ModalDeleteTeacher
+                                    data={teacher}
+                                    fetchTeachers={fetchTeachers}
+                                />
+                            </ActionButtonsContainer>
                         </Td>
                         
                     </TableRow>

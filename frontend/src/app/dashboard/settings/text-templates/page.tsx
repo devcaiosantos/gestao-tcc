@@ -29,7 +29,7 @@ import {
 } from "./style"
 import ModalCreateUpdateTextTemplate from "@/components/ModalTextTemplate/CreateUpdate";
 import ModalDeleteTextTemplate from "@/components/ModalTextTemplate/Delete";
-import { FaFileAlt, FaUserEdit, FaPlus, FaSearch, FaEdit } from "react-icons/fa";
+import { FaFileAlt, FaPlus, FaSearch, FaEdit } from "react-icons/fa";
 import searchTextTemplatesByTerm from "@/services/text-template/search";
 import useDebounce from "@/hooks/useDebounce";
 
@@ -170,34 +170,27 @@ const TextTemplatesTable = ({ textTemplates, fetchTextTemplates }: {
                         </Td>
                         <Td>{textTemplate.type}</Td>
                         <Td>
-                            {
-                                (selectedTextTemplate && selectedTextTemplate?.id === textTemplate.id)
-                                && 
-                                (
-                                    <ActionButtonsContainer>
-                                        <ModalCreateUpdateTextTemplate
-                                        isOpen={isOpenModalTextTemplate} 
-                                        setIsOpen={setIsOpenModalTextTemplate}
-                                        fetchTextTemplates={fetchTextTemplates}
-                                        data={textTemplate}
-                                        >
-                                            <Button
-                                            colorScheme="blue"
-                                            leftIcon={<FaUserEdit/>}
-                                            onClick={()=>setIsOpenModalTextTemplate(true)}
-                                            >
-                                                Editar
-                                            </Button>
-                                        </ModalCreateUpdateTextTemplate>
-                                        <ModalDeleteTextTemplate
-                                            data={textTemplate}
-                                            fetchTextTemplates={fetchTextTemplates}
-                                        />
-                                    </ActionButtonsContainer>
-                                )
-                            }
+                            <ActionButtonsContainer>
+                                <ModalCreateUpdateTextTemplate
+                                isOpen={isOpenModalTextTemplate} 
+                                setIsOpen={setIsOpenModalTextTemplate}
+                                fetchTextTemplates={fetchTextTemplates}
+                                data={textTemplate}
+                                >
+                                    <Button
+                                    variant={"outline"}
+                                    colorScheme="blue" 
+                                    onClick={()=>setIsOpenModalTextTemplate(true)}
+                                    >
+                                        <FaEdit/>
+                                    </Button>
+                                </ModalCreateUpdateTextTemplate>
+                                <ModalDeleteTextTemplate
+                                    data={textTemplate}
+                                    fetchTextTemplates={fetchTextTemplates}
+                                />
+                            </ActionButtonsContainer>
                         </Td>
-                        
                     </TableRow>
                   );
                 })

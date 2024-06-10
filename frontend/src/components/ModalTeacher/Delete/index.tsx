@@ -42,9 +42,8 @@ export default function ModalDeleteTeacher({data, fetchTeachers}: ModalTeacherPr
             colorScheme='red' 
             onClick={onOpen}
             variant="outline"
-            leftIcon={<FaTrash/>}
           >
-            Excluir
+            <FaTrash/>
           </Button>
 
           <Modal isOpen={isOpen} onClose={onClose}>

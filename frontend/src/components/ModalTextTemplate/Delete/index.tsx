@@ -42,15 +42,14 @@ export default function ModalDeleteTextTemplate({data, fetchTextTemplates}: Moda
             colorScheme='red' 
             onClick={onOpen}
             variant="outline"
-            leftIcon={<FaTrash/>}
           >
-            Excluir
+            <FaTrash/>
           </Button>
 
           <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
             <ModalContent>
-              <ModalHeader>Deseja excluir Modelo de Textos?</ModalHeader>
+              <ModalHeader>Deseja excluir Modelo de Texto?</ModalHeader>
               <ModalCloseButton />
               <ModalBody>
                  Não será possível reverter essa ação.
