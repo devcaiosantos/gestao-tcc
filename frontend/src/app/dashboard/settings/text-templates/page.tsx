@@ -128,79 +128,85 @@ const TextTemplatesTable = ({ textTemplates, fetchTextTemplates }: {
     textTemplates: ITextTemplate[],
     fetchTextTemplates: () => void
 }) => {
-    const [selectedTextTemplate, setSelectedTextTemplate] = useState<ITextTemplate | null>(null);
+    const [selectedTextTemplate, setSelectedTextTemplate] = useState<ITextTemplate | undefined>();
     const [isOpenModalTextTemplate, setIsOpenModalTextTemplate] = useState(false);
+
+    function handleEditClick(){
+        setIsOpenModalTextTemplate(true);
+    }
+
     return ( 
-        <TableContainer>
-            <Table>
-            <Thead>
-                <Tr>
-                    <TableHeader>
-                        Título
-                    </TableHeader>
-                    <TableHeader>
-                        Conteúdo
-                    </TableHeader>
-                    <TableHeader>
-                        Tipo
-                    </TableHeader>
-                    <TableHeader>
-                        
-                    </TableHeader>
-                </Tr>
-            </Thead>
-            <Tbody>
-            {textTemplates && textTemplates.length > 0 ? (
-                textTemplates.map((textTemplate) => {
-                  return (
-                    <TableRow
-                    selected={selectedTextTemplate?.id === textTemplate.id}
-                    onClick={()=>{setSelectedTextTemplate(textTemplate)}}
-                    key={textTemplate.id} 
-                    >
-                        <Td>
-                        <TitleInfo>
-                            {textTemplate.title}
-                        </TitleInfo>
-                        </Td>
-                        <Td>
-                        <ContentInfo>
-                            {textTemplate.content}
-                        </ContentInfo>
-                        </Td>
-                        <Td>{textTemplate.type}</Td>
-                        <Td>
-                            <ActionButtonsContainer>
-                                <ModalCreateUpdateTextTemplate
-                                isOpen={isOpenModalTextTemplate} 
-                                setIsOpen={setIsOpenModalTextTemplate}
-                                fetchTextTemplates={fetchTextTemplates}
-                                data={textTemplate}
-                                >
+        <>
+            <ModalCreateUpdateTextTemplate
+                isOpen={isOpenModalTextTemplate} 
+                setIsOpen={setIsOpenModalTextTemplate}
+                fetchTextTemplates={fetchTextTemplates}
+                data={selectedTextTemplate}
+            />
+            <TableContainer>
+                <Table>
+                <Thead>
+                    <Tr>
+                        <TableHeader>
+                            Título
+                        </TableHeader>
+                        <TableHeader>
+                            Conteúdo
+                        </TableHeader>
+                        <TableHeader>
+                            Tipo
+                        </TableHeader>
+                        <TableHeader>
+                            
+                        </TableHeader>
+                    </Tr>
+                </Thead>
+                <Tbody>
+                {textTemplates && textTemplates.length > 0 ? (
+                    textTemplates.map((textTemplate) => {
+                    return (
+                        <TableRow
+                        selected={selectedTextTemplate?.id === textTemplate.id}
+                        onClick={()=>{setSelectedTextTemplate(textTemplate)}}
+                        key={textTemplate.id} 
+                        >
+                            <Td>
+                            <TitleInfo>
+                                {textTemplate.title}
+                            </TitleInfo>
+                            </Td>
+                            <Td>
+                            <ContentInfo>
+                                {textTemplate.content}
+                            </ContentInfo>
+                            </Td>
+                            <Td>{textTemplate.type}</Td>
+                            <Td>
+                                <ActionButtonsContainer>
                                     <Button
                                     variant={"outline"}
                                     colorScheme="blue" 
-                                    onClick={()=>setIsOpenModalTextTemplate(true)}
+                                    onClick={()=>handleEditClick()}
                                     >
                                         <FaEdit/>
                                     </Button>
-                                </ModalCreateUpdateTextTemplate>
-                                <ModalDeleteTextTemplate
-                                    data={textTemplate}
-                                    fetchTextTemplates={fetchTextTemplates}
-                                />
-                            </ActionButtonsContainer>
-                        </Td>
+                                    <ModalDeleteTextTemplate
+                                        data={textTemplate}
+                                        fetchTextTemplates={fetchTextTemplates}
+                                    />
+                                </ActionButtonsContainer>
+                            </Td>
+                        </TableRow>
+                    );
+                    })
+                ) : (
+                    <TableRow>
+                        <Td colSpan={6}>Nenhum modelo de texto encontrado</Td>
                     </TableRow>
-                  );
-                })
-              ) : (
-                <TableRow>
-                  <Td colSpan={6}>Nenhum modelo de texto encontrado</Td>
-                </TableRow>
-              )}
-            </Tbody>
-            </Table>
-        </TableContainer>
+                )}
+                </Tbody>
+                </Table>
+            </TableContainer>
+        </>
     );
 }

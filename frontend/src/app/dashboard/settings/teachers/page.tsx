@@ -128,10 +128,22 @@ const TeachersTable = ({ teachers, fetchTeachers }: {
     teachers: ITeacher[],
     fetchTeachers: () => void
 }) => {
-    const [selectedTeacher, setSelectedTeacher] = useState<ITeacher | null>(null);
+    const [selectedTeacher, setSelectedTeacher] = useState<ITeacher | undefined>();
     const [isOpenModalTeacher, setIsOpenModalTeacher] = useState(false);
+
+    function handleEditClick(){
+        setIsOpenModalTeacher(true);
+    }
+
     return ( 
-        <TableContainer>
+        <>
+            <ModalCreateUpdateTeacher
+                isOpen={isOpenModalTeacher} 
+                setIsOpen={setIsOpenModalTeacher}
+                fetchTeachers={fetchTeachers}
+                data={selectedTeacher}
+            />
+            <TableContainer>
             <Table>
             <Thead>
                 <Tr>
@@ -178,20 +190,13 @@ const TeachersTable = ({ teachers, fetchTeachers }: {
                         </Td>
                         <Td>
                             <ActionButtonsContainer>
-                                <ModalCreateUpdateTeacher
-                                isOpen={isOpenModalTeacher} 
-                                setIsOpen={setIsOpenModalTeacher}
-                                fetchTeachers={fetchTeachers}
-                                data={teacher}
+                                <Button
+                                variant={"outline"}
+                                colorScheme="blue"
+                                onClick={()=>handleEditClick()}
                                 >
-                                    <Button
-                                    variant={"outline"}
-                                    colorScheme="blue"
-                                    onClick={()=>setIsOpenModalTeacher(true)}
-                                    >
-                                        <FaUserEdit/>
-                                    </Button>
-                                </ModalCreateUpdateTeacher>
+                                    <FaUserEdit/>
+                                </Button>
                                 <ModalDeleteTeacher
                                     data={teacher}
                                     fetchTeachers={fetchTeachers}
@@ -210,6 +215,8 @@ const TeachersTable = ({ teachers, fetchTeachers }: {
             </Tbody>
             </Table>
         </TableContainer>
+        </>
+        
     );
 }
 

@@ -12,17 +12,20 @@ import {
     Input,
     Select,
     Box,
+    useToast, 
+    Textarea,
     Text,
+    Tooltip 
 } from '@chakra-ui/react';
-import { useToast, Textarea } from '@chakra-ui/react';
-import { Container } from './style';
+import { Container, TagsContainer, TagsItem } from './style';
 import { ITextTemplate } from '@/interfaces'; 
 import { string, object, ValidationError } from 'yup';
 import createTextTemplate from '@/services/text-template/create'; 
 import updateTextTemplate from '@/services/text-template/update'; 
+import { FaPlus } from 'react-icons/fa';
 
 interface ModalTextTemplateProps {
-    children: React.ReactNode;
+    children?: React.ReactNode;
     data?: ITextTemplate;
     isOpen: boolean;
     setIsOpen: (value: boolean) => void;
@@ -38,13 +41,23 @@ export default function ModalCreateUpdateTextTemplate({ children, data, isOpen, 
     const toast = useToast();
 
     useEffect(() => {
-        if (!isOpen && !data) {
+        if (!isOpen) {
             setTempData({
                 title: '',
                 content: '',
                 type: ''
             });
         }
+
+        if (data && data.id) {
+            setTempData({
+                title: data.title,
+                content: data.content,
+                type: data.type
+            });
+        }
+
+
     }, [isOpen, data]);
 
     function handleChange(key: keyof ITextTemplate, value: string) {
@@ -117,7 +130,7 @@ export default function ModalCreateUpdateTextTemplate({ children, data, isOpen, 
             <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
                 <ModalOverlay />
                 <ModalContent>
-                    <ModalHeader>{data && data.id ? 'Editar Template de Texto' : 'Criar Novo Template de Texto'}</ModalHeader>
+                    <ModalHeader>{data && data.id ? 'Editar Modelo de Texto' : 'Criar Novo Modelo de Texto'}</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
                         <Container>
@@ -127,14 +140,6 @@ export default function ModalCreateUpdateTextTemplate({ children, data, isOpen, 
                                     value={tempData.title}
                                     onChange={(e) => handleChange('title', e.target.value)}
                                     placeholder="Digite o título do template"
-                                />
-                            </Box>
-                            <Box>
-                                <FormLabel>Conteúdo</FormLabel>
-                                <Textarea
-                                    value={tempData.content}
-                                    onChange={(e) => handleChange('content', e.target.value)}
-                                    placeholder="Digite o conteúdo do template"
                                 />
                             </Box>
                             <Box>
@@ -149,7 +154,56 @@ export default function ModalCreateUpdateTextTemplate({ children, data, isOpen, 
                                     <option value="DECLARACAO">DECLARAÇÃO</option>
                                 </Select>
                             </Box>
-                          
+                            <Box>
+                                <FormLabel>Conteúdo</FormLabel>
+                                <Textarea
+                                    value={tempData.content}
+                                    onChange={(e) => handleChange('content', e.target.value)}
+                                    placeholder="Digite o conteúdo do template"
+                                />
+                                <TagsContainer>
+                                    <Text>
+                                        Tags disponíveis: 
+                                    </Text>
+                                    <Button
+                                        size="sm"
+                                        variant={"outline"}
+                                        onClick={() => handleChange('content', `${tempData.content}<linkOrientador>`)}
+                                        rightIcon={<FaPlus/>}
+                                    >
+                                        <Tooltip
+                                            label="Link para tela de definição de orientador"
+                                        >
+                                            {`<linkOrientador>`} 
+                                        </Tooltip>
+                                    </Button>
+                                    <Button
+                                        size="sm"
+                                        variant={"outline"}
+                                        onClick={() => handleChange('content', `${tempData.content}<linkBanca>`)}
+                                        rightIcon={<FaPlus/>}
+                                    >
+                                        <Tooltip
+                                            label="Link para tela de definição de banca"
+                                        >
+                                            {`<linkBanca>`} 
+                                        </Tooltip>
+                                    </Button>
+                                    <Button
+                                        size="sm"
+                                        variant={"outline"}
+                                        onClick={() => handleChange('content', `${tempData.content}<aluno>`)}
+                                        rightIcon={<FaPlus/>}
+                                    >
+                                        <Tooltip
+                                            label="Nome do aluno"
+                                        >
+                                            {`<aluno>`} 
+                                        </Tooltip>
+                                    </Button>
+
+                                </TagsContainer>
+                            </Box>
                         </Container>
                     </ModalBody>
                     <ModalFooter>
