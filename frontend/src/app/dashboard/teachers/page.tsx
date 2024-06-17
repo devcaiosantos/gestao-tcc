@@ -12,7 +12,7 @@ import {
     InputGroup,
     InputLeftElement
 } from "@chakra-ui/react";
-import { TitlePage } from "../../style";
+import { TitlePage } from "../style";
 import { Container, ActionButtonsContainer } from "./style";
 import getAllTeachers from "@/services/teacher/findAll";
 import { ITeacher } from "@/interfaces";

@@ -12,7 +12,7 @@ import {
     InputGroup,
     InputLeftElement
 } from "@chakra-ui/react";
-import { TitlePage } from "../../style";
+import { TitlePage } from "../style";
 import getAllTextTemplates from "@/services/text-template/findAll";
 import { ITextTemplate } from "@/interfaces";
 import {
