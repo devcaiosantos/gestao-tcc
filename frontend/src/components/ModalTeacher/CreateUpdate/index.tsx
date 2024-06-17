@@ -21,15 +21,23 @@ import { boolean, object, string, ValidationError } from 'yup';
 import createTeacher from '@/services/teacher/create';
 import updateTeacher from '@/services/teacher/update';
 interface ModalTeacherProps {
-    children: React.ReactNode;
+    children?: React.ReactNode;
     data?: ITeacher
     isOpen: boolean;
     setIsOpen: (value: boolean) => void;
     fetchTeachers: () => void;
 }
+
+interface TempDataProps {
+    name: string;
+    email: string;
+    department: string;
+    active: boolean;
+}
+
 export default function ModalCreateUpdateTeacher({children, data, isOpen, setIsOpen, fetchTeachers}: ModalTeacherProps) {
     
-    const [tempData, setTempData] = useState({
+    const [tempData, setTempData] = useState<TempDataProps>({
         name: data?.name || '',
         email: data?.email || '',
         department: data?.department || '',
@@ -52,7 +60,7 @@ export default function ModalCreateUpdateTeacher({children, data, isOpen, setIsO
     ];
 
     useEffect(() => {
-        if(!isOpen && !data){
+        if(!isOpen){
             setTempData({
                 name: '',
                 email: '',
@@ -60,6 +68,16 @@ export default function ModalCreateUpdateTeacher({children, data, isOpen, setIsO
                 active: true
             });
         }
+
+        if(data && data.id){
+            setTempData({
+                name: data.name,
+                email: data.email,
+                department: data.department,
+                active: data.active
+            });
+        }
+
     }, [isOpen,data]);
 
     function handleChange(key:string, value:string | boolean){

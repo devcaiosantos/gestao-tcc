@@ -13,7 +13,7 @@ import { FaUser } from "react-icons/fa";
 import { FiUser, FiMail } from "react-icons/fi";
 import { FaMailBulk } from "react-icons/fa";
 import { PiPasswordBold } from "react-icons/pi";
-import { TitlePage } from "../../style";
+import { TitlePage } from "../style";
 import useAuthContext from "@/hooks/useAuthContext";
 import { object, number, string, ValidationError } from "yup";
 import { useToast } from "@chakra-ui/react";

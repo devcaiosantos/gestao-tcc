@@ -13,7 +13,11 @@ import { AuthGuard } from "./auth/auth.guard";
 import { ProfessorModule } from "./professor/professor.module";
 import { AdministradorModule } from "./administrador/administrador.module";
 import { ModeloTextoModule } from "./modelo-texto/modelo-texto.module";
+import * as moment from "moment-timezone";
 
+// Definindo o fuso horário para o Brasil
+moment.tz.setDefault("America/Sao_Paulo");
+console.log(new Date().toLocaleString());
 @Module({
   imports: [
     ConfigModule.forRoot({

@@ -38,7 +38,11 @@ export class ModeloTextoService {
   }
 
   findAll() {
-    return this.prisma.modeloTexto.findMany();
+    return this.prisma.modeloTexto.findMany({
+      orderBy: {
+        titulo: "asc",
+      },
+    });
   }
 
   async update(id: number, updateModeloTexto: CreateModeloTexto) {
@@ -87,5 +91,29 @@ export class ModeloTextoService {
         message: "Erro ao deletar modelo de texto",
       };
     }
+  }
+
+  async search(term: string) {
+    return this.prisma.modeloTexto.findMany({
+      where: {
+        OR: [
+          {
+            titulo: {
+              contains: term,
+              mode: "insensitive",
+            },
+          },
+          {
+            conteudo: {
+              contains: term,
+              mode: "insensitive",
+            },
+          },
+        ],
+      },
+      orderBy: {
+        titulo: "asc",
+      },
+    });
   }
 }

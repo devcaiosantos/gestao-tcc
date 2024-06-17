@@ -13,3 +13,12 @@ export interface ITeacher {
     department: string;
     active: boolean;
 }
+
+export interface ITextTemplate {
+    id: number;
+    title: string;
+    content: string;
+    type: string;
+    createdAt: Date;
+    updatedAt: Date;
+}

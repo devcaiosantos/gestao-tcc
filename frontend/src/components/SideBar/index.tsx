@@ -20,6 +20,11 @@ import {
   MenuDivider,
   MenuItem,
   MenuList,
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  AccordionIcon
 } from "@chakra-ui/react";
 import {
   FiHome,
@@ -28,6 +33,9 @@ import {
   FiBell,
   FiChevronDown,
 } from "react-icons/fi";
+import { FaChalkboardTeacher, FaFileAlt } from "react-icons/fa";
+import { TbHexagonNumber1, TbHexagonNumber2 } from "react-icons/tb";
+import { SiGoogleforms } from "react-icons/si";
 import { IconType } from "react-icons";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/hooks/useAuthContext";
@@ -39,6 +47,13 @@ interface LinkItemProps {
   icon: IconType;
   path: string;
 }
+
+const RegistrationItems: Array<LinkItemProps> = [
+  //{ name: "Alunos", icon: IoMdSchool, path: "/dashboard/students" },
+  { name: "Professores", icon: FaChalkboardTeacher, path: "/dashboard/teachers" },
+  { name: "Modelos de Texto", icon: FaFileAlt, path: "/dashboard/text-templates" },
+];
+
 const LinkItems: Array<LinkItemProps> = [
   { name: "Tela Inicial", icon: FiHome, path: "/dashboard" },
   { name: "Configurações", icon: FiSettings, path: "/dashboard/settings" },
@@ -98,11 +113,61 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
         </Text>
         <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
       </Flex>
-      {LinkItems.map((link) => (
+      <Accordion defaultIndex={[0]} allowMultiple>
+        <AccordionItem>
+          <h2>
+            <AccordionButton>
+              <Flex fontWeight={"semibold"}
+              alignItems={"center"} textAlign={"left"} w={"100%"} gap={2}>
+                <SiGoogleforms />
+                Cadastros
+              </Flex>
+              <AccordionIcon />
+            </AccordionButton>
+          </h2>
+          <AccordionPanel pl={4} pb={0}>
+            {RegistrationItems.map((link) => (
+              <NavItem key={link.name} icon={link.icon} path={link.path}>
+                {link.name}
+              </NavItem>
+            ))}
+          </AccordionPanel>
+        </AccordionItem>
+        <AccordionItem>
+          <h2>
+            <AccordionButton>
+              <Flex fontWeight={"semibold"}
+                alignItems={"center"} textAlign={"left"} w={"100%"} gap={2}>
+                <TbHexagonNumber1 />
+                TCC 1
+              </Flex>
+              <AccordionIcon />
+            </AccordionButton>
+          </h2>
+          <AccordionPanel pl={4} pb={0}>
+          </AccordionPanel>
+        </AccordionItem>
+        <AccordionItem>
+          <h2>
+            <AccordionButton>
+              <Flex fontWeight={"semibold"}
+                alignItems={"center"} textAlign={"left"} w={"100%"} gap={2}>
+                <TbHexagonNumber2 />
+                TCC 2
+              </Flex>
+              <AccordionIcon />
+            </AccordionButton>
+          </h2>
+          <AccordionPanel pl={4} pb={0}>
+          </AccordionPanel>
+        </AccordionItem>
+      </Accordion>
+      
+      {/* {LinkItems.map((link) => (
         <NavItem key={link.name} icon={link.icon} path={link.path}>
           {link.name}
         </NavItem>
-      ))}
+      ))} */}
     </Box>
   );
 };
@@ -117,8 +182,8 @@ const NavItem = ({ icon, path, children, ...rest }: NavItemProps) => {
     <Link href={path} style={{ textDecoration: "none" }} _focus={{ boxShadow: "none" }}>
       <Flex
         align="center"
-        p="4"
-        mx="4"
+        p="2"
+        mx="1"
         borderRadius="lg"
         role="group"
         cursor="pointer"
@@ -218,8 +283,8 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
             <MenuList
               bg={colors.dark}
               borderColor={colors.dark700}>
-              <MenuItem bg="transparent" onClick={()=>router.push("/dashboard/settings")}>
-                Configurações
+              <MenuItem bg="transparent" onClick={()=>router.push("/dashboard/profile")}>
+                Perfil
               </MenuItem>
               <MenuDivider />
               <MenuItem onClick={()=>handleLogout()}>

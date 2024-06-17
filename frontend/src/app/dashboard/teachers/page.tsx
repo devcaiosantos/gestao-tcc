@@ -12,7 +12,7 @@ import {
     InputGroup,
     InputLeftElement
 } from "@chakra-ui/react";
-import { TitlePage } from "../../style";
+import { TitlePage } from "../style";
 import { Container, ActionButtonsContainer } from "./style";
 import getAllTeachers from "@/services/teacher/findAll";
 import { ITeacher } from "@/interfaces";
@@ -31,12 +31,14 @@ import ModalCreateUpdateTeacher from "@/components/ModalTeacher/CreateUpdate";
 import ModalDeleteTeacher from "@/components/ModalTeacher/Delete";
 import { FaUserPlus, FaUserEdit, FaChalkboardTeacher, FaSearch  } from "react-icons/fa";
 import searchTeachersByTerm from "@/services/teacher/search";
+import useDebounce from "@/hooks/useDebounce";
 
 export default function Teachers() {
     const [teachers, setTeachers] = useState<ITeacher[]>([]);
     const toast = useToast();
     const [isOpenModalTeacher, setIsOpenModalTeacher] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
+    const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
     useEffect(() => {
         fetchTeachers();
@@ -44,7 +46,7 @@ export default function Teachers() {
 
     useEffect(() => {
         searchTeachers();
-    }, [searchTerm]);
+    }, [debouncedSearchTerm]);
 
     async function fetchTeachers() {
         const response = await getAllTeachers();  
@@ -126,10 +128,22 @@ const TeachersTable = ({ teachers, fetchTeachers }: {
     teachers: ITeacher[],
     fetchTeachers: () => void
 }) => {
-    const [selectedTeacher, setSelectedTeacher] = useState<ITeacher | null>(null);
+    const [selectedTeacher, setSelectedTeacher] = useState<ITeacher | undefined>();
     const [isOpenModalTeacher, setIsOpenModalTeacher] = useState(false);
+
+    function handleEditClick(){
+        setIsOpenModalTeacher(true);
+    }
+
     return ( 
-        <TableContainer>
+        <>
+            <ModalCreateUpdateTeacher
+                isOpen={isOpenModalTeacher} 
+                setIsOpen={setIsOpenModalTeacher}
+                fetchTeachers={fetchTeachers}
+                data={selectedTeacher}
+            />
+            <TableContainer>
             <Table>
             <Thead>
                 <Tr>
@@ -175,32 +189,19 @@ const TeachersTable = ({ teachers, fetchTeachers }: {
                             {teacher.active ? "Ativo" : "Inativo"}
                         </Td>
                         <Td>
-                            {
-                                (selectedTeacher && selectedTeacher?.id == teacher.id)
-                                && 
-                                (
-                                    <ActionButtonsContainer>
-                                        <ModalCreateUpdateTeacher
-                                        isOpen={isOpenModalTeacher} 
-                                        setIsOpen={setIsOpenModalTeacher}
-                                        fetchTeachers={fetchTeachers}
-                                        data={teacher}
-                                        >
-                                            <Button
-                                            colorScheme="blue"
-                                            leftIcon={<FaUserEdit/>}
-                                            onClick={()=>setIsOpenModalTeacher(true)}
-                                            >
-                                                Editar
-                                            </Button>
-                                        </ModalCreateUpdateTeacher>
-                                        <ModalDeleteTeacher
-                                            data={teacher}
-                                            fetchTeachers={fetchTeachers}
-                                        />
-                                    </ActionButtonsContainer>
-                                )
-                            }
+                            <ActionButtonsContainer>
+                                <Button
+                                variant={"outline"}
+                                colorScheme="blue"
+                                onClick={()=>handleEditClick()}
+                                >
+                                    <FaUserEdit/>
+                                </Button>
+                                <ModalDeleteTeacher
+                                    data={teacher}
+                                    fetchTeachers={fetchTeachers}
+                                />
+                            </ActionButtonsContainer>
                         </Td>
                         
                     </TableRow>
@@ -214,6 +215,8 @@ const TeachersTable = ({ teachers, fetchTeachers }: {
             </Tbody>
             </Table>
         </TableContainer>
+        </>
+        
     );
 }
 

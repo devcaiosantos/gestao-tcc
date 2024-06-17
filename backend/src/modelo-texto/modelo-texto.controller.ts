@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from "@nestjs/common";
 import { ModeloTextoService } from "./modelo-texto.service";
 import { CreateModeloTexto } from "./interfaces";
@@ -35,5 +36,10 @@ export class ModeloTextoController {
   @Delete(":id")
   remove(@Param("id") id: string) {
     return this.modeloTextoService.remove(+id);
+  }
+
+  @Get("search")
+  search(@Query("term") term: string) {
+    return this.modeloTextoService.search(term);
   }
 }
