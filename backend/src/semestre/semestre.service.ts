@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateSemestre } from "./interfaces";
-import { object, string, boolean } from "yup";
+import * as yup from "yup";
 
 @Injectable()
 export class SemestreService {
@@ -9,14 +9,10 @@ export class SemestreService {
 
   async create(semestre: CreateSemestre) {
     try {
-      const createSemestreSchema = object().shape({
-        id: string()
-          .matches(
-            /^\d{4}-[12]$/,
-            "Formato inválido para o campo ID (YYYY-1 ou YYYY-2)",
-          )
-          .required(),
-        ativo: boolean().required(),
+      const createSemestreSchema = yup.object().shape({
+        ano: yup.number().required().integer().positive(),
+        numero: yup.number().required().oneOf([1, 2]),
+        ativo: yup.boolean().required(),
       });
       await createSemestreSchema.validate(semestre);
     } catch (error) {
@@ -25,7 +21,22 @@ export class SemestreService {
         message: error.message,
       };
     }
-    const createdSemestre = this.prisma.semestre.create({
+
+    const existingSemestre = await this.prisma.semestre.findFirst({
+      where: {
+        ano: semestre.ano,
+        numero: semestre.numero,
+      },
+    });
+
+    if (existingSemestre) {
+      throw {
+        statusCode: 400,
+        message: "Semestre já cadastrado",
+      };
+    }
+
+    const createdSemestre = await this.prisma.semestre.create({
       data: semestre,
     });
     if (!createdSemestre) {
@@ -39,22 +50,16 @@ export class SemestreService {
 
   findAll() {
     return this.prisma.semestre.findMany({
-      orderBy: {
-        id: "asc",
-      },
+      orderBy: [{ ano: "asc" }, { numero: "asc" }],
     });
   }
 
-  async update(id: string, updateSemestre: CreateSemestre) {
+  async update(id: number, updateSemestre: CreateSemestre) {
     try {
-      const updateSemestreSchema = object().shape({
-        id: string()
-          .matches(
-            /^\d{4}-[12]$/,
-            "Formato inválido para o campo ID (YYYY-1 ou YYYY-2)",
-          )
-          .required(),
-        ativo: boolean().required(),
+      const updateSemestreSchema = yup.object().shape({
+        ano: yup.number().required().integer().positive(),
+        numero: yup.number().required().oneOf([1, 2]),
+        ativo: yup.boolean().required(),
       });
       await updateSemestreSchema.validate(updateSemestre);
     } catch (error) {
@@ -63,7 +68,7 @@ export class SemestreService {
         message: error.message,
       };
     }
-    const updatedSemestre = this.prisma.semestre.update({
+    const updatedSemestre = await this.prisma.semestre.update({
       where: {
         id: id,
       },
@@ -78,9 +83,9 @@ export class SemestreService {
     return updatedSemestre;
   }
 
-  async remove(id: string) {
+  async remove(id: number) {
     try {
-      const deletedSemestre = this.prisma.semestre.delete({
+      const deletedSemestre = await this.prisma.semestre.delete({
         where: {
           id: id,
         },

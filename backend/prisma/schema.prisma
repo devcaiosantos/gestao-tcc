@@ -68,9 +68,12 @@ model ModeloTexto {
 }
 
 model Semestre {
-  id String @id @unique
-  ativo Boolean
+  id     Int     @id @default(autoincrement())
+  ano    Int
+  numero Int
+  ativo  Boolean @default(false)
   dataCriacao DateTime @default(now())
   dataAtualizacao DateTime @updatedAt
+  @@unique([ano, numero])
   @@map("semestre")
 }

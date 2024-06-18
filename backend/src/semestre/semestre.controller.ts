@@ -25,12 +25,12 @@ export class SemestreController {
   }
 
   @Patch(":id")
-  update(@Param("id") id: string, @Body() updateModeloTexto: CreateSemestre) {
-    return this.semestreService.update(id, updateModeloTexto);
+  update(@Param("id") id: number, @Body() updateModeloTexto: CreateSemestre) {
+    return this.semestreService.update(+id, updateModeloTexto);
   }
 
   @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.semestreService.remove(id);
+  remove(@Param("id") id: number) {
+    return this.semestreService.remove(+id);
   }
 }

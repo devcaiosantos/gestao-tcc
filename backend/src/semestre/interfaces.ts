@@ -1,4 +1,5 @@
 export interface CreateSemestre {
-  id: string;
+  ano: number;
+  numero: number;
   ativo: boolean;
 }
