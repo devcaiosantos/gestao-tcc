@@ -10,7 +10,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL"),
+  url      = env("DATABASE_URL")
 }
 
 model Administrador {
@@ -65,4 +65,15 @@ model ModeloTexto {
   dataCriacao DateTime @default(now())
   dataAtualizacao DateTime @updatedAt
   @@map("modelo-texto")
+}
+
+model Semestre {
+  id     Int     @id @default(autoincrement())
+  ano    Int
+  numero Int
+  ativo  Boolean @default(false)
+  dataCriacao DateTime @default(now())
+  dataAtualizacao DateTime @updatedAt
+  @@unique([ano, numero])
+  @@map("semestre")
 }
