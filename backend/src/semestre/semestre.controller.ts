@@ -33,4 +33,9 @@ export class SemestreController {
   remove(@Param("id") id: number) {
     return this.semestreService.remove(+id);
   }
+
+  @Get("ativo")
+  findActiveSemester() {
+    return this.semestreService.findActiveSemester();
+  }
 }

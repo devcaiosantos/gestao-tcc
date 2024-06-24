@@ -36,6 +36,18 @@ export class SemestreService {
       };
     }
 
+    if (semestre.ativo) {
+      // Desativa todos os semestres
+      await this.prisma.semestre.updateMany({
+        where: {
+          ativo: true,
+        },
+        data: {
+          ativo: false,
+        },
+      });
+    }
+
     const createdSemestre = await this.prisma.semestre.create({
       data: semestre,
     });
@@ -68,6 +80,19 @@ export class SemestreService {
         message: error.message,
       };
     }
+
+    if (updateSemestre.ativo) {
+      // Desativa todos os semestres
+      await this.prisma.semestre.updateMany({
+        where: {
+          ativo: true,
+        },
+        data: {
+          ativo: false,
+        },
+      });
+    }
+
     const updatedSemestre = await this.prisma.semestre.update({
       where: {
         id: id,
@@ -97,5 +122,13 @@ export class SemestreService {
         message: "Erro ao deletar semestre",
       };
     }
+  }
+
+  async findActiveSemester() {
+    return this.prisma.semestre.findFirst({
+      where: {
+        ativo: true,
+      },
+    });
   }
 }

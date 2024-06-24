@@ -22,3 +22,10 @@ export interface ITextTemplate {
     createdAt: Date;
     updatedAt: Date;
 }
+
+export interface ISemester {
+    id: number;
+    year: number;
+    number: number;
+    active: boolean;
+}
