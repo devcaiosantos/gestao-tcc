@@ -13,6 +13,7 @@ interface AuthContextType {
     admin: IAdmin | null;
     connectionError: ConnectionError;
     activeSemester: ISemester | null;
+    setActiveSemester: (semester: ISemester | null ) => void;
 }
 
 // Criando o contexto
@@ -21,7 +22,8 @@ export const AuthContext = createContext<AuthContextType>({
     clearAdmin: () => {},
     admin: null,
     connectionError: {},
-    activeSemester: null
+    activeSemester: null,
+    setActiveSemester: () => {}
 });
 
 
@@ -49,7 +51,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                     return;
                 }
 
-                if(response.status === "success" && response.data){
+                if(response.status === "success" && response.data ){
                     setConnectionError({});
                     registerAdmin({
                         id: response.data.id,
@@ -72,7 +74,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                     console.error(response.message);
                     return;
                 }
-                if(response.data){
+                if(response.data && response.data.id){
                     setActiveSemester(response.data);
                 }
             }
@@ -102,7 +104,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 clearAdmin,
                 admin,
                 connectionError,
-                activeSemester
+                activeSemester,
+                setActiveSemester
             }}
         >
             {children}

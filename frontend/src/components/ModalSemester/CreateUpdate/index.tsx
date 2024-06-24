@@ -22,7 +22,6 @@ import { ISemester } from '@/interfaces';
 import { boolean, number, object, ValidationError } from 'yup';
 import createSemester from '@/services/semester/create';
 import updateSemester from '@/services/semester/update';
-
 interface ModalSemesterProps {
     children?: React.ReactNode;
     data?: ISemester;

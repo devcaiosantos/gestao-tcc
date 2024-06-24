@@ -147,14 +147,15 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
         </Text>
         <Button
           onClick={()=>router.push("/dashboard/semesters")}
-          bgColor={colors.dark600}
+          bgColor={activeSemester? colors.success : colors.danger}
+          color={activeSemester? colors.light : colors.light}
           width={"100%"}
           rightIcon={<FaEdit/>}
         >
           {
             activeSemester 
             ? `${activeSemester.year}/${activeSemester.number}`
-            : "Nenhum semestre ativo"
+            :  `----/-`
           }
         </Button>
       </Flex>

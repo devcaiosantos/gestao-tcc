@@ -26,11 +26,14 @@ import {
 import ModalCreateUpdateSemester from "@/components/ModalSemester/CreateUpdate"
 import ModalDeleteSemester from "@/components/ModalSemester/Delete";
 import { FaCalendarAlt, FaEdit } from "react-icons/fa";
+import useAuthContext from "@/hooks/useAuthContext";
 
 export default function Semesters() {
     const [semesters, setSemesters] = useState<ISemester[]>([]);
+    const [selectedSemester, setSelectedSemester] = useState<ISemester | undefined>();
     const toast = useToast();
     const [isOpenModalSemester, setIsOpenModalSemester] = useState(false);
+    const { setActiveSemester } = useAuthContext();
 
     useEffect(() => {
         fetchSemesters();
@@ -48,8 +51,15 @@ export default function Semesters() {
             return;
         }
         if(response.data){
-            setSemesters(response.data)
+            setSemesters(response.data);
+            const active = response.data.find(semester => semester.active);
+            setActiveSemester(active? active : null);
         }
+    }
+
+    async function handleClickCreateSemester(){
+        setIsOpenModalSemester(true);
+        setSelectedSemester(undefined);
     }
 
     return (
@@ -69,7 +79,7 @@ export default function Semesters() {
                         <Button
                         colorScheme="blue"
                         variant="solid"
-                        onClick={()=>setIsOpenModalSemester(true)}
+                        onClick={()=>handleClickCreateSemester()}
                         leftIcon={<FaCalendarAlt/>}
                         >
                             Cadastrar Semestre
@@ -80,16 +90,22 @@ export default function Semesters() {
             <SemestersTable 
                 semesters={semesters}
                 fetchSemesters={fetchSemesters}
+                selectedSemester={selectedSemester}
+                setSelectedSemester={setSelectedSemester}
             />
         </Container>
     );
 }
 
-const SemestersTable = ({ semesters, fetchSemesters }: { 
+const SemestersTable = ({ 
+    semesters, fetchSemesters,
+    selectedSemester, setSelectedSemester 
+}: { 
     semesters: ISemester[],
-    fetchSemesters: () => void
+    fetchSemesters: () => void,
+    selectedSemester?: ISemester,
+    setSelectedSemester: (semester: ISemester) => void
 }) => {
-    const [selectedSemester, setSelectedSemester] = useState<ISemester | undefined>();
     const [isOpenModalSemester, setIsOpenModalSemester] = useState(false);
 
     function handleEditClick(){
