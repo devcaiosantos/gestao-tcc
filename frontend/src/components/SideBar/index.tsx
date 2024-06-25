@@ -118,15 +118,18 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
       pos="fixed"
       h="full"
       {...rest}>
-      <Flex 
-      cursor={"pointer"}
-      onClick={() => router.push("/dashboard")}
-      h="20" alignItems="center" mx="8" justifyContent="space-between">
-        <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
-          Gestão TCC
-        </Text>
-        <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
-      </Flex>
+      <Link href={"/dashboard"}
+        width={"100%"}
+      >
+        <Flex 
+        cursor={"pointer"}
+        h="20" alignItems="center" mx="8" justifyContent="space-between">
+          <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
+            Gestão TCC
+          </Text>
+          <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
+        </Flex>
+      </Link>
       <Flex
         pl={4}
         pr={2}
@@ -145,19 +148,22 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
           <FaCalendarCheck />
           Semestre ativo: 
         </Text>
-        <Button
-          onClick={()=>router.push("/dashboard/semesters")}
-          bgColor={activeSemester? colors.success : colors.danger}
-          color={activeSemester? colors.light : colors.light}
+        <Link href={"/dashboard/semesters"}
           width={"100%"}
-          rightIcon={<FaEdit/>}
         >
-          {
-            activeSemester 
-            ? `${activeSemester.year}/${activeSemester.number}`
-            :  `----/-`
-          }
-        </Button>
+          <Button
+            bgColor={activeSemester? colors.success : colors.danger}
+            color={activeSemester? colors.light : colors.light}
+            width={"100%"}
+            rightIcon={<FaEdit/>}
+          >
+            {
+              activeSemester 
+              ? `${activeSemester.year}/${activeSemester.number}`
+              :  `----/-`
+            }
+          </Button>
+        </Link>
       </Flex>
       
       <Accordion defaultIndex={[0]} allowMultiple>
