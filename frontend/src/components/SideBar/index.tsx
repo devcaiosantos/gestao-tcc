@@ -24,7 +24,8 @@ import {
   AccordionItem,
   AccordionButton,
   AccordionPanel,
-  AccordionIcon
+  AccordionIcon,
+  Button
 } from "@chakra-ui/react";
 import {
   FiHome,
@@ -33,7 +34,12 @@ import {
   FiBell,
   FiChevronDown,
 } from "react-icons/fi";
-import { FaChalkboardTeacher, FaFileAlt } from "react-icons/fa";
+import { 
+  FaChalkboardTeacher, 
+  FaFileAlt,
+  FaCalendarCheck,
+  FaEdit 
+} from "react-icons/fa";
 import { TbHexagonNumber1, TbHexagonNumber2 } from "react-icons/tb";
 import { SiGoogleforms } from "react-icons/si";
 import { IconType } from "react-icons";
@@ -41,6 +47,9 @@ import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/hooks/useAuthContext";
 import { deleteCookie } from "@/utils/cookies";
 import theme from "@/style/theme";
+import findActiveSemester from "@/services/semester/findActive";
+
+
 const { colors } = theme;
 interface LinkItemProps {
   name: string;
@@ -97,6 +106,8 @@ interface SidebarProps extends BoxProps {
 }
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
+  const router = useRouter();
+  const {activeSemester} = useAuthContext();
   return (
     <Box
       transition="3s ease"
@@ -107,12 +118,54 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
       pos="fixed"
       h="full"
       {...rest}>
-      <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
-        <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
-          Gestão TCC
+      <Link href={"/dashboard"}
+        width={"100%"}
+      >
+        <Flex 
+        cursor={"pointer"}
+        h="20" alignItems="center" mx="8" justifyContent="space-between">
+          <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
+            Gestão TCC
+          </Text>
+          <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
+        </Flex>
+      </Link>
+      <Flex
+        pl={4}
+        pr={2}
+        mb={4}
+        flexDir={"column"}
+        alignItems={"start"}
+        gap={2}
+      >
+        <Text
+          display={"flex"}
+          alignItems={"center"}
+          gap={2}
+          fontSize="md"
+          fontWeight="semibold"
+        >
+          <FaCalendarCheck />
+          Semestre ativo: 
         </Text>
-        <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
+        <Link href={"/dashboard/semesters"}
+          width={"100%"}
+        >
+          <Button
+            bgColor={activeSemester? colors.success : colors.danger}
+            color={activeSemester? colors.light : colors.light}
+            width={"100%"}
+            rightIcon={<FaEdit/>}
+          >
+            {
+              activeSemester 
+              ? `${activeSemester.year}/${activeSemester.number}`
+              :  `----/-`
+            }
+          </Button>
+        </Link>
       </Flex>
+      
       <Accordion defaultIndex={[0]} allowMultiple>
         <AccordionItem>
           <h2>
@@ -162,12 +215,6 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
-      
-      {/* {LinkItems.map((link) => (
-        <NavItem key={link.name} icon={link.icon} path={link.path}>
-          {link.name}
-        </NavItem>
-      ))} */}
     </Box>
   );
 };
