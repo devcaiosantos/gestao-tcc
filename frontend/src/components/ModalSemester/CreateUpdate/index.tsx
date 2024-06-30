@@ -11,10 +11,10 @@ import {
     FormLabel,
     Input,
     Box,
-    Checkbox,
     Radio,
     RadioGroup,
-    Stack
+    Stack,
+    Switch
 } from '@chakra-ui/react';
 import { useToast } from '@chakra-ui/react';
 import { Container } from './style';
@@ -161,11 +161,11 @@ export default function ModalCreateUpdateSemester({children, data, isOpen, setIs
                                 </RadioGroup>
                             </Box>
                             <Box>
-                                <Checkbox 
+                                <Switch 
                                     isChecked={tempData.active}
                                     onChange={(e) => handleChange("active", e.target.checked)}>
                                     Ativo
-                                </Checkbox>
+                                </Switch>
                             </Box>
                         </Container>
                     </ModalBody>
