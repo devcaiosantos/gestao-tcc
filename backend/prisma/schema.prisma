@@ -14,14 +14,15 @@ datasource db {
 }
 
 model Administrador {
-  id Int @id @default(autoincrement())
-  nome String
-  email String @unique
-  senha String
-  email_sistema String?
+  id                  Int      @id @default(autoincrement())
+  nome                String
+  email               String   @unique
+  senha               String
+  email_sistema       String?
   senha_email_sistema String?
-  dataCriacao DateTime @default(now())
-  dataAtualizacao DateTime @updatedAt
+  dataCriacao         DateTime @default(now())
+  dataAtualizacao     DateTime @updatedAt
+
   @@map("administrador")
 }
 
@@ -41,13 +42,17 @@ enum Departamento {
 }
 
 model Professor {
-  id Int  @id @default(autoincrement())
-  nome String
-  email String @unique
-  departamento Departamento
-  ativo Boolean @default(true)
-  dataCriacao DateTime @default(now())
-  dataAtualizacao DateTime @updatedAt
+  id              Int          @id @default(autoincrement())
+  nome            String
+  email           String       @unique
+  departamento    Departamento
+  ativo           Boolean      @default(true)
+  dataCriacao     DateTime     @default(now())
+  dataAtualizacao DateTime     @updatedAt
+
+  alunosOrientados   AlunoMatriculado[] @relation("Orientador")
+  alunosCoorientados AlunoMatriculado[] @relation("Coorientador")
+
   @@map("professor")
 }
 
@@ -58,22 +63,89 @@ enum TipoTexto {
 }
 
 model ModeloTexto {
-  id Int  @id @default(autoincrement())
-  titulo String @unique
-  conteudo String
-  tipo TipoTexto
-  dataCriacao DateTime @default(now())
-  dataAtualizacao DateTime @updatedAt
+  id              Int       @id @default(autoincrement())
+  titulo          String    @unique
+  conteudo        String
+  tipo            TipoTexto
+  dataCriacao     DateTime  @default(now())
+  dataAtualizacao DateTime  @updatedAt
+
   @@map("modelo-texto")
 }
 
 model Semestre {
-  id     Int     @id @default(autoincrement())
-  ano    Int
-  numero Int
-  ativo  Boolean @default(false)
-  dataCriacao DateTime @default(now())
+  id              Int      @id @default(autoincrement())
+  ano             Int
+  numero          Int
+  ativo           Boolean  @default(false)
+  dataCriacao     DateTime @default(now())
   dataAtualizacao DateTime @updatedAt
+
+  alunosMatriculados AlunoMatriculado[]
+
   @@unique([ano, numero])
   @@map("semestre")
+}
+
+model Aluno {
+  ra              String   @id
+  nome            String
+  email           String   @unique
+  dataCriacao     DateTime @default(now())
+  dataAtualizacao DateTime @updatedAt
+
+  alunosMatriculados AlunoMatriculado[]
+  HistoricoAluno     HistoricoAluno[]
+
+  @@map("aluno")
+}
+
+enum Etapa {
+  TCC1
+  TCC2
+}
+
+enum Status {
+  matriculado
+  orientador_definido
+  banca_preenchida
+  banca_agendada
+  aprovado
+  reprovado
+  nao_finalizado
+}
+
+model AlunoMatriculado {
+  id              Int      @id @default(autoincrement())
+  raAluno         String
+  etapa           Etapa
+  status          Status
+  idSemestre      Int
+  idOrientador    Int? // Chave estrangeira referenciando Professor
+  idCoorientador  Int? // Chave estrangeira referenciando Professor (opcional)
+  dataCriacao     DateTime @default(now())
+  dataAtualizacao DateTime @updatedAt
+
+  // Relacionamentos
+  Aluno        Aluno      @relation(fields: [raAluno], references: [ra], onDelete: Cascade)
+  Semestre     Semestre   @relation(fields: [idSemestre], references: [id])
+  Orientador   Professor? @relation("Orientador", fields: [idOrientador], references: [id])
+  Coorientador Professor? @relation("Coorientador", fields: [idCoorientador], references: [id])
+
+  // Garante que a combinação de raAluno, etapa e idSemestre seja única
+  @@unique([raAluno, etapa, idSemestre])
+  @@map("aluno-matriculado")
+}
+
+model HistoricoAluno {
+  id          Int      @id @default(autoincrement())
+  raAluno     String
+  idSemestre  Int
+  status      Status
+  etapa       Etapa
+  observacao  String?
+  dataCriacao DateTime @default(now())
+
+  Aluno Aluno @relation(fields: [raAluno], references: [ra], onDelete: Cascade)
+  @@map("historico-aluno")
 }
