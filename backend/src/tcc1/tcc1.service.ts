@@ -71,7 +71,7 @@ export class TCC1Service {
     if (alreadyEnrolled) {
       throw {
         statusCode: 400,
-        message: `Este aluno já foi matriculado em TCC1 no semestre ${activeSemester.ano}/${activeSemester.numero}`,
+        message: `Já existe um aluno com este RA matriculado em TCC1 no semestre ${activeSemester.ano}/${activeSemester.numero}`,
       };
     }
 
@@ -94,6 +94,28 @@ export class TCC1Service {
         throw {
           statusCode: 500,
           message: "Erro ao cadastrar aluno",
+        };
+      }
+    }
+
+    if (
+      registeredStudent &&
+      (registeredStudent.email !== student.email ||
+        registeredStudent.nome !== student.nome)
+    ) {
+      const updatedStudent = await this.prisma.aluno.update({
+        where: {
+          ra: student.ra,
+        },
+        data: {
+          email: student.email,
+        },
+      });
+
+      if (!updatedStudent) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao atualizar email do aluno",
         };
       }
     }

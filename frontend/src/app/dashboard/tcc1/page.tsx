@@ -35,8 +35,7 @@ import {
     InputLeftElement,
  } from "@chakra-ui/react";
 
-// import ModalCreateUpdateEnrollment from "@/components/ModalEnrollment/CreateUpdate"
-// import ModalDeleteEnrollment from "@/components/ModalEnrollment/Delete";
+import ModalCreateEnrollment from "@/components/ModalEnrollment/NewEnrollment";
 import { FaUserGraduate, FaEdit, FaUserPlus, FaUsers, FaExclamationCircle, FaMailBulk } from "react-icons/fa";
 import { FaDownLong } from "react-icons/fa6";
 import useAuthContext from "@/hooks/useAuthContext";
@@ -80,14 +79,8 @@ export default function Enrollments() {
             return;
         }
         if(response.data){
-            console.log(response.data);
             setEnrollments(response.data);
         }
-    }
-
-    async function handleClickCreateEnrollment(){
-        setIsOpenModalEnrollment(true);
-        setSelectedEnrollment(undefined);
     }
 
     if(!activeSemester) {
@@ -146,33 +139,10 @@ export default function Enrollments() {
                         ))}
                     </StatusFilterSelect>
                 </FilterStatusContainer>
-                        
-                {/* <ModalCreateUpdateEnrollment 
-                    isOpen={isOpenModalEnrollment} 
-                    setIsOpen={setIsOpenModalEnrollment}
-                    fetchEnrollments={fetchEnrollments}
-                >
-                    <AddEnrollmentButtonContainer>
-                        <Button
-                        colorScheme="blue"
-                        variant="solid"
-                        onClick={()=>handleClickCreateEnrollment()}
-                        leftIcon={<FaUserGraduate/>}
-                        >
-                            Cadastrar Matrícula
-                        </Button>
-                    </AddEnrollmentButtonContainer>
-                </ModalCreateUpdateEnrollment> */}
             </Toolbar> 
             <Toolbar>
                 <AddEnrollmentButtonContainer>
-                    <Button
-                        colorScheme="blue"
-                        variant="solid"
-                        leftIcon={<FaUserPlus/>}
-                    >
-                        Matricular
-                    </Button>
+                    <ModalCreateEnrollment fetchEnrollments={fetchEnrollments}/>
                     <Button
                         colorScheme="blue"
                         variant="solid"
@@ -224,12 +194,6 @@ const EnrollmentsTable = ({
 
     return ( 
         <>
-            {/* <ModalCreateUpdateEnrollment
-                isOpen={isOpenModalEnrollment} 
-                setIsOpen={setIsOpenModalEnrollment}
-                fetchEnrollments={fetchEnrollments}
-                data={selectedEnrollment}
-            /> */}
             <TableContainer>
                 <Table>
                     <Thead>
@@ -288,10 +252,6 @@ const EnrollmentsTable = ({
                                         >
                                             <FaTrash/>
                                         </Button>
-                                        {/* <ModalDeleteEnrollment
-                                            data={enrollment}
-                                            fetchEnrollments={fetchEnrollments}
-                                        /> */}
                                     </ActionButtonsContainer>
                                 </Td>
                             </TableRow>
