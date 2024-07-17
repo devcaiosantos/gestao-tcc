@@ -106,6 +106,7 @@ enum Etapa {
 }
 
 enum Status {
+  desmatriculado
   matriculado
   orientador_definido
   banca_preenchida

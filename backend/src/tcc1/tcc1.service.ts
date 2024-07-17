@@ -6,6 +6,32 @@ import * as yup from "yup";
 @Injectable()
 export class TCC1Service {
   constructor(private prisma: PrismaService) {}
+
+  async findEnrollmentsByIdSemester(idSemester: number) {
+    if (!idSemester) {
+      throw {
+        statusCode: 400,
+        message: "id Semestre não informado",
+      };
+    }
+
+    const enrollmentsWithStudents = await this.prisma.alunoMatriculado.findMany(
+      {
+        where: {
+          idSemestre: idSemester,
+          etapa: "TCC1",
+        },
+        include: {
+          Aluno: true,
+          Orientador: true,
+          Coorientador: true,
+        },
+      },
+    );
+
+    return enrollmentsWithStudents;
+  }
+
   async enroll(student: EnrollStudent) {
     try {
       const enrollSchema = yup.object().shape({
@@ -72,39 +98,45 @@ export class TCC1Service {
       }
     }
 
-    const createdEnrollment = await this.prisma.alunoMatriculado.create({
-      data: {
-        raAluno: student.ra,
-        idSemestre: activeSemester.id,
-        etapa: "TCC1",
-        status: "matriculado",
-      },
+    // Inicia uma transação
+    const transaction = await this.prisma.$transaction(async (prisma) => {
+      const createdEnrollment = await prisma.alunoMatriculado.create({
+        data: {
+          raAluno: student.ra,
+          idSemestre: activeSemester.id,
+          etapa: "TCC1",
+          status: "matriculado",
+        },
+      });
+
+      if (!createdEnrollment) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao matricular aluno",
+        };
+      }
+
+      const createHistory = await prisma.historicoAluno.create({
+        data: {
+          raAluno: student.ra,
+          idSemestre: activeSemester.id,
+          etapa: "TCC1",
+          status: "matriculado",
+          observacao: "Aluno matriculado",
+        },
+      });
+
+      if (!createHistory) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao criar histórico",
+        };
+      }
+
+      return createdEnrollment;
     });
 
-    if (!createdEnrollment) {
-      throw {
-        statusCode: 500,
-        message: "Erro ao matricular aluno",
-      };
-    }
-
-    const createHistory = await this.prisma.historicoAluno.create({
-      data: {
-        raAluno: student.ra,
-        idSemestre: activeSemester.id,
-        etapa: "TCC1",
-        status: "matriculado",
-      },
-    });
-
-    if (!createHistory) {
-      throw {
-        statusCode: 500,
-        message: "Erro ao criar histórico",
-      };
-    }
-
-    return createdEnrollment;
+    return transaction;
   }
 
   async enrollBatch(students: EnrollStudent[]) {
@@ -202,12 +234,13 @@ export class TCC1Service {
             };
           }
 
-          const createHistory = await this.prisma.historicoAluno.create({
+          const createHistory = await prisma.historicoAluno.create({
             data: {
               raAluno: student.ra,
               idSemestre: activeSemester.id,
               etapa: "TCC1",
               status: "matriculado",
+              observacao: "Aluno matriculado em lote",
             },
           });
 
@@ -219,8 +252,7 @@ export class TCC1Service {
           }
 
           results.push({
-            status: "success",
-            enrollment: createdEnrollment,
+            ...createdEnrollment,
           });
         } catch (error) {
           throw {
@@ -233,5 +265,59 @@ export class TCC1Service {
     });
 
     return transaction;
+  }
+
+  async unenroll(idStudent: number) {
+    if (!idStudent) {
+      throw {
+        statusCode: 400,
+        message: "ID do aluno matriculado não foi informado",
+      };
+    }
+    const existingAlunoMatriculado =
+      await this.prisma.alunoMatriculado.findFirst({
+        where: {
+          id: idStudent,
+        },
+      });
+
+    if (!existingAlunoMatriculado) {
+      throw {
+        statusCode: 404,
+        message: `Aluno não encontrado`,
+      };
+    }
+
+    const deletedEnrollment = await this.prisma.alunoMatriculado.delete({
+      where: {
+        id: idStudent,
+      },
+    });
+
+    if (!deletedEnrollment) {
+      throw {
+        statusCode: 500,
+        message: "Erro ao desmatricular aluno",
+      };
+    }
+
+    const createHistory = await this.prisma.historicoAluno.create({
+      data: {
+        raAluno: existingAlunoMatriculado.raAluno,
+        idSemestre: existingAlunoMatriculado.idSemestre,
+        etapa: "TCC1",
+        status: "desmatriculado",
+        observacao: "Aluno desmatriculado",
+      },
+    });
+
+    if (!createHistory) {
+      throw {
+        statusCode: 500,
+        message: "Erro ao criar histórico",
+      };
+    }
+
+    return deletedEnrollment;
   }
 }

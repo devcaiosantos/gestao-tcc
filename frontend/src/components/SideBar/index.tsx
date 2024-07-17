@@ -215,6 +215,8 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
           </AccordionPanel>
         </AccordionItem>
       </Accordion>
+
+      <NavItem icon={TbHexagonNumber1} path={"/dashboard/tcc1"}>TCC 1</NavItem>
     </Box>
   );
 };

@@ -29,3 +29,19 @@ export interface ISemester {
     number: number;
     active: boolean;
 }
+
+export interface IEnrollmentStudent {
+    id: number;
+    studentRA: string;
+    studentName: string;
+    studentEmail: string;
+    stage: string;
+    status: string;
+    semesterId: number;
+    supervisorId: number | null;
+    supervisorName: string | null;
+    coSupervisorId: number | null;
+    coSupervisorName: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+}
