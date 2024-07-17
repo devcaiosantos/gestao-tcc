@@ -14,6 +14,8 @@ import { ProfessorModule } from "./professor/professor.module";
 import { AdministradorModule } from "./administrador/administrador.module";
 import { ModeloTextoModule } from "./modelo-texto/modelo-texto.module";
 import { SemestreModule } from "./semestre/semestre.module";
+import { TCC1Module } from "./tcc1/tcc1.module";
+import { HistoricModule } from "./historic/historic.module";
 import * as moment from "moment-timezone";
 
 // Definindo o fuso horário para o Brasil
@@ -46,6 +48,14 @@ console.log(new Date().toLocaleString());
             path: "/",
             module: SemestreModule,
           },
+          {
+            path: "/",
+            module: TCC1Module,
+          },
+          {
+            path: "/",
+            module: HistoricModule,
+          },
         ],
       },
     ]),
@@ -57,6 +67,8 @@ console.log(new Date().toLocaleString());
     AdministradorModule,
     ModeloTextoModule,
     SemestreModule,
+    TCC1Module,
+    HistoricModule,
   ],
   controllers: [AppController, AuthController],
   providers: [
