@@ -17,7 +17,9 @@ import { useToast } from '@chakra-ui/react'
 import { Container } from './style';
 import { object, string, ValidationError } from 'yup';
 import createEnrollment from '@/services/enrollment/create';
+import findStudentByRA from '@/services/student/findByRa';
 import { FaUserPlus } from 'react-icons/fa';
+import useDebounce from "@/hooks/useDebounce";
 
 interface ModalCreateEnrollmentProps {
     fetchEnrollments: () => void;
@@ -39,10 +41,26 @@ export default function ModalCreateEnrollment({fetchEnrollments}: ModalCreateEnr
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [tempData, setTempData] = useState<TempDataProps>(defaultData);
     const toast = useToast();
+    const debouncedRa = useDebounce(tempData?.ra, 500);
 
     useEffect(()=>{
         setTempData(defaultData);
     },[isOpen])
+
+    useEffect(() => {
+        if (debouncedRa) {
+            handleAutoFill(debouncedRa);
+        }
+    },[debouncedRa])
+
+    async function handleAutoFill(ra:string){
+        console.log(ra)
+        const response = await findStudentByRA(ra);
+        if(response.status === "success" && response.data){
+            console.log(response.data)
+            setTempData(response.data);
+        }
+    }
 
     function handleChange(key:string, value:string | boolean){
         setTempData({...tempData, [key]: value});
@@ -56,6 +74,7 @@ export default function ModalCreateEnrollment({fetchEnrollments}: ModalCreateEnr
         });
 
         try{
+            console.log(tempData)
             await schema.validate(tempData);
         }catch(error){
             if(error instanceof ValidationError){

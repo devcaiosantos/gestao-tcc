@@ -45,3 +45,9 @@ export interface IEnrollmentStudent {
     createdAt: Date;
     updatedAt: Date;
 }
+
+export interface IStudent {
+    name: string;
+    email: string;
+    ra: string;
+}
