@@ -239,6 +239,28 @@ export class TCC1Service {
             }
           }
 
+          if (
+            registeredStudent &&
+            (registeredStudent.email !== student.email ||
+              registeredStudent.nome !== student.nome)
+          ) {
+            const updatedStudent = await prisma.aluno.update({
+              where: {
+                ra: student.ra,
+              },
+              data: {
+                email: student.email,
+              },
+            });
+
+            if (!updatedStudent) {
+              throw {
+                statusCode: 500,
+                message: "Erro ao atualizar email do aluno",
+              };
+            }
+          }
+
           // Matricula o aluno
           const createdEnrollment = await prisma.alunoMatriculado.create({
             data: {

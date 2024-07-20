@@ -36,6 +36,7 @@ import {
  } from "@chakra-ui/react";
 
 import ModalCreateEnrollment from "@/components/ModalEnrollment/NewEnrollment";
+import ModalCreateBatchEnrollments from "@/components/ModalEnrollment/NewBatchEnrollments";
 import { FaUserGraduate, FaEdit, FaUserPlus, FaUsers, FaExclamationCircle, FaMailBulk } from "react-icons/fa";
 import { FaDownLong } from "react-icons/fa6";
 import useAuthContext from "@/hooks/useAuthContext";
@@ -143,13 +144,7 @@ export default function Enrollments() {
             <Toolbar>
                 <AddEnrollmentButtonContainer>
                     <ModalCreateEnrollment fetchEnrollments={fetchEnrollments}/>
-                    <Button
-                        colorScheme="blue"
-                        variant="solid"
-                        leftIcon={<FaUsers/>}
-                    >
-                        Matricular em lote
-                    </Button>
+                    <ModalCreateBatchEnrollments fetchEnrollments={fetchEnrollments}/>
                     <Button
                         colorScheme="yellow"
                         variant="outline"
