@@ -9,30 +9,16 @@ import {
     ModalBody,
     ModalCloseButton,
     FormLabel,
-    Textarea,
     useDisclosure
 } from '@chakra-ui/react'
 import { useToast } from '@chakra-ui/react'
 import { Container, EnrollmentsTextarea } from './style';
 import { object, string, ValidationError } from 'yup';
-import createEnrollment from '@/services/enrollment/create';
-import findStudentByRA from '@/services/student/findByRa';
+import createBatchEnrollment from '@/services/enrollment/createBatch';
 import { FaUsers } from 'react-icons/fa';
-import useDebounce from "@/hooks/useDebounce";
 
 interface ModalCreateEnrollmentProps {
     fetchEnrollments: () => void;
-}
-
-interface TempDataProps {
-    name: string;
-    email: string;
-    ra: string;
-}
-const defaultData = {
-    name: '',
-    email: '',
-    ra: ''
 }
 
 const placeholderEnrollments = ""
@@ -44,60 +30,54 @@ const placeholderEnrollments = ""
 export default function ModalCreateBatchEnrollments({fetchEnrollments}: ModalCreateEnrollmentProps) {
     
     const { isOpen, onOpen, onClose } = useDisclosure()
-    const [tempData, setTempData] = useState<TempDataProps>(defaultData);
+    const [inputValue, setInputValue] = useState("");
     const toast = useToast();
-    const debouncedRa = useDebounce(tempData?.ra, 500);
 
     useEffect(()=>{
-        setTempData(defaultData);
+        setInputValue("");
     },[isOpen])
 
-    useEffect(() => {
-        if (debouncedRa) {
-            handleAutoFill(debouncedRa);
-        }
-    },[debouncedRa])
 
-    async function handleAutoFill(ra:string){
-        console.log(ra)
-        const response = await findStudentByRA(ra);
-        if(response.status === "success" && response.data){
-            console.log(response.data)
-            setTempData(response.data);
-        }
-    }
-
-    function handleChange(key:string, value:string | boolean){
-        setTempData({...tempData, [key]: value});
+    function handleChange(value:string){
+        setInputValue(value);
     }
 
     async function handleSubmit(){
         const schema = object().shape({
-            name: string().required("Nome é obrigatório"),
-            email: string().email("Email inválido").required("Email é obrigatório"),
-            ra: string().required("RA é obrigatório")
+            ra: string().required("O RA é obrigatório"),
+            name: string().required("O nome é obrigatório"),
+            email: string().email("O e-mail informado não é válido").required("O e-mail é obrigatório")
         });
-
-        try{
-            console.log(tempData)
-            await schema.validate(tempData);
-        }catch(error){
-            if(error instanceof ValidationError){
-                return toast({
-                    title: error.message,
-                    status: "error",
-                    position: "top",
-                    duration: 5000,
-                    isClosable: true
-                });
+    
+        const lines = inputValue.split("\n");
+        const enrollments = [];
+        for (const [index, enrollment] of lines.entries()) {
+            const [ra, name, email] = enrollment.trim().split(",");
+            
+            const formattedEnrollment = {
+                ra: ra.trim(),
+                name: name.trim(),
+                email: email.trim()
+            };
+            try {
+                await schema.validate(formattedEnrollment);
+            } catch (err) {
+                if (err instanceof ValidationError) {
+                    toast({
+                        title: `Formato inválido de matrícula na linha ${index + 1}`,
+                        description: err.message,
+                        status: "error",
+                        position: "top",
+                        duration: 5000,
+                        isClosable: true
+                    });
+                    return;
+                }
             }
+            enrollments.push(formattedEnrollment);
         }
-
-        handleCreateEnrollment();
-    }
-
-    async function handleCreateEnrollment(){
-        const response = await createEnrollment(tempData);
+    
+        const response = await createBatchEnrollment(enrollments);
         toast({
             title: response.message,
             status: response.status,
@@ -105,12 +85,12 @@ export default function ModalCreateBatchEnrollments({fetchEnrollments}: ModalCre
             duration: 5000,
             isClosable: true
         });
+
         if(response.status === "success"){
             fetchEnrollments();
             onClose();
         }
     }
-
 
     return (
         <>
@@ -136,7 +116,7 @@ export default function ModalCreateBatchEnrollments({fetchEnrollments}: ModalCre
                     </FormLabel>
                     <EnrollmentsTextarea 
                         placeholder={placeholderEnrollments}
-                        onChange={(e)=>handleChange("enrollments", e.target.value)}
+                        onChange={(e)=>handleChange(e.target.value)}
                     />
                  </Container>
               </ModalBody>

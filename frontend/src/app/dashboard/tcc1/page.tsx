@@ -37,6 +37,7 @@ import {
 
 import ModalCreateEnrollment from "@/components/ModalEnrollment/NewEnrollment";
 import ModalCreateBatchEnrollments from "@/components/ModalEnrollment/NewBatchEnrollments";
+import ModalUnenroll from "@/components/ModalEnrollment/Unenroll";
 import { FaUserGraduate, FaEdit, FaUserPlus, FaUsers, FaExclamationCircle, FaMailBulk } from "react-icons/fa";
 import { FaDownLong } from "react-icons/fa6";
 import useAuthContext from "@/hooks/useAuthContext";
@@ -241,12 +242,10 @@ const EnrollmentsTable = ({
                                         >
                                             <FaEdit/>
                                         </Button>
-                                        <Button
-                                            variant={"outline"}
-                                            colorScheme="red"
-                                        >
-                                            <FaTrash/>
-                                        </Button>
+                                        <ModalUnenroll
+                                            enrollment={enrollment}
+                                            fetchEnrollments={fetchEnrollments}
+                                        />
                                     </ActionButtonsContainer>
                                 </Td>
                             </TableRow>

@@ -54,10 +54,8 @@ export default function ModalCreateEnrollment({fetchEnrollments}: ModalCreateEnr
     },[debouncedRa])
 
     async function handleAutoFill(ra:string){
-        console.log(ra)
         const response = await findStudentByRA(ra);
         if(response.status === "success" && response.data){
-            console.log(response.data)
             setTempData(response.data);
         }
     }
@@ -74,7 +72,6 @@ export default function ModalCreateEnrollment({fetchEnrollments}: ModalCreateEnr
         });
 
         try{
-            console.log(tempData)
             await schema.validate(tempData);
         }catch(error){
             if(error instanceof ValidationError){

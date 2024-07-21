@@ -21,7 +21,6 @@ import * as moment from "moment-timezone";
 
 // Definindo o fuso horário para o Brasil
 moment.tz.setDefault("America/Sao_Paulo");
-console.log(new Date().toLocaleString());
 @Module({
   imports: [
     ConfigModule.forRoot({
