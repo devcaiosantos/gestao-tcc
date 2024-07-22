@@ -51,3 +51,12 @@ export interface IStudent {
     email: string;
     ra: string;
 }
+
+export type EnrollmentStatus =
+     "matriculado" | 
+     "orientador_definido" | 
+     "banca_preenchida" | 
+     "banca_agendada" | 
+     "aprovado" | 
+     "reprovado" | 
+     "nao_finalizado";
