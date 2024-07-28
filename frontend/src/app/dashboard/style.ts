@@ -24,6 +24,8 @@ export const TitlePage = styled.h1`
     margin-bottom: 20px;
     @media (max-width: 768px) {
         font-size: 1.5rem;
+        flex-direction: column;
+        justify-content: center;
     }
 `;
 

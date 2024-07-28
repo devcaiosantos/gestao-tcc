@@ -1,14 +1,22 @@
 import axios from 'axios';
 import { getCookie } from '@/utils/cookies';
+import { IStudent } from '@/interfaces';
 
-type Status = "success" | "error";
-
-interface IUnenrollResponse {
-    status: Status;
-    message: string;
+interface Aluno {
+    ra: string;
+    nome: string;
+    email: string;
 }
 
-const unenrollStudent = async (id: number): Promise<IUnenrollResponse> => {
+interface IFindStudentByRAResponse {
+    status: "success" | "error";
+    message: string;
+    data?: IStudent;
+}
+
+export type Status = "success" | "error";
+
+const findStudentByRA = async (term:string): Promise<IFindStudentByRAResponse > => {
     const URL = process.env.NEXT_PUBLIC_API_URL;
     if (!URL) {
         throw new Error('Variável de ambiente não configurada');
@@ -19,17 +27,22 @@ const unenrollStudent = async (id: number): Promise<IUnenrollResponse> => {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${getCookie("tcc-token")}`
         },
-        url: URL + `/tcc1/desmatricular/${id}`,
-        method: 'delete'
+        url: URL + `/aluno/ra/${term}`,
+        method: 'get'
     };
 
     try {
-        const response = await axios(config);
-
+        const response = await axios<Aluno>(config);
+        const formattedData = {
+            name: response.data.nome,
+            email: response.data.email,
+            ra: response.data.ra
+        }
         const status: Status = "success";
         return {
             status: status,
-            message: "Desmatrícula realizada com sucesso"
+            message: "Aluno encontrado com sucesso",
+            data: formattedData
         };
     } catch (error) {
         let message = "Uma falha inesperada ocorreu";
@@ -50,4 +63,4 @@ const unenrollStudent = async (id: number): Promise<IUnenrollResponse> => {
     }
 };
 
-export default unenrollStudent;
+export default findStudentByRA;

@@ -24,7 +24,7 @@ const unenrollStudent = async (id: number): Promise<IUnenrollResponse> => {
     };
 
     try {
-        const response = await axios(config);
+        await axios(config);
 
         const status: Status = "success";
         return {

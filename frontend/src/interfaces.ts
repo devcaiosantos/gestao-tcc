@@ -45,3 +45,18 @@ export interface IEnrollmentStudent {
     createdAt: Date;
     updatedAt: Date;
 }
+
+export interface IStudent {
+    name: string;
+    email: string;
+    ra: string;
+}
+
+export type EnrollmentStatus =
+     "matriculado" | 
+     "orientador_definido" | 
+     "banca_preenchida" | 
+     "banca_agendada" | 
+     "aprovado" | 
+     "reprovado" | 
+     "nao_finalizado";

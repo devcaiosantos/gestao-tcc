@@ -71,7 +71,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             const fetchActiveSemester = async () => {
                 const response = await findActiveSemester();
                 if(response.status === "error"){
-                    console.error(response.message);
                     return;
                 }
                 if(response.data && response.data.id){

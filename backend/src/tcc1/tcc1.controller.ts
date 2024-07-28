@@ -1,14 +1,30 @@
-import { Controller, Post, Body, Get, Param, Delete } from "@nestjs/common";
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  Param,
+  Delete,
+  Query,
+} from "@nestjs/common";
 import { TCC1Service } from "./tcc1.service";
-import { EnrollStudent } from "./interfaces";
+import { EnrollStudent, Status } from "./interfaces";
 
 @Controller("tcc1")
 export class TCC1Controller {
   constructor(private readonly tcc1Service: TCC1Service) {}
 
-  @Get(":idSemester")
-  findEnrollmentsByIdSemester(@Param("idSemester") idSemester: string) {
-    return this.tcc1Service.findEnrollmentsByIdSemester(+idSemester);
+  @Get("")
+  findEnrollmentsByIdSemester(
+    @Query("idSemester") idSemester: string,
+    @Query("status") status: string,
+    @Query("term") term: string,
+  ) {
+    return this.tcc1Service.findEnrollmentsByIdSemester({
+      idSemester: +idSemester,
+      status: status as Status,
+      term,
+    });
   }
 
   @Post("matricular")

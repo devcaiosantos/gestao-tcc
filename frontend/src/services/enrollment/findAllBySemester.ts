@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getCookie } from '@/utils/cookies';
 import { IEnrollmentStudent } from '@/interfaces';
-
+import { EnrollmentStatus } from '@/interfaces';
 interface AlunoMatriculado {
     id: number;
     raAluno: string;
@@ -32,7 +32,13 @@ interface IGetAllEnrollmentStudentsBySemesterResponse {
 
 export type Status = "success" | "error";
 
-const findAllBySemester = async (idSemester:number): Promise<IGetAllEnrollmentStudentsBySemesterResponse> => {
+interface IFindEnrollmentsProps {
+    idSemester: number;
+    term: string;
+    status:EnrollmentStatus | "todos";
+}
+
+const findAllBySemester = async ({idSemester, status, term}:IFindEnrollmentsProps): Promise<IGetAllEnrollmentStudentsBySemesterResponse> => {
     const URL = process.env.NEXT_PUBLIC_API_URL;
     if (!URL) {
         throw new Error('Variável de ambiente não configurada');
@@ -43,7 +49,7 @@ const findAllBySemester = async (idSemester:number): Promise<IGetAllEnrollmentSt
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${getCookie("tcc-token")}`
         },
-        url: URL + `/tcc1/${idSemester}`,
+        url: URL + `/tcc1?idSemester=${idSemester}&status=${status}&term=${term}`,
         method: 'get'
     };
 

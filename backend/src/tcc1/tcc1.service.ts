@@ -1,17 +1,43 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { EnrollStudent } from "./interfaces";
+import { EnrollStudent, IfindEnrollmentsProps } from "./interfaces";
 import * as yup from "yup";
 
+const statusOptions = [
+  "todos",
+  "matriculado",
+  "orientador_definido",
+  "banca_preenchida",
+  "banca_agendada",
+  "aprovado",
+  "reprovado",
+  "nao_finalizado",
+];
 @Injectable()
 export class TCC1Service {
   constructor(private prisma: PrismaService) {}
 
-  async findEnrollmentsByIdSemester(idSemester: number) {
-    if (!idSemester) {
+  async findEnrollmentsByIdSemester({
+    idSemester,
+    term,
+    status,
+  }: IfindEnrollmentsProps) {
+    const schema = yup.object().shape({
+      idSemester: yup.number().required(),
+      term: yup.string().notRequired(),
+      status: yup.mixed().oneOf(statusOptions).notRequired(),
+    });
+
+    try {
+      await schema.validate({
+        idSemester,
+        term,
+        status,
+      });
+    } catch (error) {
       throw {
         statusCode: 400,
-        message: "id Semestre não informado",
+        message: error.message,
       };
     }
 
@@ -19,7 +45,35 @@ export class TCC1Service {
       {
         where: {
           idSemestre: idSemester,
-          etapa: "TCC1",
+          status: !status || status === "todos" ? undefined : status,
+          OR: term
+            ? [
+                {
+                  Aluno: {
+                    nome: {
+                      contains: term,
+                      mode: "insensitive",
+                    },
+                  },
+                },
+                {
+                  Aluno: {
+                    ra: {
+                      contains: term,
+                      mode: "insensitive",
+                    },
+                  },
+                },
+                {
+                  Aluno: {
+                    email: {
+                      contains: term,
+                      mode: "insensitive",
+                    },
+                  },
+                },
+              ]
+            : undefined,
         },
         include: {
           Aluno: true,
@@ -71,7 +125,7 @@ export class TCC1Service {
     if (alreadyEnrolled) {
       throw {
         statusCode: 400,
-        message: `Este aluno já foi matriculado em TCC1 no semestre ${activeSemester.ano}/${activeSemester.numero}`,
+        message: `Já existe um aluno com este RA matriculado em TCC1 no semestre ${activeSemester.ano}/${activeSemester.numero}`,
       };
     }
 
@@ -94,6 +148,28 @@ export class TCC1Service {
         throw {
           statusCode: 500,
           message: "Erro ao cadastrar aluno",
+        };
+      }
+    }
+
+    if (
+      registeredStudent &&
+      (registeredStudent.email !== student.email ||
+        registeredStudent.nome !== student.nome)
+    ) {
+      const updatedStudent = await this.prisma.aluno.update({
+        where: {
+          ra: student.ra,
+        },
+        data: {
+          email: student.email,
+        },
+      });
+
+      if (!updatedStudent) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao atualizar email do aluno",
         };
       }
     }
@@ -217,6 +293,28 @@ export class TCC1Service {
             }
           }
 
+          if (
+            registeredStudent &&
+            (registeredStudent.email !== student.email ||
+              registeredStudent.nome !== student.nome)
+          ) {
+            const updatedStudent = await prisma.aluno.update({
+              where: {
+                ra: student.ra,
+              },
+              data: {
+                email: student.email,
+              },
+            });
+
+            if (!updatedStudent) {
+              throw {
+                statusCode: 500,
+                message: "Erro ao atualizar email do aluno",
+              };
+            }
+          }
+
           // Matricula o aluno
           const createdEnrollment = await prisma.alunoMatriculado.create({
             data: {
@@ -319,5 +417,61 @@ export class TCC1Service {
     }
 
     return deletedEnrollment;
+  }
+
+  async search(term: string) {
+    if (!term) {
+      throw {
+        statusCode: 400,
+        message: "Termo de busca não informado",
+      };
+    }
+
+    const activeSemester = await this.prisma.semestre.findFirst({
+      where: {
+        ativo: true,
+      },
+    });
+
+    if (!activeSemester) {
+      throw {
+        statusCode: 400,
+        message: "Não existe um semestre ativo",
+      };
+    }
+
+    const students = await this.prisma.alunoMatriculado.findMany({
+      where: {
+        idSemestre: activeSemester.id,
+        OR: [
+          {
+            Aluno: {
+              nome: {
+                contains: term,
+                mode: "insensitive",
+              },
+            },
+          },
+          {
+            Aluno: {
+              ra: {
+                contains: term,
+                mode: "insensitive",
+              },
+            },
+          },
+          {
+            Aluno: {
+              email: {
+                contains: term,
+                mode: "insensitive",
+              },
+            },
+          },
+        ],
+      },
+    });
+
+    return students;
   }
 }
