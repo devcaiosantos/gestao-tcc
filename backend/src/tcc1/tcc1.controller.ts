@@ -6,6 +6,7 @@ import {
   Param,
   Delete,
   Query,
+  Put,
 } from "@nestjs/common";
 import { TCC1Service } from "./tcc1.service";
 import { EnrollStudent, Status } from "./interfaces";
@@ -40,5 +41,10 @@ export class TCC1Controller {
   @Delete("desmatricular/:id")
   unenroll(@Param("id") id: string) {
     return this.tcc1Service.unenroll(+id);
+  }
+
+  @Put("finalizar-semestre/:id")
+  finishSemester(@Param("id") id: number) {
+    return this.tcc1Service.finishSemester(+id);
   }
 }

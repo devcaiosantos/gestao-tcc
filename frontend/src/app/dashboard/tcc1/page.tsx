@@ -38,6 +38,7 @@ import {
 import ModalCreateEnrollment from "@/components/ModalEnrollment/NewEnrollment";
 import ModalCreateBatchEnrollments from "@/components/ModalEnrollment/NewBatchEnrollments";
 import ModalUnenroll from "@/components/ModalEnrollment/Unenroll";
+import ModalEndSemester from "@/components/ModalEndSemester";
 import { FaUserGraduate, FaEdit, FaExclamationCircle, FaMailBulk } from "react-icons/fa";
 import useAuthContext from "@/hooks/useAuthContext";
 import useDebounce from "@/hooks/useDebounce";
@@ -118,15 +119,26 @@ export default function Enrollments() {
             <TitlePage>
                 <FaUserGraduate/>
                 Matrículas TCC 1 - {activeSemester?.year}/{activeSemester?.number}
-                <Button
-                    colorScheme="red"
-                    variant="outline"
-                    leftIcon={<FaExclamationCircle/>}
-                >
-                    Finalizar Semestre
-                </Button>
+                <ModalEndSemester
+                    data={activeSemester}
+                    fetchEnrollments={fetchEnrollments}
+                />
             </TitlePage>
             <Divider mb={"10px"}/>
+            <Toolbar>
+                <AddEnrollmentButtonContainer>
+                    <ModalCreateEnrollment fetchEnrollments={fetchEnrollments}/>
+                    <ModalCreateBatchEnrollments fetchEnrollments={fetchEnrollments}/>
+                </AddEnrollmentButtonContainer>
+                <Button
+                    colorScheme="cyan"
+                    variant="outline"
+                    leftIcon={<FaMailBulk/>}
+                >
+                    Enviar E-mails
+                </Button>
+                
+            </Toolbar>
             <Toolbar>
                 <InputGroup>
                     <InputLeftElement pointerEvents='none'>
@@ -155,20 +167,6 @@ export default function Enrollments() {
                     </StatusFilterSelect>
                 </FilterStatusContainer>
             </Toolbar> 
-            <Toolbar>
-                <AddEnrollmentButtonContainer>
-                    <ModalCreateEnrollment fetchEnrollments={fetchEnrollments}/>
-                    <ModalCreateBatchEnrollments fetchEnrollments={fetchEnrollments}/>
-                </AddEnrollmentButtonContainer>
-                <Button
-                    colorScheme="cyan"
-                    variant="outline"
-                    leftIcon={<FaMailBulk/>}
-                >
-                    Enviar E-mails
-                </Button>
-                
-            </Toolbar>
             <EnrollmentsTable 
                 enrollments={enrollments}
                 fetchEnrollments={fetchEnrollments}
