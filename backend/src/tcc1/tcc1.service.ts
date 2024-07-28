@@ -419,59 +419,91 @@ export class TCC1Service {
     return deletedEnrollment;
   }
 
-  async search(term: string) {
-    if (!term) {
+  async finishSemester(idSemester: number) {
+    if (!idSemester) {
       throw {
         statusCode: 400,
-        message: "Termo de busca não informado",
+        message: "ID do semestre não foi informado",
       };
     }
 
-    const activeSemester = await this.prisma.semestre.findFirst({
+    const existingSemester = await this.prisma.semestre.findFirst({
       where: {
-        ativo: true,
+        id: idSemester,
       },
     });
 
-    if (!activeSemester) {
+    if (!existingSemester) {
       throw {
-        statusCode: 400,
-        message: "Não existe um semestre ativo",
+        statusCode: 404,
+        message: `Semestre não encontrado`,
       };
     }
 
-    const students = await this.prisma.alunoMatriculado.findMany({
-      where: {
-        idSemestre: activeSemester.id,
-        OR: [
-          {
-            Aluno: {
-              nome: {
-                contains: term,
-                mode: "insensitive",
+    const transaction = await this.prisma.$transaction(async (prisma) => {
+      const updatedEnrollments = await prisma.alunoMatriculado.updateMany({
+        where: {
+          idSemestre: idSemester,
+          etapa: "TCC1",
+          OR: [
+            {
+              status: {
+                not: "aprovado",
               },
             },
-          },
-          {
-            Aluno: {
-              ra: {
-                contains: term,
-                mode: "insensitive",
+            {
+              status: {
+                not: "reprovado",
               },
             },
+          ],
+        },
+        data: {
+          status: "nao_finalizado",
+        },
+      });
+
+      if (!updatedEnrollments) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao finalizar semestre",
+        };
+      }
+
+      const enrollments = await prisma.alunoMatriculado.findMany({
+        where: {
+          idSemestre: idSemester,
+          etapa: "TCC1",
+        },
+      });
+
+      if (!enrollments) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao buscar matrículas",
+        };
+      }
+
+      for (const enrollment of enrollments) {
+        const createHistory = await prisma.historicoAluno.create({
+          data: {
+            raAluno: enrollment.raAluno,
+            idSemestre: idSemester,
+            etapa: "TCC1",
+            status: "nao_finalizado",
+            observacao: "Semestre finalizado",
           },
-          {
-            Aluno: {
-              email: {
-                contains: term,
-                mode: "insensitive",
-              },
-            },
-          },
-        ],
-      },
+        });
+
+        if (!createHistory) {
+          throw {
+            statusCode: 500,
+            message: "Erro ao criar histórico",
+          };
+        }
+      }
     });
 
-    return students;
+    return transaction;
   }
 }
