@@ -87,7 +87,17 @@ export const ActionButtonsContainer = styled.div`
   gap: 10px;  
 `;
 
-export const Toolbar = styled.div`
+export const Toolbar1 = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  @media (max-width: 1070px) {
+    align-items: flex-start;
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+`;
+export const Toolbar2= styled.div`
   display: flex;
   justify-content: space-between;
   margin-bottom: 10px;

@@ -21,7 +21,7 @@ interface ModalEndSemesterProps {
 export default function ModalEndSemester({data, fetchEnrollments}: ModalEndSemesterProps) {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const toast = useToast();
-    async function handleDelete(){
+    async function handleClick(){
       if(data){
         const response = await endSemester(data.id);
         toast({
@@ -63,7 +63,7 @@ export default function ModalEndSemester({data, fetchEnrollments}: ModalEndSemes
                 <Button 
                   colorScheme='red' 
                   variant='outline'
-                  onClick={handleDelete}
+                  onClick={handleClick}
                 >
                   Finalizar
                 </Button>
