@@ -43,8 +43,13 @@ export class TCC1Controller {
     return this.tcc1Service.unenroll(+id);
   }
 
-  @Put("finalizar-semestre/:id")
-  finishSemester(@Param("id") id: number) {
+  @Put("finalizar-semestre/:idSemester")
+  finishSemester(@Param("idSemester") id: number) {
     return this.tcc1Service.finishSemester(+id);
+  }
+
+  @Put("importar-matriculas/:idSemester")
+  importEnrollments(@Param("idSemester") id: number) {
+    return this.tcc1Service.importEnrollmentsFromSemester(+id);
   }
 }

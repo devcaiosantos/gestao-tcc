@@ -186,34 +186,6 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
             ))}
           </AccordionPanel>
         </AccordionItem>
-        <AccordionItem>
-          <h2>
-            <AccordionButton>
-              <Flex fontWeight={"semibold"}
-                alignItems={"center"} textAlign={"left"} w={"100%"} gap={2}>
-                <TbHexagonNumber1 />
-                TCC 1
-              </Flex>
-              <AccordionIcon />
-            </AccordionButton>
-          </h2>
-          <AccordionPanel pl={4} pb={0}>
-          </AccordionPanel>
-        </AccordionItem>
-        <AccordionItem>
-          <h2>
-            <AccordionButton>
-              <Flex fontWeight={"semibold"}
-                alignItems={"center"} textAlign={"left"} w={"100%"} gap={2}>
-                <TbHexagonNumber2 />
-                TCC 2
-              </Flex>
-              <AccordionIcon />
-            </AccordionButton>
-          </h2>
-          <AccordionPanel pl={4} pb={0}>
-          </AccordionPanel>
-        </AccordionItem>
       </Accordion>
 
       <NavItem icon={TbHexagonNumber1} path={"/dashboard/tcc1"}>TCC 1</NavItem>
@@ -233,6 +205,7 @@ const NavItem = ({ icon, path, children, ...rest }: NavItemProps) => {
         align="center"
         p="2"
         mx="1"
+        fontWeight={"semibold"}
         borderRadius="lg"
         role="group"
         cursor="pointer"

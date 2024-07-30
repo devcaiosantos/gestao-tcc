@@ -24,7 +24,8 @@ import {
     SearchInput,
     FilterStatusContainer,
     StatusFilterSelect,
-    Toolbar,
+    Toolbar1,
+    Toolbar2,
     Container, 
     ActionButtonsContainer
 } from "./style";
@@ -39,6 +40,7 @@ import ModalCreateEnrollment from "@/components/ModalEnrollment/NewEnrollment";
 import ModalCreateBatchEnrollments from "@/components/ModalEnrollment/NewBatchEnrollments";
 import ModalUnenroll from "@/components/ModalEnrollment/Unenroll";
 import ModalEndSemester from "@/components/ModalEndSemester";
+import ModalImportEnrollments from "@/components/ModalImportEnrollments";
 import { FaUserGraduate, FaEdit, FaExclamationCircle, FaMailBulk } from "react-icons/fa";
 import useAuthContext from "@/hooks/useAuthContext";
 import useDebounce from "@/hooks/useDebounce";
@@ -125,21 +127,23 @@ export default function Enrollments() {
                 />
             </TitlePage>
             <Divider mb={"10px"}/>
-            <Toolbar>
+            <Toolbar1>
                 <AddEnrollmentButtonContainer>
                     <ModalCreateEnrollment fetchEnrollments={fetchEnrollments}/>
                     <ModalCreateBatchEnrollments fetchEnrollments={fetchEnrollments}/>
                 </AddEnrollmentButtonContainer>
-                <Button
-                    colorScheme="cyan"
-                    variant="outline"
-                    leftIcon={<FaMailBulk/>}
-                >
-                    Enviar E-mails
-                </Button>
-                
-            </Toolbar>
-            <Toolbar>
+                <AddEnrollmentButtonContainer>
+                    <ModalImportEnrollments fetchEnrollments={fetchEnrollments}/>
+                    <Button
+                        colorScheme="cyan"
+                        variant="outline"
+                        leftIcon={<FaMailBulk/>}
+                    >
+                        Enviar E-mails
+                    </Button>
+                </AddEnrollmentButtonContainer>
+            </Toolbar1>
+            <Toolbar2>
                 <InputGroup>
                     <InputLeftElement pointerEvents='none'>
                         <FaSearch/>
@@ -166,7 +170,7 @@ export default function Enrollments() {
                         ))}
                     </StatusFilterSelect>
                 </FilterStatusContainer>
-            </Toolbar> 
+            </Toolbar2> 
             <EnrollmentsTable 
                 enrollments={enrollments}
                 fetchEnrollments={fetchEnrollments}
