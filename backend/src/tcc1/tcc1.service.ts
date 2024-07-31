@@ -3,7 +3,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { JwtService } from "@nestjs/jwt";
 import { EnrollStudent, IfindEnrollmentsProps } from "./interfaces";
 import * as yup from "yup";
-
+import sendEmail from "src/utils/mailTransporter";
 const statusOptions = [
   "todos",
   "matriculado",
@@ -629,6 +629,11 @@ export class TCC1Service {
   }
 
   async adminDefineAdvisor({ enrollmentId, advisorId, coAdvisorId, admin }) {
+    const adminName = admin?.nome;
+    const adminEmail = admin?.email;
+    const systemEmail = admin?.email_sistema;
+    const systemEmailKey = admin?.senha_email_sistema;
+
     const schema = yup.object().shape({
       enrollmentId: yup.number().required(),
       advisorId: yup.number().required(),
@@ -642,8 +647,8 @@ export class TCC1Service {
         enrollmentId,
         advisorId,
         coAdvisorId,
-        systemEmail: admin.email_sistema,
-        systemEmailKey: admin.senha_email_sistema,
+        systemEmail: systemEmail,
+        systemEmailKey: systemEmailKey,
       });
     } catch (error) {
       throw {
@@ -662,6 +667,13 @@ export class TCC1Service {
       throw {
         statusCode: 404,
         message: "Matrícula não encontrada",
+      };
+    }
+
+    if (enrollment.status !== "matriculado") {
+      throw {
+        statusCode: 400,
+        message: "O status do aluno não permite a definição de orientador",
       };
     }
 
@@ -724,6 +736,9 @@ export class TCC1Service {
           idCoorientador: coAdvisorId,
           status: "orientador_definido",
         },
+        include: {
+          Aluno: true,
+        },
       });
 
       if (!updatedEnrollment) {
@@ -750,6 +765,24 @@ export class TCC1Service {
         throw {
           statusCode: 500,
           message: "Erro ao criar histórico",
+        };
+      }
+
+      const response = await sendEmail({
+        user: systemEmail,
+        pass: systemEmailKey,
+        from: `${adminName} <${adminEmail}>`,
+        to: advisor.email,
+        subject: "Orientador TCC1 definido",
+        text:
+          `Olá, ${advisor.nome}!\n\n` +
+          `Você foi definido como orientador do aluno ${updatedEnrollment.Aluno.nome} (RA: ${updatedEnrollment.Aluno.ra})\n\n` +
+          `Para mais informações, entre em contato com o PRATCC (${admin.nome} - ${admin.email}) \n\n`,
+      });
+      if (response.status === "error") {
+        throw {
+          statusCode: 500,
+          message: "Erro ao enviar email para orientador",
         };
       }
     });

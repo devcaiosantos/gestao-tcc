@@ -41,6 +41,7 @@ import ModalCreateBatchEnrollments from "@/components/ModalEnrollment/NewBatchEn
 import ModalUnenroll from "@/components/ModalEnrollment/Unenroll";
 import ModalEndSemester from "@/components/ModalEndSemester";
 import ModalImportEnrollments from "@/components/ModalImportEnrollments";
+import ModalDefineAdvisorAdmin from "@/components/ModalDefineAdvisorAdmin";
 import { FaUserGraduate, FaEdit, FaExclamationCircle, FaMailBulk } from "react-icons/fa";
 import useAuthContext from "@/hooks/useAuthContext";
 import useDebounce from "@/hooks/useDebounce";
@@ -250,6 +251,13 @@ const EnrollmentsTable = ({
                                         >
                                             <FaEdit/>
                                         </Button>
+                                        {
+                                            enrollment.status === "matriculado" &&
+                                            <ModalDefineAdvisorAdmin
+                                                enrollmentId={enrollment.id}
+                                                fetchEnrollments={fetchEnrollments}
+                                            />
+                                        }
                                         <ModalUnenroll
                                             enrollment={enrollment}
                                             fetchEnrollments={fetchEnrollments}
