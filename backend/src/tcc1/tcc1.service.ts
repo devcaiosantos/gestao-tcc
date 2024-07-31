@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
+import { JwtService } from "@nestjs/jwt";
 import { EnrollStudent, IfindEnrollmentsProps } from "./interfaces";
 import * as yup from "yup";
 
@@ -15,7 +16,10 @@ const statusOptions = [
 ];
 @Injectable()
 export class TCC1Service {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: JwtService,
+  ) {}
 
   async findEnrollmentsByIdSemester({
     idSemester,
@@ -618,6 +622,135 @@ export class TCC1Service {
             message: "Erro ao criar histórico",
           };
         }
+      }
+    });
+
+    return transaction;
+  }
+
+  async adminDefineAdvisor({ enrollmentId, advisorId, coAdvisorId, admin }) {
+    const schema = yup.object().shape({
+      enrollmentId: yup.number().required(),
+      advisorId: yup.number().required(),
+      coAdvisorId: yup.number().notRequired(),
+      systemEmail: yup.string().email().required(),
+      systemEmailKey: yup.string().required(),
+    });
+
+    try {
+      await schema.validate({
+        enrollmentId,
+        advisorId,
+        coAdvisorId,
+        systemEmail: admin.email_sistema,
+        systemEmailKey: admin.senha_email_sistema,
+      });
+    } catch (error) {
+      throw {
+        statusCode: 400,
+        message: error.message,
+      };
+    }
+
+    const enrollment = await this.prisma.alunoMatriculado.findFirst({
+      where: {
+        id: enrollmentId,
+      },
+    });
+
+    if (!enrollment) {
+      throw {
+        statusCode: 404,
+        message: "Matrícula não encontrada",
+      };
+    }
+
+    const advisor = await this.prisma.professor.findFirst({
+      where: {
+        id: advisorId,
+        ativo: true,
+      },
+    });
+
+    if (!advisor) {
+      throw {
+        statusCode: 404,
+        message: "Orientador não encontrado",
+      };
+    }
+
+    const coAdvisor = coAdvisorId
+      ? await this.prisma.professor.findFirst({
+          where: {
+            id: coAdvisorId,
+          },
+        })
+      : null;
+
+    if (coAdvisorId && !coAdvisor) {
+      throw {
+        statusCode: 404,
+        message: "Coorientador não encontrado",
+      };
+    }
+
+    const activeSemester = await this.prisma.semestre.findFirst({
+      where: {
+        ativo: true,
+      },
+    });
+
+    if (!activeSemester) {
+      throw {
+        statusCode: 400,
+        message: "Não existe um semestre ativo",
+      };
+    }
+
+    if (enrollment.idSemestre !== activeSemester.id) {
+      throw {
+        statusCode: 400,
+        message: "A matrícula não pertence ao semestre ativo",
+      };
+    }
+
+    const transaction = await this.prisma.$transaction(async (prisma) => {
+      const updatedEnrollment = await prisma.alunoMatriculado.update({
+        where: {
+          id: enrollmentId,
+        },
+        data: {
+          idOrientador: advisorId,
+          idCoorientador: coAdvisorId,
+          status: "orientador_definido",
+        },
+      });
+
+      if (!updatedEnrollment) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao definir orientador",
+        };
+      }
+
+      const createHistory = await prisma.historicoAluno.create({
+        data: {
+          raAluno: updatedEnrollment.raAluno,
+          idSemestre: activeSemester.id,
+          etapa: "TCC1",
+          status: "orientador_definido",
+          observacao:
+            `Definição Orientador por administrador\n` +
+            `Orientador: ${advisor.nome}\n` +
+            `Coorientador: ${coAdvisor ? coAdvisor.nome : "Não definido"}`,
+        },
+      });
+
+      if (!createHistory) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao criar histórico",
+        };
       }
     });
 
