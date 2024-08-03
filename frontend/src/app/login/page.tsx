@@ -64,8 +64,8 @@ export default function Login() {
             id: response.data.id,
             name: response.data.nome,
             email: response.data.email,
-            email_system: response.data.email_sistema,
-            password_email_system: response.data.senha_email_sistema
+            systemEmail: response.data.emailSistema,
+            systemEmailKey: response.data.chaveEmailSistema
           });
           setCookie({
             name: "tcc-token",

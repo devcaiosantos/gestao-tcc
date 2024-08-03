@@ -57,8 +57,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                         id: response.data.id,
                         name: response.data.nome,
                         email: response.data.email,
-                        email_system: response.data.email_sistema,
-                        password_email_system: response.data.senha_email_sistema
+                        systemEmail: response.data.emailSistema,
+                        systemEmailKey: response.data.chaveEmailSistema
                     });
                 }
             }
@@ -87,8 +87,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             id: admin.id,
             name: admin.name,
             email: admin.email,
-            email_system: admin.email_system,
-            password_email_system: admin.password_email_system
+            systemEmail: admin.systemEmail,
+            systemEmailKey: admin.systemEmailKey
         });
     }
 

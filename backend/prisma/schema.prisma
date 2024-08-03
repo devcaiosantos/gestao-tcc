@@ -18,8 +18,8 @@ model Administrador {
   nome                String
   email               String   @unique
   senha               String
-  email_sistema       String?
-  senha_email_sistema String?
+  emailSistema        String?
+  chaveEmailSistema   String?
   dataCriacao         DateTime @default(now())
   dataAtualizacao     DateTime @updatedAt
 

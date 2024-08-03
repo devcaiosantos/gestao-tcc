@@ -1,8 +1,8 @@
 interface IJwt{
     exp: number;
     iat: number;
-    email_sistema: string;
-    senha_email_sistema: string;
+    emailSistema: string;
+    chaveEmailSistema: string;
     nome: string;
     email: string;
     id: number;

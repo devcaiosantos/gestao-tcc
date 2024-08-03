@@ -631,8 +631,8 @@ export class TCC1Service {
   async adminDefineAdvisor({ enrollmentId, advisorId, coAdvisorId, admin }) {
     const adminName = admin?.nome;
     const adminEmail = admin?.email;
-    const systemEmail = admin?.email_sistema;
-    const systemEmailKey = admin?.senha_email_sistema;
+    const systemEmail = admin?.emailSistema;
+    const systemEmailKey = admin?.chaveEmailSistema;
 
     const schema = yup.object().shape({
       enrollmentId: yup.number().required(),

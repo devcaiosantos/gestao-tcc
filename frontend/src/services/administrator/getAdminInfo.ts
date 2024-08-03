@@ -5,8 +5,8 @@ interface SuccessResponse {
     id: number;
     nome: string;
     email: string;
-    email_sistema: string;
-    senha_email_sistema: string;
+    emailSistema: string;
+    chaveEmailSistema: string;
 }
 
 interface IGetAdminResponse {
