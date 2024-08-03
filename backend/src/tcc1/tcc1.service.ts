@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { JwtService } from "@nestjs/jwt";
 import { EnrollStudent, IfindEnrollmentsProps } from "./interfaces";
 import * as yup from "yup";
 import sendEmail from "src/utils/mailTransporter";
@@ -16,10 +15,7 @@ const statusOptions = [
 ];
 @Injectable()
 export class TCC1Service {
-  constructor(
-    private prisma: PrismaService,
-    private jwtService: JwtService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   async findEnrollmentsByIdSemester({
     idSemester,

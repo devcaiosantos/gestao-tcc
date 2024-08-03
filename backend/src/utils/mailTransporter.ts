@@ -18,12 +18,12 @@ const sendEmail = async ({ user, pass, from, to, subject, text }) => {
     });
     return {
       status: "success",
-      message: "Email sent successfully",
+      message: "E-mail enviado com sucesso para " + to,
     };
   } catch (error) {
     return {
       status: "error",
-      message: error,
+      message: `Falha ao enviar e-mail para ${to} \n${error}`,
     };
   }
 };
