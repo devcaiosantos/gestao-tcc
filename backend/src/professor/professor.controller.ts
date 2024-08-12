@@ -10,6 +10,7 @@ import {
 } from "@nestjs/common";
 import { ProfessorService } from "./professor.service";
 import { createProfessorProps } from "./interfaces";
+import { Public } from "src/auth/constants";
 @Controller("professor")
 export class ProfessorController {
   constructor(private readonly professorService: ProfessorService) {}
@@ -19,6 +20,7 @@ export class ProfessorController {
     return this.professorService.create(createProfessor);
   }
 
+  @Public()
   @Get()
   findAll() {
     return this.professorService.findAll();

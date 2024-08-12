@@ -82,6 +82,7 @@ export class AppService {
           {
             id: enrollment.id,
             adminId: admin.id,
+            step: "tcc1",
             type: "definir-orientador",
           },
           {
@@ -91,7 +92,7 @@ export class AppService {
         );
         formattedText = formattedText.replace(
           "<linkDefinirOrientador>",
-          `${process.env.FRONTEND_URL}/definir-orientador?token=${enrollmentToken}`,
+          `${process.env.FRONTEND_URL}/define-advisor?token=${enrollmentToken}`,
         );
       }
 

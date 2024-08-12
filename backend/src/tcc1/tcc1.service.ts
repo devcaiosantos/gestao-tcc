@@ -808,7 +808,6 @@ export class TCC1Service {
         message: error.message,
       };
     }
-
     const payload = await this.jwtService
       .verifyAsync(studentToken, {
         secret: process.env.STUDENT_JWT_SECRET,
@@ -817,7 +816,7 @@ export class TCC1Service {
       .catch((err) => {
         throw {
           statusCode: 401,
-          message: "[1] Token inválido" + err,
+          message: "[1] Token inválido " + err,
         };
       });
 
