@@ -81,8 +81,8 @@ export class AppService {
         const enrollmentToken = await this.jwtService.signAsync(
           {
             id: enrollment.id,
-            ra: enrollment.Aluno.ra,
-            tipo: "definir-orientador",
+            adminId: admin.id,
+            type: "definir-orientador",
           },
           {
             secret: process.env.STUDENT_JWT_SECRET,

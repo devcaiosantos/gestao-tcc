@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
+import { JwtService } from "@nestjs/jwt";
 import { EnrollStudent, IfindEnrollmentsProps } from "./interfaces";
 import * as yup from "yup";
 import sendEmail from "src/utils/mailTransporter";
@@ -15,7 +16,10 @@ const statusOptions = [
 ];
 @Injectable()
 export class TCC1Service {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: JwtService,
+  ) {}
 
   async findEnrollmentsByIdSemester({
     idSemester,
@@ -768,6 +772,174 @@ export class TCC1Service {
         user: systemEmail,
         pass: systemEmailKey,
         from: `${adminName} <${adminEmail}>`,
+        to: advisor.email,
+        subject: "Orientador TCC1 definido",
+        text:
+          `Olá, ${advisor.nome}!\n\n` +
+          `Você foi definido como orientador do aluno ${updatedEnrollment.Aluno.nome} (RA: ${updatedEnrollment.Aluno.ra})\n\n` +
+          `Para mais informações, entre em contato com o PRATCC (${admin.nome} - ${admin.email}) \n\n`,
+      });
+      if (response.status === "error") {
+        throw {
+          statusCode: 500,
+          message: "Erro ao enviar email para orientador",
+        };
+      }
+    });
+
+    return transaction;
+  }
+
+  async studentDefineAdvisor({ advisorId, coAdvisorId, studentToken }) {
+    const schema = yup.object().shape({
+      advisorId: yup.number().required(),
+      coAdvisorId: yup.number(),
+      studentToken: yup.string().required(),
+    });
+    try {
+      await schema.validate({
+        advisorId,
+        coAdvisorId,
+        studentToken: studentToken,
+      });
+    } catch (error) {
+      throw {
+        statusCode: 400,
+        message: error.message,
+      };
+    }
+
+    const payload = await this.jwtService
+      .verifyAsync(studentToken, {
+        secret: process.env.STUDENT_JWT_SECRET,
+      })
+      .then((payload) => payload)
+      .catch((err) => {
+        throw {
+          statusCode: 401,
+          message: "[1] Token inválido" + err,
+        };
+      });
+
+    const enrollmentId = payload.id;
+    const adminId = payload.adminId;
+    const type = payload.type;
+
+    if (type != "definir-orientador") {
+      throw {
+        statusCode: 401,
+        message: "[2] Token Inválido",
+      };
+    }
+
+    const enrollment = await this.prisma.alunoMatriculado.findFirst({
+      where: {
+        id: enrollmentId,
+      },
+      include: {
+        Semestre: true,
+      },
+    });
+
+    if (
+      !enrollment ||
+      enrollment.status !== "matriculado" ||
+      !enrollment.Semestre.ativo
+    ) {
+      throw {
+        statusCode: 400,
+        message: "Matrícula inválida",
+      };
+    }
+
+    const admin = await this.prisma.administrador.findFirst({
+      where: {
+        id: adminId,
+      },
+    });
+
+    if (!admin) {
+      throw {
+        statusCode: 404,
+        message: "Administrador não encontrado",
+      };
+    }
+
+    const advisor = await this.prisma.professor.findFirst({
+      where: {
+        id: advisorId,
+        ativo: true,
+      },
+    });
+
+    if (!advisor) {
+      throw {
+        statusCode: 404,
+        message: "Orientador inválido",
+      };
+    }
+
+    const coAdvisor = coAdvisorId
+      ? await this.prisma.professor.findFirst({
+          where: {
+            id: coAdvisorId,
+          },
+        })
+      : null;
+
+    if (coAdvisorId && !coAdvisor) {
+      throw {
+        statusCode: 404,
+        message: "Coorientador inválido",
+      };
+    }
+
+    const transaction = await this.prisma.$transaction(async (prisma) => {
+      const updatedEnrollment = await prisma.alunoMatriculado.update({
+        where: {
+          id: enrollmentId,
+        },
+        data: {
+          idOrientador: advisorId,
+          idCoorientador: coAdvisorId,
+          status: "orientador_definido",
+        },
+        include: {
+          Aluno: true,
+        },
+      });
+
+      if (!updatedEnrollment) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao definir orientador",
+        };
+      }
+
+      const createHistory = await prisma.historicoAluno.create({
+        data: {
+          raAluno: updatedEnrollment.raAluno,
+          idSemestre: enrollment.Semestre.id,
+          etapa: "TCC1",
+          status: "orientador_definido",
+          observacao:
+            `Definição Orientador por aluno\n` +
+            `Orientador: ${advisor.nome}\n` +
+            `Coorientador: ${coAdvisor ? coAdvisor.nome : "Não definido"}`,
+        },
+      });
+
+      if (!createHistory) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao criar histórico",
+        };
+      }
+
+      const response = await sendEmail({
+        user: admin.emailSistema,
+        pass: admin.chaveEmailSistema,
+        from: `${admin.nome} <${admin.emailSistema}>`,
         to: advisor.email,
         subject: "Orientador TCC1 definido",
         text:

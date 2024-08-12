@@ -42,6 +42,7 @@ import ModalUnenroll from "@/components/ModalEnrollment/Unenroll";
 import ModalEndSemester from "@/components/ModalEndSemester";
 import ModalImportEnrollments from "@/components/ModalImportEnrollments";
 import ModalDefineAdvisorAdmin from "@/components/ModalDefineAdvisorAdmin";
+import ModalSendEmails from "@/components/ModalSendEmails";
 import { FaUserGraduate, FaEdit, FaExclamationCircle, FaMailBulk } from "react-icons/fa";
 import useAuthContext from "@/hooks/useAuthContext";
 import useDebounce from "@/hooks/useDebounce";
@@ -51,7 +52,7 @@ interface IStatusOptions {
     colorScheme: string;
 }
 
-const statusOptions: IStatusOptions[] = [
+export const statusOptions: IStatusOptions[] = [
     { value: "todos", label: "Todos", colorScheme: "#81e6d9" },
     { value: "matriculado", label: "Matriculado", colorScheme: "#d6bcfa" },
     { value: "orientador_definido", label: "Orientador Definido", colorScheme: "#fbb6ce" },
@@ -84,7 +85,7 @@ export default function Enrollments() {
     async function fetchEnrollments() {
         if(!activeSemester) return;
         const response = await getAllEnrollments({
-            idSemester: activeSemester.id,
+            semesterId: activeSemester.id,
             status: selectedStatusFilter,
             term: searchTerm
         }); 
@@ -135,13 +136,7 @@ export default function Enrollments() {
                 </AddEnrollmentButtonContainer>
                 <AddEnrollmentButtonContainer>
                     <ModalImportEnrollments fetchEnrollments={fetchEnrollments}/>
-                    <Button
-                        colorScheme="cyan"
-                        variant="outline"
-                        leftIcon={<FaMailBulk/>}
-                    >
-                        Enviar E-mails
-                    </Button>
+                    <ModalSendEmails />
                 </AddEnrollmentButtonContainer>
             </Toolbar1>
             <Toolbar2>

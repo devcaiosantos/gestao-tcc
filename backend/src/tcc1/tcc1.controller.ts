@@ -70,5 +70,11 @@ export class TCC1Controller {
 
   @Public()
   @Post("definir-orientador/aluno")
-  defineAdvisorByProfessor(@Body() {}) {}
+  defineAdvisorByStudent(@Body() { idOrientador, idCoorientador, token }) {
+    return this.tcc1Service.studentDefineAdvisor({
+      advisorId: idOrientador,
+      coAdvisorId: idCoorientador,
+      studentToken: token,
+    });
+  }
 }
