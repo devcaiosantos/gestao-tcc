@@ -83,7 +83,7 @@ export class AppService {
             id: enrollment.id,
             adminId: admin.id,
             step: "tcc1",
-            type: "definir-orientador",
+            status: "definir-orientador",
           },
           {
             secret: process.env.STUDENT_JWT_SECRET,
@@ -92,7 +92,7 @@ export class AppService {
         );
         formattedText = formattedText.replace(
           "<linkDefinirOrientador>",
-          `${process.env.FRONTEND_URL}/define-advisor?token=${enrollmentToken}`,
+          `<${process.env.FRONTEND_URL}/define-advisor?token=${enrollmentToken}>`,
         );
       }
 
@@ -117,7 +117,7 @@ export class AppService {
 
         formattedText = formattedText.replace(
           "<linkDefinirBanca>",
-          `${process.env.FRONTEND_URL}/definir-banca?token=${enrollmentToken}`,
+          `<${process.env.FRONTEND_URL}/definir-banca?token=${enrollmentToken}>`,
         );
       }
 
@@ -143,5 +143,81 @@ export class AppService {
     );
 
     return emailResponses;
+  }
+
+  async validateStudentToken({
+    status,
+    studentToken,
+  }: {
+    status: string;
+    studentToken: string;
+  }) {
+    const schema = object().shape({
+      status: string().required(),
+      studentToken: string().required(),
+    });
+
+    try {
+      await schema.validate({
+        status,
+        studentToken,
+      });
+    } catch (err) {
+      throw {
+        message: err.message,
+        statusCode: 400,
+      };
+    }
+
+    const payload = await this.jwtService
+      .verifyAsync(studentToken, {
+        secret: process.env.STUDENT_JWT_SECRET,
+      })
+      .then((payload) => payload)
+      .catch((err) => {
+        throw {
+          statusCode: 401,
+          message: "[1] Token inválido " + err,
+        };
+      });
+
+    const enrollmentId = payload.id;
+    const adminId = payload.adminId;
+
+    if (payload.status != status) {
+      throw {
+        statusCode: 401,
+        message: "[2] Token Inválido",
+      };
+    }
+
+    const enrollment = await this.prisma.alunoMatriculado.findFirst({
+      where: {
+        id: enrollmentId,
+      },
+      include: {
+        Semestre: true,
+      },
+    });
+
+    if (!enrollment || !enrollment.Semestre.ativo) {
+      throw {
+        statusCode: 400,
+        message: "Matrícula inválida",
+      };
+    }
+
+    const admin = await this.prisma.administrador.findFirst({
+      where: {
+        id: adminId,
+      },
+    });
+
+    if (!admin) {
+      throw {
+        statusCode: 404,
+        message: "Administrador não encontrado",
+      };
+    }
   }
 }

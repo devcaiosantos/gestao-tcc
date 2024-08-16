@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Request } from "@nestjs/common";
 import { AppService } from "./app.service";
-
+import { Public } from "./auth/constants";
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
@@ -18,6 +18,17 @@ export class AppController {
       recipients: destinatarios,
       subject: assunto,
       text: texto,
+    });
+  }
+
+  @Public()
+  @Post("validar-token-aluno")
+  validateStudentToken(
+    @Body() { status, studentToken }: { status: string; studentToken: string },
+  ) {
+    return this.appService.validateStudentToken({
+      status,
+      studentToken,
     });
   }
 }

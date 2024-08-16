@@ -129,8 +129,6 @@ export default function DefineAdvisor() {
         return <Container>{tokenError}</Container>;
     }
 
-
-
     return (
       <Container>
         <InputsContainer>

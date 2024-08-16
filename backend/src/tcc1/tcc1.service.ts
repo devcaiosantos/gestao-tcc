@@ -122,14 +122,13 @@ export class TCC1Service {
       where: {
         raAluno: student.ra,
         idSemestre: activeSemester.id,
-        etapa: "TCC1",
       },
     });
 
     if (alreadyEnrolled) {
       throw {
         statusCode: 400,
-        message: `Já existe um aluno com este RA matriculado em TCC1 no semestre ${activeSemester.ano}/${activeSemester.numero}`,
+        message: `Já existe um aluno com este RA matriculado em ${alreadyEnrolled.etapa} no semestre ${activeSemester.ano}/${activeSemester.numero}`,
       };
     }
 
@@ -262,14 +261,13 @@ export class TCC1Service {
             where: {
               raAluno: student.ra,
               idSemestre: activeSemester.id,
-              etapa: "TCC1",
             },
           });
 
           if (alreadyEnrolled) {
             throw {
               statusCode: 422,
-              message: `O aluno ${student.nome} (RA: ${student.ra}) já foi matriculado em TCC1 no semestre ${activeSemester.ano}/${activeSemester.numero}`,
+              message: `O aluno ${student.nome} (RA: ${student.ra}) já foi matriculado em ${alreadyEnrolled.etapa} no semestre ${activeSemester.ano}/${activeSemester.numero}`,
             };
           }
 
@@ -822,9 +820,9 @@ export class TCC1Service {
 
     const enrollmentId = payload.id;
     const adminId = payload.adminId;
-    const type = payload.type;
+    const status = payload.status;
 
-    if (type != "definir-orientador") {
+    if (status != "definir-orientador") {
       throw {
         statusCode: 401,
         message: "[2] Token Inválido",
