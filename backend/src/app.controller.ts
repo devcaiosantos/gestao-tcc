@@ -24,11 +24,11 @@ export class AppController {
   @Public()
   @Post("validar-token-aluno")
   validateStudentToken(
-    @Body() { status, studentToken }: { status: string; studentToken: string },
+    @Body() { status, token }: { status: string; token: string },
   ) {
     return this.appService.validateStudentToken({
       status,
-      studentToken,
+      studentToken: token,
     });
   }
 }

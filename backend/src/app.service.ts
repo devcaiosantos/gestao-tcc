@@ -177,7 +177,7 @@ export class AppService {
       .catch((err) => {
         throw {
           statusCode: 401,
-          message: "[1] Token inválido " + err,
+          message: "Token inválido " + err,
         };
       });
 
@@ -187,7 +187,7 @@ export class AppService {
     if (payload.status != status) {
       throw {
         statusCode: 401,
-        message: "[2] Token Inválido",
+        message: "Status da requisição é diferente do status do token",
       };
     }
 
@@ -203,8 +203,27 @@ export class AppService {
     if (!enrollment || !enrollment.Semestre.ativo) {
       throw {
         statusCode: 400,
-        message: "Matrícula inválida",
+        message: "Matrícula não encontrada ou semestre não ativo",
       };
+    }
+
+    switch (payload.status) {
+      case "definir-orientador":
+        if (enrollment.status != "matriculado") {
+          throw {
+            statusCode: 400,
+            message: "Matrícula não está no status 'matriculado'",
+          };
+        }
+        break;
+      case "definir-banca":
+        if (enrollment.status != "orientador_definido") {
+          throw {
+            statusCode: 400,
+            message: "Matrícula não está no status 'orientador_definido'",
+          };
+        }
+        break;
     }
 
     const admin = await this.prisma.administrador.findFirst({

@@ -8,7 +8,7 @@ import parseJwtStudent from '@/utils/parseJwtStudent';
 import { Container, InputsContainer, Note } from './style';
 import { FormLabel, Box, Select, Button, useToast } from '@chakra-ui/react';
 import { object, number, ValidationError } from 'yup';
-
+import validateStudentToken from '@/services/validateStudentToken';
 interface IFormData {
     advisorId: number;
     coadvisorId?: number;
@@ -51,6 +51,19 @@ export default function DefineAdvisor() {
             return;
         }
 
+        async function validateToken() {
+            const response = await validateStudentToken({
+                status: "definir-orientador",
+                token: token || "",
+            });
+
+            if (response.status === "error") {
+                setTokenError("[3] Link inválido");
+            }
+        }
+
+        validateToken();
+
         async function fetchData() {
             try {
                 const response = await RetrieveTeachers();
@@ -64,6 +77,10 @@ export default function DefineAdvisor() {
 
         fetchData();
     }, [searchParams]);
+
+    function handleValidation() {
+      
+    }
 
     function handleChange({key, value}: {key: string, value: number}) {
         setFormData({
