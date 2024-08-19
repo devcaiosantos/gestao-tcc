@@ -43,7 +43,9 @@ import ModalEndSemester from "@/components/ModalEndSemester";
 import ModalImportEnrollments from "@/components/ModalImportEnrollments";
 import ModalDefineAdvisorAdmin from "@/components/ModalDefineAdvisorAdmin";
 import ModalSendEmails from "@/components/ModalSendEmails";
-import { FaUserGraduate, FaEdit, FaExclamationCircle, FaMailBulk } from "react-icons/fa";
+import ModalRemoveAdvisor from "@/components/ModalRemoveAdvisor";
+
+import { FaUserGraduate } from "react-icons/fa";
 import useAuthContext from "@/hooks/useAuthContext";
 import useDebounce from "@/hooks/useDebounce";
 interface IStatusOptions {
@@ -240,12 +242,14 @@ const EnrollmentsTable = ({
                                 </Td>
                                 <Td>
                                     <ActionButtonsContainer>
-                                        <Button
-                                            variant={"outline"}
-                                            colorScheme="blue"
-                                        >
-                                            <FaEdit/>
-                                        </Button>
+                                        {
+                                            enrollment.status === "orientador_definido" &&
+                                            <ModalRemoveAdvisor 
+                                                data={enrollment}
+                                                fetchEnrollments={fetchEnrollments}   
+                                            />
+                                        }
+                                        
                                         {
                                             enrollment.status === "matriculado" &&
                                             <ModalDefineAdvisorAdmin

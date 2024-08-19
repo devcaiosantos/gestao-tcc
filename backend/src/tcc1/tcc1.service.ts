@@ -954,4 +954,97 @@ export class TCC1Service {
 
     return transaction;
   }
+
+  async removeAdvisor({
+    enrollmentId,
+    adminName,
+  }: {
+    enrollmentId: number;
+    adminName: string;
+  }) {
+    if (!enrollmentId) {
+      throw {
+        statusCode: 400,
+        message: "ID da matrícula não foi informado",
+      };
+    }
+
+    const enrollment = await this.prisma.alunoMatriculado.findFirst({
+      where: {
+        id: enrollmentId,
+      },
+      include: {
+        Semestre: true,
+        Aluno: true,
+        Orientador: true,
+        Coorientador: true,
+      },
+    });
+
+    if (!enrollment) {
+      throw {
+        statusCode: 404,
+        message: "Matrícula não encontrada",
+      };
+    }
+
+    if (enrollment.status !== "orientador_definido") {
+      throw {
+        statusCode: 400,
+        message: "O status do aluno não permite a remoção de orientador",
+      };
+    }
+
+    const semester = await this.prisma.semestre.findFirst({
+      where: {
+        id: enrollment.idSemestre,
+      },
+    });
+
+    if (!semester || !semester.ativo) {
+      throw {
+        statusCode: 500,
+        message: "Semestre não encontrado ou não ativo",
+      };
+    }
+
+    const transaction = await this.prisma.$transaction(async (prisma) => {
+      const updatedEnrollment = await prisma.alunoMatriculado.update({
+        where: {
+          id: enrollmentId,
+        },
+        data: {
+          idOrientador: null,
+          idCoorientador: null,
+          status: "matriculado",
+        },
+      });
+
+      if (!updatedEnrollment) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao remover orientador",
+        };
+      }
+
+      const createHistory = await prisma.historicoAluno.create({
+        data: {
+          raAluno: updatedEnrollment.raAluno,
+          idSemestre: semester.id,
+          etapa: "TCC1",
+          status: "matriculado",
+          observacao: `Orientador/Coorientador removidos por administrador ${adminName}`,
+        },
+      });
+
+      if (!createHistory) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao criar histórico",
+        };
+      }
+    });
+
+    return transaction;
+  }
 }

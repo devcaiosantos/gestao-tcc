@@ -77,4 +77,13 @@ export class TCC1Controller {
       studentToken: token,
     });
   }
+
+  @Put("remover-orientador/:idMatricula")
+  removeAdvisor(@Param("idMatricula") idMatricula: number, @Req() req) {
+    const admin = req.admin;
+    return this.tcc1Service.removeAdvisor({
+      enrollmentId: +idMatricula,
+      adminName: admin.nome,
+    });
+  }
 }

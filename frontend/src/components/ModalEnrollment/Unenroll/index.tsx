@@ -9,6 +9,7 @@ import {
     ModalBody,
     ModalCloseButton,
     useDisclosure, 
+    Tooltip
   } from "@chakra-ui/react"
 import { Container } from "./style"
 import { FaTrash } from "react-icons/fa"
@@ -56,13 +57,15 @@ export default function ModalUnenroll({enrollment, fetchEnrollments}: ModalEnrol
 
     return (
       <>
-        <Button
-            onClick={onOpen}
-            variant={"outline"}
-            colorScheme="red"
-        >
-            <FaTrash/>
-        </Button>
+        <Tooltip label="Desmatricular Aluno" aria-label="A tooltip">
+          <Button
+              onClick={onOpen}
+              variant={"outline"}
+              colorScheme="red"
+          >
+              <FaTrash/>
+          </Button>
+        </Tooltip>
         <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />
           <ModalContent>
