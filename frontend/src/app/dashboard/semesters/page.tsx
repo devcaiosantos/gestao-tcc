@@ -163,7 +163,6 @@ const SemestersTable = ({
                                 <Td>
                                     <ActionButtonsContainer>
                                         <Button
-                                            variant={"outline"}
                                             colorScheme="blue"
                                             onClick={handleEditClick}
                                         >

@@ -162,9 +162,12 @@ export default function Enrollments() {
                         color={
                             statusOptions.find((status) => status.value === selectedStatusFilter)?.colorScheme
                         }
+                        
                     >
                         {statusOptions.map((status) => (
-                            <option key={status.value} value={status.value}>{status.label}</option>
+                            <option key={status.value} value={status.value}
+                                style={{backgroundColor: "black"}}
+                            >{status.label}</option>
                         ))}
                     </StatusFilterSelect>
                 </FilterStatusContainer>

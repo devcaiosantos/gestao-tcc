@@ -91,7 +91,14 @@ export default function DefineAdvisor() {
 
     async function handleSubmit() {
       const schema = object().shape({
-        advisorId: number().required(),
+        advisorId: number()
+        .test(
+          "adviser-coadviser",
+          "O orientador e coorientador devem ser diferentes",
+          () => formData.advisorId !== formData.coadvisorId
+
+        ).
+        required(),
         coadvisorId: number(),
       });
 

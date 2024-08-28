@@ -160,7 +160,6 @@ export default function ModalSendEmails() {
         <>
           <Button
             colorScheme="cyan"
-            variant="outline"
             leftIcon={<FaMailBulk/>}
             onClick={onOpen}
             >
@@ -266,7 +265,6 @@ export default function ModalSendEmails() {
                 <Button 
                     onClick={handleSendEmail}
                     colorScheme='green' 
-                    variant='outline'
                     isDisabled={isLoading}
                 >
                     {

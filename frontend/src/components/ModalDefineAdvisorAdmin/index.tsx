@@ -77,7 +77,16 @@ export default function ModalDefineAdvisorAdmin({enrollmentId, fetchEnrollments}
     async function handleSubmit(){
         const scheme = object().shape({
             advisorId: number()
-            .oneOf(teachers.map((teacher) => teacher.id)).required("O campo de orientador é obrigatório")
+            .oneOf(teachers.map((teacher) => teacher.id))
+            .test(
+                "advisor-not-coadvisor",
+                "O orientador não pode ser o mesmo que o coorientador",
+                ()=>{
+                if(data?.coAdvisorId === data?.advisorId){
+                    return false;
+                }
+                return true;
+            })
             .required("O campo de orientador é obrigatório"),
 
             coAdvisorId: number()
@@ -126,9 +135,9 @@ export default function ModalDefineAdvisorAdmin({enrollmentId, fetchEnrollments}
       <>
         <Tooltip label="Definir Orientador" aria-label="Definir Orientador">
             <Button
-                color="#feb2b2"
-                variant="outline"
+                colorScheme="orange"
                 onClick={onOpen}
+                zIndex="1"
             >
                 <FaChalkboardTeacher/>
             </Button>
@@ -172,7 +181,7 @@ export default function ModalDefineAdvisorAdmin({enrollmentId, fetchEnrollments}
                 Cancelar
               </Button>
               <Button 
-                color="#feb2b2"
+                colorScheme="orange"
                 onClick={handleSubmit}
                 variant='ghost'
                 isDisabled={loading} // Desabilita o botão enquanto carrega

@@ -190,7 +190,9 @@ export default function ModalCreateUpdateTeacher({children, data, isOpen, setIsO
                         {/* Check box */}
                         <Checkbox 
                         isChecked={tempData.active}
-                        onChange={(e) => handleChange("active", e.target.checked)}>
+                        onChange={(e) => handleChange("active", e.target.checked)}
+                        borderColor={"black"}
+                        >
                         Ativo
                         </Checkbox>
                     </Box>

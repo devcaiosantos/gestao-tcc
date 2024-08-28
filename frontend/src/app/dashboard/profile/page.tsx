@@ -122,7 +122,7 @@ export default function Account() {
             <InputWrapper>
                 <Label>
                     <FaMailBulk/>
-                    E-mail NoReply
+                    E-mail Sistema
                 </Label>
                 <InputField 
                     value={tempData?.systemEmail}
@@ -133,7 +133,7 @@ export default function Account() {
             <InputWrapper>
                 <Label>
                     <PiPasswordBold/>
-                    Senha E-mail NoReply
+                    Chave E-mail Sistema
                 </Label>
                 <InputField 
                     value={tempData?.systemEmailKey}

@@ -44,7 +44,6 @@ export default function ModalRemoveAdvisor({data, fetchEnrollments}: ModalRemove
             <Button 
               onClick={onOpen}
               colorScheme="red"
-              variant="outline"
               leftIcon={<MdGroupRemove/>}
               fontSize={"lg"}
             >
@@ -75,7 +74,6 @@ export default function ModalRemoveAdvisor({data, fetchEnrollments}: ModalRemove
                 </Button>
                 <Button 
                   colorScheme='red' 
-                  variant='outline'
                   onClick={handleClick}
                 >
                   Remover
