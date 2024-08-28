@@ -75,7 +75,7 @@ export default function Sidebar({
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
-    <Box minH="100vh" bg={colors.dark}>
+    <Box minH="100vh" bg={colors.dark} color={colors.light}>
       <SidebarContent
         onClose={() => onClose}
         display={{ base: "none", md: "block" }}
@@ -309,7 +309,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
                 Perfil
               </MenuItem>
               <MenuDivider />
-              <MenuItem onClick={()=>handleLogout()}>
+              <MenuItem bg="transparent" onClick={()=>handleLogout()}>
                 Sair
               </MenuItem>
             </MenuList>
