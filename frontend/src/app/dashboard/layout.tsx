@@ -38,7 +38,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     if (!admin) {
         return (
             <LoadContainer>
-                <Spinner />
+                <Spinner colorScheme="white" />
             </LoadContainer>
         ) 
     }

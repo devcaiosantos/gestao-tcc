@@ -60,6 +60,7 @@ export default function ModalEndSemester({data, fetchEnrollments}: ModalEndSemes
                   Cancelar
                 </Button>
                 <Button 
+                  variant={"outline"}
                   colorScheme='red' 
                   onClick={handleClick}
                 >

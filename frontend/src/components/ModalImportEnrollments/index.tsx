@@ -120,6 +120,7 @@ export default function ModalImportEnrollments({ fetchEnrollments }: ModalImport
                   Cancelar
                 </Button>
                 <Button 
+                    variant={"outline"}
                     colorScheme='green' 
                     onClick={()=>handleSubmit()}
                 >

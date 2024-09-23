@@ -43,6 +43,7 @@ export default function ModalRemoveAdvisor({data, fetchEnrollments}: ModalRemove
           <Tooltip label="Remover Orientador e Coorientador" aria-label="A tooltip">
             <Button 
               onClick={onOpen}
+              variant={"outline"}
               colorScheme="red"
               leftIcon={<MdGroupRemove/>}
               fontSize={"lg"}
@@ -74,6 +75,7 @@ export default function ModalRemoveAdvisor({data, fetchEnrollments}: ModalRemove
                 </Button>
                 <Button 
                   colorScheme='red' 
+                  variant={"outline"}
                   onClick={handleClick}
                 >
                   Remover

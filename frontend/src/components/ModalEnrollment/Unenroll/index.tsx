@@ -60,6 +60,7 @@ export default function ModalUnenroll({enrollment, fetchEnrollments}: ModalEnrol
         <Tooltip label="Desmatricular Aluno" aria-label="A tooltip">
           <Button
               onClick={onOpen}
+              variant={"outline"}
               colorScheme="red"
           >
               <FaTrash/>
@@ -82,7 +83,7 @@ export default function ModalUnenroll({enrollment, fetchEnrollments}: ModalEnrol
               <Button 
                 colorScheme='red' 
                 onClick={handleUnenroll}
-                variant='ghost'>
+                variant={"outline"}>
                 Desmatricular 
               </Button>
             </ModalFooter>

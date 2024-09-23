@@ -165,9 +165,7 @@ export default function Enrollments() {
                         
                     >
                         {statusOptions.map((status) => (
-                            <option key={status.value} value={status.value}
-                                style={{backgroundColor: "black"}}
-                            >{status.label}</option>
+                            <option key={status.value} value={status.value}>{status.label}</option>
                         ))}
                     </StatusFilterSelect>
                 </FilterStatusContainer>
@@ -191,11 +189,6 @@ const EnrollmentsTable = ({
     selectedEnrollment?: IEnrollmentStudent,
     setSelectedEnrollment: (enrollment: IEnrollmentStudent) => void
 }) => {
-    const [isOpenModalEnrollment, setIsOpenModalEnrollment] = useState(false);
-
-    function handleEditClick(){
-        setIsOpenModalEnrollment(true);
-    }
 
     return ( 
         <>
@@ -238,7 +231,7 @@ const EnrollmentsTable = ({
                                     </EnrollmentInfo>
                                 </Td>
                                 <Td>
-                                    {enrollment.status?.toUpperCase()}
+                                    {enrollment.status?.toUpperCase().replace("_", " ")}
                                 </Td>
                                 <Td>
                                     {enrollment.supervisorName?.toUpperCase()}

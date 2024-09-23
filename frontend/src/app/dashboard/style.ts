@@ -8,6 +8,7 @@ export const LoadContainer = styled.div`
     height: 100vh;
     width: 100%;
     background-color: ${theme.colors.dark};
+    color: ${theme.colors.light};
 `
 
 export const WelcomeTitle = styled.h1`

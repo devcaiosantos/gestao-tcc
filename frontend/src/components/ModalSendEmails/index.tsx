@@ -264,6 +264,7 @@ export default function ModalSendEmails() {
                 </Button>
                 <Button 
                     onClick={handleSendEmail}
+                    variant={"outline"}
                     colorScheme='green' 
                     isDisabled={isLoading}
                 >

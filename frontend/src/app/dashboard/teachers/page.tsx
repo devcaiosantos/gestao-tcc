@@ -191,6 +191,7 @@ const TeachersTable = ({ teachers, fetchTeachers }: {
                         <Td>
                             <ActionButtonsContainer>
                                 <Button
+                                variant={"outline"}
                                 colorScheme="blue"
                                 onClick={()=>handleEditClick()}
                                 >

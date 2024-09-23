@@ -58,7 +58,8 @@ export default function ModalDeleteTeacher({data, fetchTeachers}: ModalTeacherPr
                   Cancelar
                 </Button>
                 <Button 
-                  colorScheme='red' 
+                  variant={"outline"}
+                  colorScheme='red'
                   onClick={handleDelete}
                 >
                   Excluir

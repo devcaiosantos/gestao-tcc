@@ -167,6 +167,7 @@ export default function ModalCreateUpdateTextTemplate({ children, data, isOpen, 
                                     </Text>
                                     <Button
                                         size="sm"
+                                        variant={"outline"}
                                         onClick={() => handleChange('content', `${tempData.content}<linkDefinirOrientador>`)}
                                         rightIcon={<FaPlus/>}
                                     >
@@ -178,6 +179,7 @@ export default function ModalCreateUpdateTextTemplate({ children, data, isOpen, 
                                     </Button>
                                     <Button
                                         size="sm"
+                                        variant={"outline"}
                                         onClick={() => handleChange('content', `${tempData.content}<linkDefinirBanca>`)}
                                         rightIcon={<FaPlus/>}
                                     >
@@ -189,6 +191,7 @@ export default function ModalCreateUpdateTextTemplate({ children, data, isOpen, 
                                     </Button>
                                     <Button
                                         size="sm"
+                                        variant={"outline"}
                                         onClick={() => handleChange('content', `${tempData.content}<nomeAluno>`)}
                                         rightIcon={<FaPlus/>}
                                     >

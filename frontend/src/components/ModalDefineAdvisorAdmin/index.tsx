@@ -135,9 +135,9 @@ export default function ModalDefineAdvisorAdmin({enrollmentId, fetchEnrollments}
       <>
         <Tooltip label="Definir Orientador" aria-label="Definir Orientador">
             <Button
-                colorScheme="orange"
+                variant={"outline"}
+                colorScheme={"orange"}
                 onClick={onOpen}
-                zIndex="1"
             >
                 <FaChalkboardTeacher/>
             </Button>
@@ -181,9 +181,9 @@ export default function ModalDefineAdvisorAdmin({enrollmentId, fetchEnrollments}
                 Cancelar
               </Button>
               <Button 
+                variant={"outline"}
                 colorScheme="orange"
                 onClick={handleSubmit}
-                variant='ghost'
                 isDisabled={loading} // Desabilita o botão enquanto carrega
               >
                 {loading ? <Spinner size="sm"/> : "Definir"} 

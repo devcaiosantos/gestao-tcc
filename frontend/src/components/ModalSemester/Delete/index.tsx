@@ -61,6 +61,7 @@ export default function ModalDeleteSemester({data, fetchSemesters}: ModalSemeste
                             Cancelar
                         </Button>
                         <Button 
+                            variant={"outline"}
                             colorScheme='red' 
                             onClick={handleDelete}
                         >

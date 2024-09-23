@@ -184,6 +184,7 @@ const TextTemplatesTable = ({ textTemplates, fetchTextTemplates }: {
                             <Td>
                                 <ActionButtonsContainer>
                                     <Button
+                                    variant={"outline"}
                                     colorScheme="blue" 
                                     onClick={()=>handleEditClick()}
                                     >
