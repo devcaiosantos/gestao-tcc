@@ -168,37 +168,37 @@ export default function ModalCreateUpdateTextTemplate({ children, data, isOpen, 
                                     <Button
                                         size="sm"
                                         variant={"outline"}
-                                        onClick={() => handleChange('content', `${tempData.content}<linkOrientador>`)}
+                                        onClick={() => handleChange('content', `${tempData.content}<linkDefinirOrientador>`)}
                                         rightIcon={<FaPlus/>}
                                     >
                                         <Tooltip
                                             label="Link para tela de definição de orientador"
                                         >
-                                            {`<linkOrientador>`} 
+                                            {`<linkDefinirOrientador>`} 
                                         </Tooltip>
                                     </Button>
                                     <Button
                                         size="sm"
                                         variant={"outline"}
-                                        onClick={() => handleChange('content', `${tempData.content}<linkBanca>`)}
+                                        onClick={() => handleChange('content', `${tempData.content}<linkDefinirBanca>`)}
                                         rightIcon={<FaPlus/>}
                                     >
                                         <Tooltip
                                             label="Link para tela de definição de banca"
                                         >
-                                            {`<linkBanca>`} 
+                                            {`<linkDefinirBanca>`} 
                                         </Tooltip>
                                     </Button>
                                     <Button
                                         size="sm"
                                         variant={"outline"}
-                                        onClick={() => handleChange('content', `${tempData.content}<aluno>`)}
+                                        onClick={() => handleChange('content', `${tempData.content}<nomeAluno>`)}
                                         rightIcon={<FaPlus/>}
                                     >
                                         <Tooltip
                                             label="Nome do aluno"
                                         >
-                                            {`<aluno>`} 
+                                            {`<nomeAluno>`} 
                                         </Tooltip>
                                     </Button>
 

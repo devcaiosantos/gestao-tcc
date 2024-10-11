@@ -83,7 +83,7 @@ export default function ModalResetPassword() {
       <>
         <Button
             colorScheme="red"
-            variant="outline"
+            variant={"outline"}
             onClick={onOpen}
         >
             Redefinir Senha

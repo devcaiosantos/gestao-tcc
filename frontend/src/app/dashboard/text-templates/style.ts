@@ -38,7 +38,7 @@ export const TableHeader = styled(Th)`
   position: sticky;
   top: 0;
   background-color: ${colors.dark700};
-  color: white;
+  color: white !important;
 `;
 
 interface TableRowProps {

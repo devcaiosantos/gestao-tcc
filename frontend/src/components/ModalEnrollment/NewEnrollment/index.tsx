@@ -153,7 +153,7 @@ export default function ModalCreateEnrollment({fetchEnrollments}: ModalCreateEnr
                 </Button>
                 <Button 
                   colorScheme='green' 
-                  variant='ghost'
+                  variant='solid'
                   onClick={handleSubmit}
                 >
                    Matricular

@@ -1,12 +1,14 @@
-import { title } from "process";
-import styled from "styled-components";
 
+import styled from "styled-components";
+import theme from "@/style/theme";
 export const LoadContainer = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     width: 100%;
+    background-color: ${theme.colors.dark};
+    color: ${theme.colors.light};
 `
 
 export const WelcomeTitle = styled.h1`

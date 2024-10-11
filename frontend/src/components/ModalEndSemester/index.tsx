@@ -41,7 +41,6 @@ export default function ModalEndSemester({data, fetchEnrollments}: ModalEndSemes
           <Button
             onClick={onOpen}
             colorScheme="red"
-            variant="outline"
             leftIcon={<FaExclamationCircle/>}
           >
             Finalizar Semestre
@@ -61,8 +60,8 @@ export default function ModalEndSemester({data, fetchEnrollments}: ModalEndSemes
                   Cancelar
                 </Button>
                 <Button 
+                  variant={"outline"}
                   colorScheme='red' 
-                  variant='outline'
                   onClick={handleClick}
                 >
                   Finalizar

@@ -1,5 +1,5 @@
 "use client"
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Divider, Button } from "@chakra-ui/react";
 import { 
     Container, 
@@ -26,6 +26,10 @@ export default function Account() {
     const [tempData, setTempData] = useState(admin);
     const toast = useToast();
 
+    useEffect(()=>{
+        setTempData(admin);
+    },[admin])
+
     function handleChange(e:ChangeEvent<HTMLInputElement>){
         const {name, value} = e.target;
         if(!tempData){
@@ -41,8 +45,8 @@ export default function Account() {
         const scheme = object().shape({
             name: string().required("Nome de usuário é obrigatório"),
             email: string().email("E-mail inválido").required("E-mail é obrigatório"),
-            email_system: string().email("E-mail inválido"),
-            password_email_system: string()
+            systemEmail: string().email("E-mail inválido"),
+            systemEmailKey: string()
         });
 
         try	{
@@ -59,7 +63,7 @@ export default function Account() {
                 )
             }
         }
-
+        
         const response = await updateAdminInfo(tempData);
         toast(
             {
@@ -75,8 +79,8 @@ export default function Account() {
                 id: response.data.id,
                 name: response.data.nome,
                 email: response.data.email,
-                email_system: response.data.email_sistema,
-                password_email_system: response.data.senha_email_sistema
+                systemEmail: response.data.emailSistema,
+                systemEmailKey: response.data.chaveEmailSistema
            }
            registerAdmin(formattedData);
         }
@@ -118,24 +122,24 @@ export default function Account() {
             <InputWrapper>
                 <Label>
                     <FaMailBulk/>
-                    E-mail NoReply
+                    E-mail Sistema
                 </Label>
                 <InputField 
-                    value={tempData?.email_system}
+                    value={tempData?.systemEmail}
                     placeholder="Digite aqui o email noreply"
                     onChange={handleChange} 
-                    name="email_system" />
+                    name="systemEmail" />
             </InputWrapper>
             <InputWrapper>
                 <Label>
                     <PiPasswordBold/>
-                    Senha E-mail NoReply
+                    Chave E-mail Sistema
                 </Label>
                 <InputField 
-                    value={tempData?.password_email_system}
+                    value={tempData?.systemEmailKey}
                     placeholder="Digite aqui a senha do email noreply"
                     onChange={handleChange} 
-                    name="password_email_system" />
+                    name="systemEmailKey" />
             </InputWrapper>
             <SaveChangesWrapper display={tempData!=admin?"inherit":"none"}>
                 <Button

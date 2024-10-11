@@ -190,7 +190,8 @@ export default function ModalCreateUpdateTeacher({children, data, isOpen, setIsO
                         {/* Check box */}
                         <Checkbox 
                         isChecked={tempData.active}
-                        onChange={(e) => handleChange("active", e.target.checked)}>
+                        onChange={(e) => handleChange("active", e.target.checked)}
+                        >
                         Ativo
                         </Checkbox>
                     </Box>
@@ -203,7 +204,6 @@ export default function ModalCreateUpdateTeacher({children, data, isOpen, setIsO
                 </Button>
                 <Button 
                   colorScheme='green' 
-                //   onClick={handleResetPassword}
                   variant='ghost'
                   onClick={handleSubmit}
                 >

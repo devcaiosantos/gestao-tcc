@@ -41,7 +41,11 @@ import ModalCreateBatchEnrollments from "@/components/ModalEnrollment/NewBatchEn
 import ModalUnenroll from "@/components/ModalEnrollment/Unenroll";
 import ModalEndSemester from "@/components/ModalEndSemester";
 import ModalImportEnrollments from "@/components/ModalImportEnrollments";
-import { FaUserGraduate, FaEdit, FaExclamationCircle, FaMailBulk } from "react-icons/fa";
+import ModalDefineAdvisorAdmin from "@/components/ModalDefineAdvisorAdmin";
+import ModalSendEmails from "@/components/ModalSendEmails";
+import ModalRemoveAdvisor from "@/components/ModalRemoveAdvisor";
+
+import { FaUserGraduate } from "react-icons/fa";
 import useAuthContext from "@/hooks/useAuthContext";
 import useDebounce from "@/hooks/useDebounce";
 interface IStatusOptions {
@@ -50,7 +54,7 @@ interface IStatusOptions {
     colorScheme: string;
 }
 
-const statusOptions: IStatusOptions[] = [
+export const statusOptions: IStatusOptions[] = [
     { value: "todos", label: "Todos", colorScheme: "#81e6d9" },
     { value: "matriculado", label: "Matriculado", colorScheme: "#d6bcfa" },
     { value: "orientador_definido", label: "Orientador Definido", colorScheme: "#fbb6ce" },
@@ -83,7 +87,7 @@ export default function Enrollments() {
     async function fetchEnrollments() {
         if(!activeSemester) return;
         const response = await getAllEnrollments({
-            idSemester: activeSemester.id,
+            semesterId: activeSemester.id,
             status: selectedStatusFilter,
             term: searchTerm
         }); 
@@ -134,13 +138,7 @@ export default function Enrollments() {
                 </AddEnrollmentButtonContainer>
                 <AddEnrollmentButtonContainer>
                     <ModalImportEnrollments fetchEnrollments={fetchEnrollments}/>
-                    <Button
-                        colorScheme="cyan"
-                        variant="outline"
-                        leftIcon={<FaMailBulk/>}
-                    >
-                        Enviar E-mails
-                    </Button>
+                    <ModalSendEmails />
                 </AddEnrollmentButtonContainer>
             </Toolbar1>
             <Toolbar2>
@@ -164,6 +162,7 @@ export default function Enrollments() {
                         color={
                             statusOptions.find((status) => status.value === selectedStatusFilter)?.colorScheme
                         }
+                        
                     >
                         {statusOptions.map((status) => (
                             <option key={status.value} value={status.value}>{status.label}</option>
@@ -190,11 +189,6 @@ const EnrollmentsTable = ({
     selectedEnrollment?: IEnrollmentStudent,
     setSelectedEnrollment: (enrollment: IEnrollmentStudent) => void
 }) => {
-    const [isOpenModalEnrollment, setIsOpenModalEnrollment] = useState(false);
-
-    function handleEditClick(){
-        setIsOpenModalEnrollment(true);
-    }
 
     return ( 
         <>
@@ -237,19 +231,28 @@ const EnrollmentsTable = ({
                                     </EnrollmentInfo>
                                 </Td>
                                 <Td>
-                                    {enrollment.status?.toUpperCase()}
+                                    {enrollment.status?.toUpperCase().replace("_", " ")}
                                 </Td>
                                 <Td>
                                     {enrollment.supervisorName?.toUpperCase()}
                                 </Td>
                                 <Td>
                                     <ActionButtonsContainer>
-                                        <Button
-                                            variant={"outline"}
-                                            colorScheme="blue"
-                                        >
-                                            <FaEdit/>
-                                        </Button>
+                                        {
+                                            enrollment.status === "orientador_definido" &&
+                                            <ModalRemoveAdvisor 
+                                                data={enrollment}
+                                                fetchEnrollments={fetchEnrollments}   
+                                            />
+                                        }
+                                        
+                                        {
+                                            enrollment.status === "matriculado" &&
+                                            <ModalDefineAdvisorAdmin
+                                                enrollmentId={enrollment.id}
+                                                fetchEnrollments={fetchEnrollments}
+                                            />
+                                        }
                                         <ModalUnenroll
                                             enrollment={enrollment}
                                             fetchEnrollments={fetchEnrollments}

@@ -1,13 +1,14 @@
-interface IJwt{
+interface IJwtAdmin{
     exp: number;
     iat: number;
-    email_sistema: string;
-    senha_email_sistema: string;
+    emailSistema: string;
+    chaveEmailSistema: string;
     nome: string;
     email: string;
     id: number;
 }
-function parseJwt (token:string): IJwt | null {
+
+function parseJwt (token:string): IJwtAdmin | null {
     try{
         if(token != null || token != undefined){
             const base64String = token.split(".")[1];

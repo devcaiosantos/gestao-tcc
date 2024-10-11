@@ -16,6 +16,7 @@ import { ISemester } from '@/interfaces';
 import { FaArrowDown } from 'react-icons/fa';
 import importEnrollmentsFromSemester from '@/services/enrollment/importFromSemester';
 import findAllSemesters from '@/services/semester/findAll';
+import useAuthContext from '@/hooks/useAuthContext';
 
 interface ModalImportEnrollmentsProps {
     fetchEnrollments: () => void;
@@ -26,7 +27,15 @@ export default function ModalImportEnrollments({ fetchEnrollments }: ModalImport
     const [semesters, setSemesters] = useState<ISemester[]>([]);
     const [selectedSemesterId, setSelectedSemesterId] = useState<string>("");
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const { activeSemester } = useAuthContext();
     const toast = useToast();
+
+    const lastSemester = semesters.find((s)=>{
+        if(activeSemester?.number === 1){
+            return s.year == activeSemester?.year - 1 && s.number == 2;
+        }
+        return s.year == activeSemester?.year && s.number == activeSemester?.number - 1;
+    })
 
     useEffect(() => {
         if(!isOpen){
@@ -55,9 +64,9 @@ export default function ModalImportEnrollments({ fetchEnrollments }: ModalImport
     }, []);
 
     async function handleSubmit(){
-        if(!selectedSemesterId){
+        if(!lastSemester){
             toast({
-                title: "Selecione um semestre",
+                title: "Nenhum semestre anterior encontrado",
                 status: "error",
                 duration: 5000,
                 isClosable: true,
@@ -66,7 +75,7 @@ export default function ModalImportEnrollments({ fetchEnrollments }: ModalImport
             return;
         }
         
-        const response = await importEnrollmentsFromSemester(Number(selectedSemesterId));
+        const response = await importEnrollmentsFromSemester(Number(lastSemester?.id));
         toast({
             title: response.message,
             status: response.status,
@@ -82,14 +91,20 @@ export default function ModalImportEnrollments({ fetchEnrollments }: ModalImport
 
     return (
         <>
-          <Button
-            onClick={onOpen}
-            colorScheme="yellow"
-            variant="outline"
-            leftIcon={<FaArrowDown/>}
-          >
-            Importar Matrículas
-          </Button>
+        {
+            lastSemester
+            &&
+            (
+                <Button
+                    onClick={onOpen}
+                    colorScheme="yellow"
+                    leftIcon={<FaArrowDown/>}
+                >
+                    Importar Matrículas
+                </Button>
+            )
+        }
+          
 
           <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
@@ -97,20 +112,7 @@ export default function ModalImportEnrollments({ fetchEnrollments }: ModalImport
               <ModalHeader>Importar Matrículas</ModalHeader>
               <ModalCloseButton />
               <ModalBody>
-                {
-                    semesters && 
-                    <Select 
-                    placeholder="Selecione um semestre"
-                    value={selectedSemesterId}
-                    onChange={(e) => setSelectedSemesterId(e.target.value)}
-                    >
-                    {
-                        semesters.map(semester => (
-                        <option key={semester.id} value={semester.id}>{semester.year}/{semester.number}</option>
-                        ))
-                    }
-                    </Select>
-                }
+                Último semestre: {lastSemester?.year}/{lastSemester?.number}
             
               </ModalBody>
               <ModalFooter>
@@ -118,8 +120,8 @@ export default function ModalImportEnrollments({ fetchEnrollments }: ModalImport
                   Cancelar
                 </Button>
                 <Button 
+                    variant={"outline"}
                     colorScheme='green' 
-                    variant='outline'
                     onClick={()=>handleSubmit()}
                 >
                     Importar

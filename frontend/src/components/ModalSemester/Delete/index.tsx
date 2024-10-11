@@ -44,7 +44,6 @@ export default function ModalDeleteSemester({data, fetchSemesters}: ModalSemeste
             <Button 
                 colorScheme='red' 
                 onClick={onOpen}
-                variant="outline"
             >
                 <FaTrash/>
             </Button>
@@ -62,8 +61,8 @@ export default function ModalDeleteSemester({data, fetchSemesters}: ModalSemeste
                             Cancelar
                         </Button>
                         <Button 
+                            variant={"outline"}
                             colorScheme='red' 
-                            variant='outline'
                             onClick={handleDelete}
                         >
                             Excluir

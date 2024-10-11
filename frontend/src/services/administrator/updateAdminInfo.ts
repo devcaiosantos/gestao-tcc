@@ -6,16 +6,16 @@ interface IUpdateAdminProps {
     id: number;
     name: string;
     email: string;
-    email_system?: string;
-    password_email_system?: string;
+    systemEmail?: string;
+    systemEmailKey?: string;
 }
 
 interface SuccessResponse {
     id: number;
     nome: string;
     email: string;
-    email_sistema: string;
-    senha_email_sistema: string;
+    emailSistema: string;
+    chaveEmailSistema: string;
 }
 
 interface IUpdateAdminResponse {
@@ -35,8 +35,8 @@ const updateAdminInfo = async (data: IUpdateAdminProps): Promise<IUpdateAdminRes
     const formattedData = {
         nome: data.name,
         email: data.email,
-        email_sistema: data.email_system,
-        senha_email_sistema: data.password_email_system
+        emailSistema: data.systemEmail,
+        chaveEmailSistema: data.systemEmailKey
     };
 
     const config = {

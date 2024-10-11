@@ -1,18 +1,24 @@
 "use client"
 
-import { ChakraProvider } from '@chakra-ui/react'
-import { ThemeProvider } from "styled-components";
-import theme from "../style/theme";
+import { chakra, ChakraProvider, extendTheme } from '@chakra-ui/react'
 import { AuthProvider } from '@/contexts/AuthContext';
+
+
+const chakraTheme = extendTheme({
+  config: {
+    initialColorMode: "dark",
+    useSystemColorMode: false,
+  }
+})
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return(
-    <ChakraProvider>
-        <ThemeProvider theme={theme}>
-            <AuthProvider>
-              {children}
-            </AuthProvider>
-        </ThemeProvider>
-    </ChakraProvider>
+      <ChakraProvider
+        theme={chakraTheme}
+      >
+              <AuthProvider>
+                {children}
+              </AuthProvider>
+      </ChakraProvider>
   )
 }

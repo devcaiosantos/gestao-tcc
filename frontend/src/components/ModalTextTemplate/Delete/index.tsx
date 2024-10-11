@@ -40,8 +40,8 @@ export default function ModalDeleteTextTemplate({data, fetchTextTemplates}: Moda
         <>
           <Button 
             colorScheme='red' 
+            variant={"outline"}
             onClick={onOpen}
-            variant="outline"
           >
             <FaTrash/>
           </Button>
@@ -60,7 +60,7 @@ export default function ModalDeleteTextTemplate({data, fetchTextTemplates}: Moda
                 </Button>
                 <Button 
                   colorScheme='red' 
-                  variant='outline'
+                  variant={"outline"}
                   onClick={handleDelete}
                 >
                   Excluir
