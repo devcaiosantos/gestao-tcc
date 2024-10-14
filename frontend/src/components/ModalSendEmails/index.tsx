@@ -3,7 +3,7 @@ import RetrieveTextTemplates from '../../services/text-template/findAll';
 import RetrieveEnrollments from '../../services/enrollment/findAllBySemester';
 import SendDirectMail from '../../services/email/sendDirectMail';
 import { ITextTemplate } from '@/interfaces';
-import { statusOptions } from '@/app/dashboard/tcc1/page';
+import { statusOptions } from '@/utils/statusOptions';
 import useAuthContext from '@/hooks/useAuthContext';
 import {
     Button,

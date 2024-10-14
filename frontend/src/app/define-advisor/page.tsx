@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import RetrieveTeachers from '../../services/teacher/findAll';
 import DefineAdvisorStudent from '@/services/enrollment/defineAdvisorStudent';
 import { ITeacher } from '@/interfaces';
@@ -9,6 +9,7 @@ import { Container, InputsContainer, Note } from './style';
 import { FormLabel, Box, Select, Button, useToast } from '@chakra-ui/react';
 import { object, number, ValidationError } from 'yup';
 import validateStudentToken from '@/services/validateStudentToken';
+
 interface IFormData {
     advisorId: number;
     coadvisorId?: number;
@@ -19,7 +20,7 @@ const defaultFormData: IFormData = {
     coadvisorId: 0,
 }
 
-export default function DefineAdvisor() {
+function DefineAdvisorComponent() {
     const [teachers, setTeachers] = useState<ITeacher[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [tokenError, setTokenError] = useState<string | null>(null);
@@ -78,15 +79,12 @@ export default function DefineAdvisor() {
         fetchData();
     }, [searchParams]);
 
-    function handleValidation() {
-      
-    }
-
+    // Função handleChange para lidar com as alterações nos selects
     function handleChange({key, value}: {key: string, value: number}) {
         setFormData({
             ...formData,
             [key]: value
-        }); 
+        });
     }
 
     async function handleSubmit() {
@@ -97,8 +95,7 @@ export default function DefineAdvisor() {
           "O orientador e coorientador devem ser diferentes",
           () => formData.advisorId !== formData.coadvisorId
 
-        ).
-        required(),
+        ).required(),
         coadvisorId: number(),
       });
 
@@ -191,5 +188,13 @@ export default function DefineAdvisor() {
         </InputsContainer>
           
       </Container>
+    );
+}
+
+export default function DefineAdvisor() {
+    return (
+      <Suspense fallback={<div>Carregando...</div>}>
+        <DefineAdvisorComponent />
+      </Suspense>
     );
 }
