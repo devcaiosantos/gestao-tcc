@@ -16,6 +16,9 @@ RUN yarn global add @nestjs/cli
 # Copiar o restante do código da aplicação
 COPY . .
 
+# Compilar o código NestJS
+RUN yarn build
+
 # Expor a porta que o backend usará
 EXPOSE 5000
 
