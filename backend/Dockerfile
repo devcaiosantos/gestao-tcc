@@ -10,6 +10,9 @@ COPY package.json yarn.lock ./
 # Instalar as dependências usando Yarn
 RUN yarn install --production
 
+# Instalar o Nest CLI globalmente
+RUN yarn global add @nestjs/cli
+
 # Copiar o restante do código da aplicação
 COPY . .
 
@@ -17,4 +20,4 @@ COPY . .
 EXPOSE 5000
 
 # Comando para rodar a aplicação
-CMD ["yarn", "start"]
+CMD ["yarn", "star:prod"]
