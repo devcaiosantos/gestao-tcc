@@ -12,8 +12,9 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - '3000:3000'
+      - '3000:80'  # Mapear porta 3000 externa para 80 interna
     volumes:
       - ./frontend:/app
     environment:
       - NODE_ENV=production
+
