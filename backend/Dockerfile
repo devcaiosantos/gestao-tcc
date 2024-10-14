@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 5000
 
 # Comando para rodar a aplicação
-CMD ["yarn", "start:prod"]
+CMD ["yarn", "start"]
