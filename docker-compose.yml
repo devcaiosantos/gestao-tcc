@@ -6,18 +6,7 @@ services:
       - '5000:5000'
     volumes:
       - ./backend:/app
-    environment:
-      - NODE_ENV=production
-      - JWT_SECRET=mysecret                # Defina diretamente as variáveis
-      - JWT_EXPIRES=1d                     # 24 horas
-      - STUDENT_JWT_SECRET=mystudentsecret
-      - STUDENT_JWT_EXPIRES=30d
-      - FRONTEND_URL=http://localhost:3000
-      - PORT=5000
-      - TZ=America/Sao_Paulo
-      - DATABASE_URL="postgresql://admin:admin@db:5432/gestao-tcc"  # Conexão com o PostgreSQL
-    depends_on:
-      - db
+    env_file: ./backend/.env
 
   frontend:
     build: ./frontend
@@ -28,17 +17,5 @@ services:
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_API_URL=http://localhost:5000/api  # URL do backend
-
-  db:
-    image: postgres:17.0  # Escolha a versão do PostgreSQL
-    environment:
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=admin
-      - POSTGRES_DB=gestao-tcc
-    ports:
-      - '5432:5432'  # Expor a porta 5432 para o host
-    volumes:
-      - postgres-data:/var/lib/postgresql/data  # Persistência dos dados
-
 volumes:
   postgres-data:  # Volume para armazenar os dados do banco de forma persistente
