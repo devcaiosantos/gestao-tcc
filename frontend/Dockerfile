@@ -1,33 +1,29 @@
-# Usando uma imagem do Node.js como base
-FROM node:20.18 as builder
+# Builder Stage
+FROM node:20.18 AS builder
 
-# Definir o diretório de trabalho
 WORKDIR /app
 
-# Copiar package.json e yarn.lock para instalar as dependências
 COPY package.json yarn.lock ./
 
-# Instalar as dependências usando Yarn
-RUN yarn install
+RUN yarn install --frozen-lockfile
 
-# Copiar o restante do código da aplicação
 COPY . .
 
-# Build da aplicação
-RUN yarn build
+RUN yarn run build
 
-# Usar uma imagem de servidor web (nginx) para servir o build estático
-FROM nginx:alpine
+# Production Stage 
 
-# Copiar o build para o diretório padrão do nginx
-COPY --from=builder /app/.next /usr/share/nginx/html
-COPY --from=builder /app/public /usr/share/nginx/html
+FROM node:20.18 AS production
 
-# Copiar um arquivo de configuração Nginx personalizado, se necessário
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
+WORKDIR /app
 
-# Expor a porta que o nginx usará
-EXPOSE 80
+# Copy the built artifacts from the builder stage
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 
-# Comando padrão do Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Set the environment variables (if needed)
+ENV NODE_ENV=production
+
+EXPOSE 3000
+
+CMD ["node", "server.js"]
