@@ -28,6 +28,12 @@ RUN yarn build
 # Verifique se o diretório dist/ foi gerado
 RUN ls dist/
 
+# Install dependencies required to build native modules
+RUN apt-get update && apt-get install -y \
+  python3 \
+  build-essential \
+  && rm -rf /var/lib/apt/lists/*
+
 # Remover as dependências de desenvolvimento (opcional para imagem menor)
 RUN yarn install --production --frozen-lockfile
 
