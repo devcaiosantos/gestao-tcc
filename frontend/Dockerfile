@@ -1,14 +1,29 @@
 # Builder Stage
 FROM node:20.18 AS builder
 
-WORKDIR /usr/src/api 
+WORKDIR /app
+
+COPY package.json yarn.lock ./
+
+RUN yarn install --frozen-lockfile
 
 COPY . .
-COPY ./.env.production ./.env
 
-RUN yarn install --silent --ignore-optional
+RUN yarn run build
 
-RUN yarn build
+# Production Stage 
 
-CMD ["yarn", "start"]
+FROM node:20.18 AS production
 
+WORKDIR /app
+
+# Copy the built artifacts from the builder stage
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+
+# Set the environment variables (if needed)
+ENV NODE_ENV=production
+
+EXPOSE 3000
+
+CMD ["node", "server.js"]
