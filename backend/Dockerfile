@@ -9,4 +9,6 @@ RUN yarn install --silent --ignore-optional
 
 RUN yarn build
 
+EXPOSE 3000
+
 CMD ["yarn", "start"]
