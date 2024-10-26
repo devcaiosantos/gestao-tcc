@@ -30,7 +30,7 @@ import {
     ActionButtonsContainer
 } from "./style";
 
-import { FaSearch, FaTrash, FaFilter } from "react-icons/fa";
+import { FaSearch, FaFilter } from "react-icons/fa";
 import { 
     InputGroup,
     InputLeftElement,
@@ -48,22 +48,7 @@ import ModalRemoveAdvisor from "@/components/ModalRemoveAdvisor";
 import { FaUserGraduate } from "react-icons/fa";
 import useAuthContext from "@/hooks/useAuthContext";
 import useDebounce from "@/hooks/useDebounce";
-interface IStatusOptions {
-    value: EnrollmentStatus | "todos";
-    label: string;
-    colorScheme: string;
-}
-
-export const statusOptions: IStatusOptions[] = [
-    { value: "todos", label: "Todos", colorScheme: "#81e6d9" },
-    { value: "matriculado", label: "Matriculado", colorScheme: "#d6bcfa" },
-    { value: "orientador_definido", label: "Orientador Definido", colorScheme: "#fbb6ce" },
-    { value: "banca_preenchida", label: "Banca Preenchida", colorScheme: "#fbd38d" },
-    { value: "banca_agendada", label: "Banca Agendada", colorScheme: "#90cdf4" },
-    { value: "aprovado", label: "Aprovado", colorScheme: "#9ae6b4" },
-    { value: "reprovado", label: "Reprovado", colorScheme: "#feb2b2" },
-    { value: "nao_finalizado", label: "Não Finalizado", colorScheme: "#faf089" }
-]
+import { statusOptions } from "@/utils/statusOptions";
 
 export default function Enrollments() {
     const [enrollments, setEnrollments] = useState<IEnrollmentStudent[]>([])
