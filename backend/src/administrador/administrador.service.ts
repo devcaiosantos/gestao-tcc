@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../prisma.service";
+import { PrismaService } from "../prisma/prisma.service";
 import { Administrador } from "@prisma/client";
 import { createAdministradorProps, resetPasswordProps } from "./interfaces";
 import { object, string } from "yup";
@@ -15,8 +15,8 @@ export class AdministradorService {
         nome: string().required(),
         email: string().email().required(),
         senha: string().min(8).required(),
-        email_sistema: string().email(),
-        senha_email_sistema: string(),
+        emailSistema: string().email(),
+        chaveEmailSistema: string(),
       });
       await createAdministradorSchema.validate(administrador);
     } catch (error) {
@@ -46,8 +46,8 @@ export class AdministradorService {
         nome: administrador.nome,
         email: administrador.email,
         senha: hash,
-        email_sistema: administrador.email_sistema,
-        senha_email_sistema: administrador.senha_email_sistema,
+        emailSistema: administrador.emailSistema,
+        chaveEmailSistema: administrador.chaveEmailSistema,
       },
     });
     if (!createdAdministrador) {
@@ -68,10 +68,25 @@ export class AdministradorService {
     return this.prisma.administrador.findMany();
   }
 
-  findOne(id: number): Promise<Administrador | null> {
-    return this.prisma.administrador.findUnique({
+  async findOne(id: number) {
+    const existingAdministrador = await this.prisma.administrador.findUnique({
       where: { id },
     });
+
+    if (!existingAdministrador) {
+      throw {
+        statusCode: 404,
+        message: "Administrador não encontrado",
+      };
+    }
+
+    return {
+      id: existingAdministrador.id,
+      nome: existingAdministrador.nome,
+      email: existingAdministrador.email,
+      emailSistema: existingAdministrador.emailSistema,
+      chaveEmailSistema: existingAdministrador.chaveEmailSistema,
+    };
   }
 
   async update(id: number, newAdministrador: createAdministradorProps) {
@@ -90,8 +105,8 @@ export class AdministradorService {
       const updateAdministradorSchema = object().shape({
         nome: string().required(),
         email: string().email().required(),
-        email_sistema: string().email(),
-        senha_email_sistema: string(),
+        emailSistema: string().email(),
+        chaveEmailSistema: string(),
       });
       await updateAdministradorSchema.validate(newAdministrador);
     } catch (error) {
@@ -106,8 +121,8 @@ export class AdministradorService {
       data: {
         nome: newAdministrador.nome,
         email: newAdministrador.email,
-        email_sistema: newAdministrador.email_sistema,
-        senha_email_sistema: newAdministrador.senha_email_sistema,
+        emailSistema: newAdministrador.emailSistema,
+        chaveEmailSistema: newAdministrador.chaveEmailSistema,
       },
     });
 
@@ -122,8 +137,8 @@ export class AdministradorService {
       id: updatedAdministrador.id,
       nome: updatedAdministrador.nome,
       email: updatedAdministrador.email,
-      email_sistema: updatedAdministrador.email_sistema,
-      senha_email_sistema: updatedAdministrador.senha_email_sistema,
+      emailSistema: updatedAdministrador.emailSistema,
+      chaveEmailSistema: updatedAdministrador.chaveEmailSistema,
     };
   }
 

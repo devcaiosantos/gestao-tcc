@@ -1,4 +1,12 @@
-import { Controller, Post, Body, Patch, Param, Delete } from "@nestjs/common";
+import {
+  Controller,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Get,
+} from "@nestjs/common";
 import { AdministradorService } from "./administrador.service";
 import { createAdministradorProps, resetPasswordProps } from "./interfaces";
 import { Public } from "src/auth/constants";
@@ -10,6 +18,11 @@ export class AdministradorController {
   @Post()
   create(@Body() adminstrador: createAdministradorProps) {
     return this.administradorService.create(adminstrador);
+  }
+
+  @Get(":id")
+  findOne(@Param("id") id: string) {
+    return this.administradorService.findOne(+id);
   }
 
   @Patch(":id")

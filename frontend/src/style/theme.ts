@@ -1,13 +1,16 @@
 const theme = {
-    colors: {
-        primary: '#007bff',
-        secondary: '#6c757d',
-        success: '#28a745',
-        danger: '#dc3545',
-        warning: '#ffc107',
-        info: '#17a2b8',
-        light: '#f8f9fa',
-        dark: '#343a40',
+    colors:{
+        primary: '#4c4c4c', // Um tom mais vibrante de cinza
+        secondary: '#707070', // Cinza claro mais vibrante
+        success: '#4caf50', // Verde vibrante (para sucesso)
+        danger: '#ff5252', // Vermelho vibrante (para perigo)
+        warning: '#ffc107', // Amarelo vibrante (para aviso)
+        info: '#03a9f4', // Azul vibrante (para informação)
+        light: '#ffffff', // Branco para o tom claro
+        dark: '#212121', // Cinza muito escuro (mantendo o estilo dark)
+        dark800: '#424242', // Cinza muito escuro
+        dark700: '#616161', // Cinza escuro
+        dark600: '#757575', // Cinza moderadamente escuro
     },
     fonts: {
         primary: 'Inter, sans-serif',

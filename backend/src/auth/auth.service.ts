@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { PrismaService } from "src/prisma.service";
+import { PrismaService } from "src/prisma/prisma.service";
 import { AuthData, LoginProps } from "./interfaces";
 import * as bcrypt from "bcrypt";
 // import { UserService } from "../user/user.service";
@@ -43,6 +43,8 @@ export class AuthService {
       email: administrador.email,
       nome: administrador.nome,
       id: administrador.id,
+      emailSistema: administrador.emailSistema,
+      chaveEmailSistema: administrador.chaveEmailSistema,
     };
 
     const jwt = await this.jwtService.signAsync(payload, {
@@ -50,6 +52,11 @@ export class AuthService {
       expiresIn: process.env.JWT_EXPIRES,
     });
     return {
+      id: administrador.id,
+      email: administrador.email,
+      nome: administrador.nome,
+      emailSistema: administrador.emailSistema,
+      chaveEmailSistema: administrador.chaveEmailSistema,
       access_token: jwt,
       expires_in: Number(process.env.JWT_EXPIRES),
     };

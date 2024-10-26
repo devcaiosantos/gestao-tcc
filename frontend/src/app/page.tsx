@@ -3,7 +3,7 @@
 import styled from "styled-components";
 
 const StyledH1 = styled.h1`
-  color: #0070f3;
+  /* color: #0070f3; */
   font-size: 50px;
 `;
 
