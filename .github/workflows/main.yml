@@ -20,16 +20,24 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Build backend Docker image
+      - name: Autenticar no Docker Hub
+        run: echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Build and push backend Docker image
         run: |
           cd backend
-          docker build -t gestao-tcc-backend .
+          docker build -t gestao-tcc-backend:latest .
+          docker tag gestao-tcc-backend:latest docker.io/${{ secrets.DOCKER_USERNAME }}/gestao-tcc-backend:latest
+          docker push docker.io/${{ secrets.DOCKER_USERNAME }}/gestao-tcc-backend:latest
 
   # Job para deploy do backend
   deploy-backend:
     runs-on: ubuntu-latest
     needs: build-backend  # Aguarda o build do backend
     steps:
+      - name: Autenticar no Docker Hub
+        run: echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
       - name: Deploy backend to server
         uses: appleboy/ssh-action@v0.1.3
         with:
@@ -40,8 +48,8 @@ jobs:
           script: |
             docker stop gestao-tcc-backend || true
             docker rm gestao-tcc-backend || true
-            docker pull gestao-tcc-backend
-            docker run -d --name gestao-tcc-backend -p 5000:5000 gestao-tcc-backend
+            docker pull docker.io/${{ secrets.DOCKER_USERNAME }}/gestao-tcc-backend:latest
+            docker run -d --name gestao-tcc-backend -p 5000:5000 docker.io/${{ secrets.DOCKER_USERNAME }}/gestao-tcc-backend:latest
 
   # Job para build do frontend
   build-frontend:
@@ -55,16 +63,24 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Build frontend Docker image
+      - name: Autenticar no Docker Hub
+        run: echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Build and push frontend Docker image
         run: |
           cd frontend
-          docker build -t gestao-tcc-frontend .
+          docker build -t gestao-tcc-frontend:latest .
+          docker tag gestao-tcc-frontend:latest docker.io/${{ secrets.DOCKER_USERNAME }}/gestao-tcc-frontend:latest
+          docker push docker.io/${{ secrets.DOCKER_USERNAME }}/gestao-tcc-frontend:latest
 
   # Job para deploy do frontend
   deploy-frontend:
     runs-on: ubuntu-latest
     needs: build-frontend  # Aguarda o build do frontend
     steps:
+      - name: Autenticar no Docker Hub
+        run: echo "${{ secrets.DOCKER_TOKEN }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
       - name: Deploy frontend to server
         uses: appleboy/ssh-action@v0.1.3
         with:
@@ -75,5 +91,5 @@ jobs:
           script: |
             docker stop gestao-tcc-frontend || true
             docker rm gestao-tcc-frontend || true
-            docker pull gestao-tcc-frontend
-            docker run -d --name gestao-tcc-frontend -p 3000:3000 gestao-tcc-frontend
+            docker pull docker.io/${{ secrets.DOCKER_USERNAME }}/gestao-tcc-frontend:latest
+            docker run -d --name gestao-tcc-frontend -p 3000:3000 docker.io/${{ secrets.DOCKER_USERNAME }}/gestao-tcc-frontend:latest
