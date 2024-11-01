@@ -58,6 +58,10 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v3
 
+      - name: Recriar .env.production
+        run: |
+          echo "${{ secrets.ENV_FRONTEND }}" > frontend/.env
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
