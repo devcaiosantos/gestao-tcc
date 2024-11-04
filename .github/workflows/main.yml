@@ -58,10 +58,6 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v3
 
-      - name: Recriar .env.production
-        run: |
-          echo "${{ secrets.ENV_FRONTEND }}" > frontend/.env.production
-
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
@@ -96,4 +92,4 @@ jobs:
             docker stop gestao-tcc-frontend || true
             docker rm gestao-tcc-frontend || true
             docker pull docker.io/${{ secrets.DOCKER_USERNAME }}/gestao-tcc-frontend:latest
-            docker run -d --name gestao-tcc-frontend -p 3000:3000 -e NEXT_PUBLIC_API_URL="http://localhost:5000/api" docker.io/${{ secrets.DOCKER_USERNAME }}/gestao-tcc-frontend:latest
+            docker run -d --name gestao-tcc-frontend -p 3000:3000 -e NEXT_PUBLIC_API_URL="http://200.134.21.91:5000/api" docker.io/${{ secrets.DOCKER_USERNAME }}/gestao-tcc-frontend:latest
