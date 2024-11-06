@@ -1,6 +1,9 @@
 # Builder Stage
 FROM node:20.18 AS builder
 
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+
 WORKDIR /app
 
 COPY package.json yarn.lock ./
@@ -14,9 +17,6 @@ RUN yarn run build
 # Production Stage 
 
 FROM node:20.18 AS production
-
-ARG NEXT_PUBLIC_API_URL
-ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
 WORKDIR /app
 
