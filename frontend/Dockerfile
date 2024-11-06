@@ -15,6 +15,9 @@ RUN yarn run build
 
 FROM node:20.18 AS production
 
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+
 WORKDIR /app
 
 # Copy the built artifacts from the builder stage
