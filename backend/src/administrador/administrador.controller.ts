@@ -6,6 +6,7 @@ import {
   Param,
   Delete,
   Get,
+  Headers,
 } from "@nestjs/common";
 import { AdministradorService } from "./administrador.service";
 import { createAdministradorProps, resetPasswordProps } from "./interfaces";
@@ -16,7 +17,16 @@ export class AdministradorController {
   constructor(private readonly administradorService: AdministradorService) {}
   @Public()
   @Post()
-  create(@Body() adminstrador: createAdministradorProps) {
+  create(
+    @Body() adminstrador: createAdministradorProps,
+    @Headers("apikey") apiKey: string,
+  ) {
+    if (apiKey !== process.env.API_KEY) {
+      throw {
+        statusCode: 401,
+        message: "Não foi possível criar usuário",
+      };
+    }
     return this.administradorService.create(adminstrador);
   }
 
