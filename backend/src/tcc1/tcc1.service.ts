@@ -1047,4 +1047,175 @@ export class TCC1Service {
 
     return transaction;
   }
+
+  async adminDefineBoard({ enrollmentId, membersIds, admin }) {
+    const adminName = admin?.nome;
+    const adminEmail = admin?.email;
+    const systemEmail = admin?.emailSistema;
+    const systemEmailKey = admin?.chaveEmailSistema;
+
+    const schema = yup.object().shape({
+      enrollmentId: yup.number().required(),
+      membersIds: yup
+        .array()
+        .of(yup.number())
+        .min(3)
+        .required("idMembros é um campo obrigatório"),
+      systemEmail: yup.string().email().required(),
+      systemEmailKey: yup.string().required(),
+    });
+
+    try {
+      await schema.validate({
+        enrollmentId,
+        membersIds,
+        systemEmail: systemEmail,
+        systemEmailKey: systemEmailKey,
+      });
+    } catch (error) {
+      throw {
+        statusCode: 400,
+        message: error.message,
+      };
+    }
+
+    const enrollment = await this.prisma.alunoMatriculado.findFirst({
+      where: {
+        id: enrollmentId,
+      },
+      include: {
+        Aluno: true,
+      },
+    });
+
+    if (!enrollment) {
+      throw {
+        statusCode: 404,
+        message: "Matrícula não encontrada",
+      };
+    }
+
+    if (enrollment.status !== "orientador_definido") {
+      throw {
+        statusCode: 400,
+        message: "O status do aluno não permite a definição de banca",
+      };
+    }
+
+    const members = await this.prisma.professor.findMany({
+      where: {
+        id: {
+          in: membersIds,
+        },
+        ativo: true,
+      },
+    });
+
+    if (members.length !== membersIds.length) {
+      throw {
+        statusCode: 404,
+        message: "Membro da banca não encontrado",
+      };
+    }
+
+    const activeSemester = await this.prisma.semestre.findFirst({
+      where: {
+        ativo: true,
+      },
+    });
+
+    if (!activeSemester) {
+      throw {
+        statusCode: 400,
+        message: "Não existe um semestre ativo",
+      };
+    }
+
+    if (enrollment.idSemestre !== activeSemester.id) {
+      throw {
+        statusCode: 400,
+        message: "A matrícula não pertence ao semestre ativo",
+      };
+    }
+
+    const transaction = await this.prisma.$transaction(async (prisma) => {
+      const updatedEnrollment = await prisma.alunoMatriculado.update({
+        where: {
+          id: enrollmentId,
+        },
+        data: {
+          status: "banca_preenchida",
+        },
+        include: {
+          Aluno: true,
+        },
+      });
+
+      const createdBoard = await prisma.banca.create({
+        data: {
+          idAlunoMatriculado: enrollmentId,
+        },
+      });
+
+      if (!createdBoard) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao definir banca",
+        };
+      }
+
+      const createBoardMembers = await prisma.bancaMembro.createMany({
+        data: members.map((member) => ({
+          bancaId: createdBoard.id,
+          professorId: member.id,
+        })),
+      });
+
+      if (!createBoardMembers) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao definir membros da banca",
+        };
+      }
+
+      const createHistory = await prisma.historicoAluno.create({
+        data: {
+          raAluno: updatedEnrollment.raAluno,
+          idSemestre: activeSemester.id,
+          etapa: "TCC1",
+          status: "banca_preenchida",
+          observacao:
+            `Definição Banca por administrador\n` +
+            `Banca: ${members.map((member) => member.nome).join(", ")}`,
+        },
+      });
+
+      if (!createHistory) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao criar histórico",
+        };
+      }
+
+      const response = await sendEmail({
+        user: systemEmail,
+        pass: systemEmailKey,
+        from: `${adminName} <${adminEmail}>`,
+        to: members.map((member) => member.email).join(", "),
+        subject: "Banca TCC1 definida",
+        text:
+          `Olá!\n\n` +
+          `Você foi definido como membro da banca do aluno ${updatedEnrollment.Aluno.nome} (RA: ${updatedEnrollment.Aluno.ra})\n\n` +
+          `Para mais informações, entre em contato com o PRATCC (${adminName} - ${adminEmail}) \n\n`,
+      });
+      if (response.status === "error") {
+        throw {
+          statusCode: 500,
+          message: "Erro ao enviar email para membros da banca",
+        };
+      }
+    });
+
+    return transaction;
+  }
 }
