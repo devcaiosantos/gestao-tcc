@@ -44,6 +44,7 @@ import ModalImportEnrollments from "@/components/ModalImportEnrollments";
 import ModalDefineAdvisorAdmin from "@/components/ModalDefineAdvisorAdmin";
 import ModalSendEmails from "@/components/ModalSendEmails";
 import ModalRemoveAdvisor from "@/components/ModalRemoveAdvisor";
+import ModalDefineBoard from "@/components/ModalDefineBoard";
 
 import { FaUserGraduate } from "react-icons/fa";
 import useAuthContext from "@/hooks/useAuthContext";
@@ -235,6 +236,14 @@ const EnrollmentsTable = ({
                                             enrollment.status === "matriculado" &&
                                             <ModalDefineAdvisorAdmin
                                                 enrollmentId={enrollment.id}
+                                                fetchEnrollments={fetchEnrollments}
+                                            />
+                                        }
+
+                                        {
+                                            enrollment.status === "orientador_definido" &&
+                                            <ModalDefineBoard
+                                                data={enrollment}
                                                 fetchEnrollments={fetchEnrollments}
                                             />
                                         }
