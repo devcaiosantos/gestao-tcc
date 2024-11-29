@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import {
     Tooltip,
     Button,
@@ -19,21 +20,63 @@ import { Container } from './style';
 import { IEnrollmentStudent } from '@/interfaces';
 import { GiTeacher } from "react-icons/gi";
 import defineBoardAdmin from '@/services/enrollment/defineBoardAdmin';
-
+import TagsInput from '@/components/TagsInput';
+import getAllTeachers from '@/services/teacher/findAll';
+import { ITeacher } from '@/interfaces';
 
 interface ModalEndSemesterProps {
     data?: IEnrollmentStudent
     fetchEnrollments: () => void;
 }
+
+interface Option {
+    id: number;
+    title: string;
+}
+
 export default function ModalDefineBoard({data, fetchEnrollments}: ModalEndSemesterProps) {
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const [teachers, setTeachers] = useState<ITeacher[]>([]);
+    const [selectedTeachers, setSelectedTeachers] = useState<Option[]>([]);
     const toast = useToast();
+
+    useEffect(() => {
+      const defaultSelectedTeachers:Option[]= [];
+      if(data?.supervisorId && data?.supervisorName){
+        defaultSelectedTeachers.push({id: data.supervisorId, title: data?.supervisorName});
+      }
+      if(data?.coSupervisorId && data.coSupervisorName) {
+        defaultSelectedTeachers.push({id: data.coSupervisorId, title: data.coSupervisorName});
+      }
+      setSelectedTeachers(defaultSelectedTeachers);
+      fetchTeachers();
+    }, [isOpen]);
+
+    async function fetchTeachers() {
+      const response = await getAllTeachers();  
+      if(response.status == "error"){
+          toast({
+              title: response.message,
+              status: "error",
+              duration: 5000,
+              isClosable: true
+          });
+          return;
+      }
+      if(response.data){
+          setTeachers(response.data.filter(teacher => teacher.active))
+      }
+    }
+
+    async function handleInputChange(value: Option[]) {
+      setSelectedTeachers(value);
+    }
 
     async function handleClick(){
       if(data){
         const response = await defineBoardAdmin({
             enrollmentId: data.id,
-            memberIds: [1, 2, 3]
+            memberIds: selectedTeachers.map(teacher => teacher.id)
         });
         toast({
             title: response.message,
@@ -69,12 +112,14 @@ export default function ModalDefineBoard({data, fetchEnrollments}: ModalEndSemes
               <ModalBody>
                 <Container>
                     <Box>
-                        <FormControl>
-                            <FormLabel>
-
-
-                            </FormLabel>
-                        </FormControl>
+                        <TagsInput
+                            id="tags"
+                            label="Membros:"
+                            placeholder="Selecione os membros da banca"
+                            options={teachers.map(teacher => ({id: teacher.id, title: teacher.name}))}
+                            selectedTags={selectedTeachers}
+                            onChange={(value)=>handleInputChange(value)}
+                        />
 
                     </Box>
                 </Container>

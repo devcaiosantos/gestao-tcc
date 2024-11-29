@@ -21,7 +21,7 @@ const defineBoardAdmin = async (data: IDefineBoardAdminProps): Promise<IDefineBo
 
     const formattedData = {
         idMatricula: data.enrollmentId,
-        idsMembros: data.memberIds
+        idMembros: data.memberIds
     };
 
     const config = {
