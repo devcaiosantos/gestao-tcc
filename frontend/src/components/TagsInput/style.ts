@@ -10,7 +10,6 @@ export const StyledInput = styled(Input)`
   flex-wrap: wrap;
   padding: 12px 10px;
   font-size: 16px;
-  color: rgb(33, 37, 41); /* Cinza escuro */
   border-radius: 4px;
   margin-top: 2px;
   background-color: transparent;
@@ -27,17 +26,41 @@ export const TagsInputWrapper = styled.div`
   flex-wrap: wrap;
 `;
 
-export const Tag = styled.div`
+export const Tag = styled.div<{
+  $isPresident?: boolean;
+}>`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: rgb(255, 255, 255); 
+  background-color: ${({ $isPresident }) => ($isPresident ? "rgb(75,181,67)" : "rgb(255, 255, 255)")};
   color: rgb(33, 37, 41); 
   padding: 2px 5px;
   margin: 0.1rem;
   border-radius: 3px;
   font-size: 1.0rem;
   font-family: 'Roboto', sans-serif;
+  height: 40px;
+
+
+  div{
+    display: flex;
+    align-items: center;
+    p {
+    width: ${({ $isPresident }) => ($isPresident ? "230px" : "300px")};
+
+    margin-left: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  }
+  
+  span {
+    font-size: 0.8rem;
+    color: rgb(33, 37, 41); 
+    font-weight: bold;
+  }
 
   .iconCancel {
     margin-left: 5px;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { MdCancel } from "react-icons/md";
+import { MdCancel, MdOutlineDragIndicator } from "react-icons/md";
 import {
   TagsInputWrapper,
   Tag,
@@ -112,6 +112,25 @@ const TagsInput: React.FC<NewTagsInputProps> = ({
     }
   }
 
+  function handleDragStart(e: React.DragEvent<HTMLDivElement>, index: number) {
+      e.dataTransfer.setData("dragIndex", index.toString());
+  }
+
+  function handleDrop(e: React.DragEvent<HTMLDivElement>, dropIndex: number) {
+      e.preventDefault();
+      const dragIndex = parseInt(e.dataTransfer.getData("dragIndex"), 10);
+      const newTags: Option[] = [...selectedTags];
+      const draggedTag = newTags[dragIndex];
+      newTags.splice(dragIndex, 1);
+      newTags.splice(dropIndex, 0, draggedTag);
+      onChange(newTags);
+  }
+
+  function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
+      e.preventDefault();
+  }
+
+
   return (
     <StyledTagContainer>
        <InputLabel>{label}</InputLabel>
@@ -119,9 +138,29 @@ const TagsInput: React.FC<NewTagsInputProps> = ({
         {selectedTags &&
           selectedTags.length > 0 &&
           selectedTags.map((tag, i) => (
-            
-            <Tag key={i}>
-              {tag.title}
+            <Tag 
+              key={i}
+              $isPresident={i === 0}
+              draggable
+              onDragStart={(e) => handleDragStart(e, i)}
+              onDragOver={handleDragOver}
+              onDrop={(e) => handleDrop(e, i)}
+            >
+              <div>
+                <MdOutlineDragIndicator />
+                <p>
+                  {tag.title}
+                </p>
+              </div>
+              
+              {
+                i === 0 && (
+                  <span>
+                    (Presidente)
+                  </span>
+                )
+              }
+
               <MdCancel
                 className="iconCancel"
                 onClick={() => removeTag(i)}
