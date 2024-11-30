@@ -13,19 +13,19 @@ import {
 } from '@chakra-ui/react'
 import { IEnrollmentStudent } from '@/interfaces';
 import { MdGroupRemove } from "react-icons/md";
-import removeAdvisor from '@/services/enrollment/removeAdvisor';
+import removeBoard from '@/services/enrollment/removeBoard';
 
 interface ModalRemoveAdvisorProps {
     data?: IEnrollmentStudent
     fetchEnrollments: () => void;
 }
 
-export default function ModalRemoveAdvisor({data, fetchEnrollments}: ModalRemoveAdvisorProps) {
+export default function ModalRemoveBoard({data, fetchEnrollments}: ModalRemoveAdvisorProps) {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const toast = useToast();
     async function handleClick(){
       if(data){
-        const response = await removeAdvisor(data.id);
+        const response = await removeBoard(data.id);
         toast({
             title: response.message,
             status: response.status,
@@ -40,32 +40,28 @@ export default function ModalRemoveAdvisor({data, fetchEnrollments}: ModalRemove
     }
     return (
         <>
-          <Tooltip label="Remover Orientador e Coorientador" aria-label="A tooltip">
+          <Tooltip label="Remover Banca" aria-label="A tooltip">
             <Button 
               onClick={onOpen}
               variant={"outline"}
               colorScheme="red"
               fontSize={"lg"}
             >
-              <MdGroupRemove/>
+              <MdGroupRemove />
             </Button>
           </Tooltip>
           
           <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
             <ModalContent>
-              <ModalHeader>Deseja remover o Orientador e Coorientador dessa matrícula?</ModalHeader>
+              <ModalHeader>
+                Deseja remover a banca da matrícula?
+              </ModalHeader>
               <ModalCloseButton />
               <ModalBody>
                 <p>
-                  <strong>Nome do Aluno:</strong>{data?.studentName}
-                  <br/>
-                  <b>Orientador:</b>{data?.supervisorName}
-                  <br/>
-                  <b>Coorientador:</b>{data?.coSupervisorName}
-                  <br/>
                   {/* eslint-disable-next-line react/no-unescaped-entities */}
-                  A matrícula será atualizada para o status de "matriculado", e o orientador e coorientador serão removidos.
+                  A matrícula será atualizada para o status de "orientador definido", as informações de banca serão removidas.
                   Essa ação não poderá ser desfeita.
                 </p>
               </ModalBody>

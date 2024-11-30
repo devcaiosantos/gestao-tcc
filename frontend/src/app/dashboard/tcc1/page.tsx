@@ -44,7 +44,9 @@ import ModalImportEnrollments from "@/components/ModalImportEnrollments";
 import ModalDefineAdvisorAdmin from "@/components/ModalDefineAdvisorAdmin";
 import ModalSendEmails from "@/components/ModalSendEmails";
 import ModalRemoveAdvisor from "@/components/ModalRemoveAdvisor";
-import ModalDefineBoard from "@/components/ModalDefineBoard";
+import ModalDefineBoard from "@/components/ModalDefineBoard/Create";
+import ModalUpdateBoard from "@/components/ModalDefineBoard/Update";
+import ModalRemoveBoard from "@/components/ModalRemoveBoard";
 
 import { FaUserGraduate } from "react-icons/fa";
 import useAuthContext from "@/hooks/useAuthContext";
@@ -247,6 +249,23 @@ const EnrollmentsTable = ({
                                                 fetchEnrollments={fetchEnrollments}
                                             />
                                         }
+                                            
+                                        {
+                                            enrollment.status === "banca_preenchida" &&
+                                            <>
+                                                <ModalRemoveBoard
+                                                    data={enrollment}
+                                                    fetchEnrollments={fetchEnrollments}
+                                                />
+                                                <ModalUpdateBoard
+                                                    data={enrollment}
+                                                    fetchEnrollments={fetchEnrollments}
+                                                 />
+                                                
+                                            </>
+                                            
+                                        }
+
                                         <ModalUnenroll
                                             enrollment={enrollment}
                                             fetchEnrollments={fetchEnrollments}

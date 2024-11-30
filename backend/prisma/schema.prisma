@@ -172,6 +172,9 @@ model BancaMembro {
   id           Int     @id @default(autoincrement())
   bancaId      Int
   professorId  Int
+  isPresidente Boolean 
+  dataCriacao        DateTime  @default(now())
+  dataAtualizacao    DateTime  @updatedAt
 
   banca     Banca     @relation("BancaMembros", fields: [bancaId], references: [id])
   professor Professor @relation("ProfessorMembroBanca", fields: [professorId], references: [id])

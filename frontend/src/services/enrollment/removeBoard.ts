@@ -1,38 +1,26 @@
 import axios from 'axios';
 import { getCookie } from '@/utils/cookies';
 
-interface IDefineBoardAdminProps {
-    enrollmentId: number;
-    memberIds: number[];
-}
-
-interface IDefineBoardAdminResponse {
+interface IRemoveBoardResponse {
     status: "success" | "error";
     message: string;
 }
 
-type Status = "success" | "error";
+export type Status = "success" | "error";
 
-const defineBoardAdmin = async (data: IDefineBoardAdminProps): Promise<IDefineBoardAdminResponse> => {
+const removeBoard = async (enrollmentId: number): Promise<IRemoveBoardResponse> => {
     const URL = process.env.NEXT_PUBLIC_API_URL;
     if (!URL) {
         throw new Error('Variável de ambiente não configurada');
     }
-
-    const formattedData = {
-        presidenteId: data.memberIds[0],
-        idMatricula: data.enrollmentId,
-        idMembros: data.memberIds
-    };
 
     const config = {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${getCookie("tcc-token")}`
         },
-        url: URL + `/tcc1/definir-banca/admin`,
-        method: 'post',
-        data: formattedData
+        url: URL + `/tcc1/remover-banca/${enrollmentId}`,
+        method: 'delete',
     };
 
     try {
@@ -41,7 +29,7 @@ const defineBoardAdmin = async (data: IDefineBoardAdminProps): Promise<IDefineBo
         const status: Status = "success";
         return {
             status: status,
-            message: "Banca definida com sucesso",
+            message: "Banca removida com sucesso",
         };
     } catch (error) {
         let message = "Uma falha inesperada ocorreu";
@@ -62,4 +50,4 @@ const defineBoardAdmin = async (data: IDefineBoardAdminProps): Promise<IDefineBo
     }
 };
 
-export default defineBoardAdmin;
+export default removeBoard;

@@ -84,7 +84,7 @@ export class TCC1Controller {
     });
   }
 
-  @Put("remover-orientador/:idMatricula")
+  @Delete("remover-orientador/:idMatricula")
   removeAdvisor(@Param("idMatricula") idMatricula: number, @Req() req) {
     const admin = req.admin;
     return this.tcc1Service.removeAdvisor({
@@ -103,6 +103,29 @@ export class TCC1Controller {
     return this.tcc1Service.adminDefineBoard({
       enrollmentId: idMatricula,
       membersIds: idMembros,
+      admin,
+    });
+  }
+
+  @Put("alterar-banca/admin")
+  adminUpdateBoard(
+    @Body()
+    { idMatricula, idMembros }: IDefineBoardByAdminBody,
+    @Req() req,
+  ) {
+    const admin = req.admin;
+    return this.tcc1Service.adminUpdateBoard({
+      enrollmentId: idMatricula,
+      membersIds: idMembros,
+      admin,
+    });
+  }
+
+  @Delete("remover-banca/:idMatricula")
+  removeBoard(@Param("idMatricula") idMatricula: number, @Req() req) {
+    const admin = req.admin;
+    return this.tcc1Service.removeBoard({
+      enrollmentId: +idMatricula,
       admin,
     });
   }
