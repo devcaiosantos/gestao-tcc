@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { FormLabel, Input } from "@chakra-ui/react";
 export const StyledTagContainer = styled.div`
   position: relative;
-  width: 100%;
+  width: 360px;
 `;
 
 export const StyledInput = styled(Input)`
@@ -40,7 +40,6 @@ export const Tag = styled.div<{
   font-size: 1.0rem;
   font-family: 'Roboto', sans-serif;
   height: 40px;
-
 
   div{
     display: flex;

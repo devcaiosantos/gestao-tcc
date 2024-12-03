@@ -129,4 +129,13 @@ export class TCC1Controller {
       admin,
     });
   }
+
+  @Public()
+  @Put("definir-banca/aluno")
+  defineBoardByStudent(@Body() { idMembros, token }) {
+    return this.tcc1Service.studentDefineBoard({
+      membersIds: idMembros,
+      studentToken: token,
+    });
+  }
 }
