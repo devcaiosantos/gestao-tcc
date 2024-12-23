@@ -1,16 +1,14 @@
 import axios from 'axios';
 import { getCookie } from '@/utils/cookies';
-import { IEnrollmentStudent } from '@/interfaces';
 
-interface IRemoveAdvisorResponse {
+interface IRemoveBoardResponse {
     status: "success" | "error";
     message: string;
-    data?: IEnrollmentStudent;
 }
 
 export type Status = "success" | "error";
 
-const removeAdvisor = async (enrollmentId: number): Promise<IRemoveAdvisorResponse> => {
+const removeBoard = async (enrollmentId: number): Promise<IRemoveBoardResponse> => {
     const URL = process.env.NEXT_PUBLIC_API_URL;
     if (!URL) {
         throw new Error('Variável de ambiente não configurada');
@@ -21,17 +19,17 @@ const removeAdvisor = async (enrollmentId: number): Promise<IRemoveAdvisorRespon
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${getCookie("tcc-token")}`
         },
-        url: URL + `/tcc1/remover-orientador/${enrollmentId}`,
+        url: URL + `/tcc1/remover-banca/${enrollmentId}`,
         method: 'delete',
     };
 
     try {
-        await axios<IEnrollmentStudent>(config);
+        await axios(config);
 
         const status: Status = "success";
         return {
             status: status,
-            message: "Orientador removido com sucesso",
+            message: "Banca removida com sucesso",
         };
     } catch (error) {
         let message = "Uma falha inesperada ocorreu";
@@ -52,4 +50,4 @@ const removeAdvisor = async (enrollmentId: number): Promise<IRemoveAdvisorRespon
     }
 };
 
-export default removeAdvisor;
+export default removeBoard;

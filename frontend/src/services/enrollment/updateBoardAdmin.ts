@@ -1,37 +1,46 @@
 import axios from 'axios';
 import { getCookie } from '@/utils/cookies';
-import { IEnrollmentStudent } from '@/interfaces';
 
-interface IRemoveAdvisorResponse {
-    status: "success" | "error";
-    message: string;
-    data?: IEnrollmentStudent;
+interface IUpdateBoardAdminProps {
+    enrollmentId: number;
+    memberIds: number[];
 }
 
-export type Status = "success" | "error";
+interface IUpdateBoardAdminResponse {
+    status: "success" | "error";
+    message: string;
+}
 
-const removeAdvisor = async (enrollmentId: number): Promise<IRemoveAdvisorResponse> => {
+type Status = "success" | "error";
+
+const updateBoardAdmin = async (data: IUpdateBoardAdminProps): Promise<IUpdateBoardAdminResponse> => {
     const URL = process.env.NEXT_PUBLIC_API_URL;
     if (!URL) {
         throw new Error('Variável de ambiente não configurada');
     }
+
+    const formattedData = {
+        idMatricula: data.enrollmentId,
+        idMembros: data.memberIds
+    };
 
     const config = {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${getCookie("tcc-token")}`
         },
-        url: URL + `/tcc1/remover-orientador/${enrollmentId}`,
-        method: 'delete',
+        url: URL + `/tcc1/alterar-banca/admin`,
+        method: 'put',
+        data: formattedData
     };
 
     try {
-        await axios<IEnrollmentStudent>(config);
+        await axios(config);
 
         const status: Status = "success";
         return {
             status: status,
-            message: "Orientador removido com sucesso",
+            message: "Banca alterada com sucesso",
         };
     } catch (error) {
         let message = "Uma falha inesperada ocorreu";
@@ -52,4 +61,4 @@ const removeAdvisor = async (enrollmentId: number): Promise<IRemoveAdvisorRespon
     }
 };
 
-export default removeAdvisor;
+export default updateBoardAdmin;

@@ -14,14 +14,14 @@ datasource db {
 }
 
 model Administrador {
-  id                  Int      @id @default(autoincrement())
-  nome                String
-  email               String   @unique
-  senha               String
-  emailSistema        String?
-  chaveEmailSistema   String?
-  dataCriacao         DateTime @default(now())
-  dataAtualizacao     DateTime @updatedAt
+  id                Int      @id @default(autoincrement())
+  nome              String
+  email             String   @unique
+  senha             String
+  emailSistema      String?
+  chaveEmailSistema String?
+  dataCriacao       DateTime @default(now())
+  dataAtualizacao   DateTime @updatedAt
 
   @@map("administrador")
 }
@@ -52,6 +52,7 @@ model Professor {
 
   alunosOrientados   AlunoMatriculado[] @relation("Orientador")
   alunosCoorientados AlunoMatriculado[] @relation("Coorientador")
+  membroEmBancas     BancaMembro[]      @relation("ProfessorMembroBanca") // Relacionamento nomeado
 
   @@map("professor")
 }
@@ -90,7 +91,7 @@ model Semestre {
 model Aluno {
   ra              String   @id
   nome            String
-  email           String 
+  email           String
   dataCriacao     DateTime @default(now())
   dataAtualizacao DateTime @updatedAt
 
@@ -127,11 +128,11 @@ model AlunoMatriculado {
   dataCriacao     DateTime @default(now())
   dataAtualizacao DateTime @updatedAt
 
-  // Relacionamentos
   Aluno        Aluno      @relation(fields: [raAluno], references: [ra], onDelete: Cascade)
   Semestre     Semestre   @relation(fields: [idSemestre], references: [id])
   Orientador   Professor? @relation("Orientador", fields: [idOrientador], references: [id])
   Coorientador Professor? @relation("Coorientador", fields: [idCoorientador], references: [id])
+  Banca        Banca?     @relation("AlunoBanca") // Relação nomeada
 
   // Garante que a combinação de raAluno, etapa e idSemestre seja única
   @@unique([raAluno, etapa, idSemestre])
@@ -148,5 +149,36 @@ model HistoricoAluno {
   dataCriacao DateTime @default(now())
 
   Aluno Aluno @relation(fields: [raAluno], references: [ra], onDelete: Cascade)
+
   @@map("historico-aluno")
+}
+
+model Banca {
+  id                 Int       @id @default(autoincrement())
+  dataHorario        DateTime? @default(now())
+  local              String?
+  nota               Float?
+  dataCriacao        DateTime  @default(now())
+  dataAtualizacao    DateTime  @updatedAt
+  idAlunoMatriculado Int       @unique
+
+  aluno   AlunoMatriculado @relation("AlunoBanca", fields: [idAlunoMatriculado], references: [id], onDelete: Cascade)
+  membros BancaMembro[]    @relation("BancaMembros")
+
+  @@map("banca")
+}
+
+model BancaMembro {
+  id           Int     @id @default(autoincrement())
+  bancaId      Int
+  professorId  Int
+  isPresidente Boolean 
+  dataCriacao        DateTime  @default(now())
+  dataAtualizacao    DateTime  @updatedAt
+
+  banca     Banca     @relation("BancaMembros", fields: [bancaId], references: [id])
+  professor Professor @relation("ProfessorMembroBanca", fields: [professorId], references: [id])
+
+  @@unique([bancaId, professorId]) // Evita duplicidade do mesmo professor na mesma banca
+  @@map("banca_membro")
 }

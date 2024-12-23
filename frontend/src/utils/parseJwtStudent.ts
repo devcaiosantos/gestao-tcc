@@ -4,6 +4,11 @@ interface IJwtStudent{
     id: number;
     adminId: number;
     type: string;
+    student: {
+        id: number;
+        nome: string;
+        ra: string;
+    };
 }
 
 function parseJwt (token:string): IJwtStudent | null {
