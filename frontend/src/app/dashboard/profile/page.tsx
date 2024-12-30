@@ -1,16 +1,20 @@
 "use client"
 import { ChangeEvent, useEffect, useState } from "react";
-import { Divider, Button } from "@chakra-ui/react";
+import { Divider, Button, Flex } from "@chakra-ui/react";
 import { 
     Container, 
     InputWrapper, 
     InputField, 
     Label, 
     ChangePasswordWrapper, 
-    SaveChangesWrapper 
+    SaveChangesWrapper,
+    CredentialsStatusErrorText,
+    CredentialsStatusSuccessText,
+    GoogleCredentialButtons
 } from "./style";
-import { FaUser } from "react-icons/fa";
+import { FaCheck, FaUser } from "react-icons/fa";
 import { FiUser, FiMail } from "react-icons/fi";
+import { BsGoogle } from "react-icons/bs";
 import { FaMailBulk } from "react-icons/fa";
 import { PiPasswordBold } from "react-icons/pi";
 import { TitlePage } from "../style";
@@ -18,17 +22,30 @@ import useAuthContext from "@/hooks/useAuthContext";
 import { object, number, string, ValidationError } from "yup";
 import { useToast } from "@chakra-ui/react";
 import updateAdminInfo from "@/services/administrator/updateAdminInfo";
+import retrieveGoogleCredentials from "@/services/google-credentials/retrieveOne";
 import ModalResetPassword from "@/components/ModalResetPassword";
+import ModalCreateGoogleCredentials from "@/components/ModalGoogleCredentials/CreateCredentials";
+import ModalUpdateGoogleCredentials from "@/components/ModalGoogleCredentials/UpdateCredentials";
+import ModalDeleteGoogleCredentials from "@/components/ModalGoogleCredentials/DeleteCredentials";
+import { IGoogleCredentials } from "@/interfaces";
+import { FaXmark } from "react-icons/fa6";
 
 export default function Account() {
 
     const { admin, registerAdmin } = useAuthContext(); 
     const [tempData, setTempData] = useState(admin);
+    const [googleCredentials, setGoogleCredentials] = useState<IGoogleCredentials | null>(null);
     const toast = useToast();
 
     useEffect(()=>{
         setTempData(admin);
+        fetchGoogleCredentials();
     },[admin])
+
+    async function fetchGoogleCredentials(){
+        const response = await retrieveGoogleCredentials();
+        setGoogleCredentials(response.data || null);
+    }
 
     function handleChange(e:ChangeEvent<HTMLInputElement>){
         const {name, value} = e.target;
@@ -141,6 +158,41 @@ export default function Account() {
                     onChange={handleChange} 
                     name="systemEmailKey" />
             </InputWrapper>
+            <InputWrapper>
+                <Label>
+                    <BsGoogle/>
+                    Credenciais Google
+                </Label>
+                {
+                    googleCredentials?
+                    <CredentialsStatusSuccessText>
+                        Credenciais já cadastradas
+                        <FaCheck/>
+                    </CredentialsStatusSuccessText>
+                    :
+                    <CredentialsStatusErrorText>
+                        <FaXmark/>
+                        Credenciais Google não cadastradas
+                    </CredentialsStatusErrorText>
+                }
+                {
+                    googleCredentials?
+                    <GoogleCredentialButtons>
+                        <ModalUpdateGoogleCredentials
+                            googleCredentials={googleCredentials}
+                            fetchGoogleCredentials={fetchGoogleCredentials}
+                        />
+                        <ModalDeleteGoogleCredentials 
+                            googleCredentials={googleCredentials}
+                            fetchGoogleCredentials={fetchGoogleCredentials}
+                        />
+                    </GoogleCredentialButtons>
+                    :
+                    <ModalCreateGoogleCredentials fetchGoogleCredentials={fetchGoogleCredentials}/>
+                }
+                
+            </InputWrapper>
+            
             <SaveChangesWrapper display={tempData!=admin?"inherit":"none"}>
                 <Button
                     colorScheme="red"

@@ -51,3 +51,25 @@ export const ChangePasswordWrapper = styled(Flex)`
   align-items: center;
   margin-top: 20px;
 `;
+
+export const CredentialsStatusText = styled.div`
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0;
+`;
+
+export const CredentialsStatusSuccessText = styled(CredentialsStatusText)`
+  color: green;
+`;
+
+export const CredentialsStatusErrorText = styled(CredentialsStatusText)`
+  color: red;
+`;
+
+export const GoogleCredentialButtons = styled(Flex)`
+  display: flex;
+  gap: 20px;
+`;
+
