@@ -12,6 +12,12 @@ import {
 import { TCC1Service } from "./tcc1.service";
 import { EnrollStudent, Status } from "./interfaces";
 import { Public } from "../auth/constants";
+
+interface IDefineBoardByAdminBody {
+  idMatricula: number;
+  idMembros: number[];
+}
+
 @Controller("tcc1")
 export class TCC1Controller {
   constructor(private readonly tcc1Service: TCC1Service) {}
@@ -78,12 +84,58 @@ export class TCC1Controller {
     });
   }
 
-  @Put("remover-orientador/:idMatricula")
+  @Delete("remover-orientador/:idMatricula")
   removeAdvisor(@Param("idMatricula") idMatricula: number, @Req() req) {
     const admin = req.admin;
     return this.tcc1Service.removeAdvisor({
       enrollmentId: +idMatricula,
       adminName: admin.nome,
+    });
+  }
+
+  @Post("definir-banca/admin")
+  defineBoard(
+    @Body()
+    { idMatricula, idMembros }: IDefineBoardByAdminBody,
+    @Req() req,
+  ) {
+    const admin = req.admin;
+    return this.tcc1Service.adminDefineBoard({
+      enrollmentId: idMatricula,
+      membersIds: idMembros,
+      admin,
+    });
+  }
+
+  @Put("alterar-banca/admin")
+  adminUpdateBoard(
+    @Body()
+    { idMatricula, idMembros }: IDefineBoardByAdminBody,
+    @Req() req,
+  ) {
+    const admin = req.admin;
+    return this.tcc1Service.adminUpdateBoard({
+      enrollmentId: idMatricula,
+      membersIds: idMembros,
+      admin,
+    });
+  }
+
+  @Delete("remover-banca/:idMatricula")
+  removeBoard(@Param("idMatricula") idMatricula: number, @Req() req) {
+    const admin = req.admin;
+    return this.tcc1Service.removeBoard({
+      enrollmentId: +idMatricula,
+      admin,
+    });
+  }
+
+  @Public()
+  @Put("definir-banca/aluno")
+  defineBoardByStudent(@Body() { idMembros, token }) {
+    return this.tcc1Service.studentDefineBoard({
+      membersIds: idMembros,
+      studentToken: token,
     });
   }
 }

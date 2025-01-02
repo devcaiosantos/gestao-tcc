@@ -82,7 +82,7 @@ export class AppService {
           {
             id: enrollment.id,
             adminId: admin.id,
-            step: "tcc1",
+            student: enrollment.Aluno,
             status: "definir-orientador",
           },
           {
@@ -106,8 +106,9 @@ export class AppService {
         const enrollmentToken = await this.jwtService.signAsync(
           {
             id: enrollment.id,
-            ra: enrollment.Aluno.ra,
-            tipo: "definir-banca",
+            student: enrollment.Aluno,
+            adminId: admin.id,
+            status: "definir-banca",
           },
           {
             secret: process.env.STUDENT_JWT_SECRET,
@@ -117,7 +118,7 @@ export class AppService {
 
         formattedText = formattedText.replace(
           "<linkDefinirBanca>",
-          `<${process.env.FRONTEND_URL}/definir-banca?token=${enrollmentToken}>`,
+          `<${process.env.FRONTEND_URL}/define-board?token=${enrollmentToken}>`,
         );
       }
 
@@ -183,7 +184,6 @@ export class AppService {
 
     const enrollmentId = payload.id;
     const adminId = payload.adminId;
-
     if (payload.status != status) {
       throw {
         statusCode: 401,
