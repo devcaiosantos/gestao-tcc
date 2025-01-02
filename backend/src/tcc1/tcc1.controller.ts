@@ -138,4 +138,18 @@ export class TCC1Controller {
       studentToken: token,
     });
   }
+
+  @Post("agendar-banca/admin")
+  scheduleBoardByAdmin(
+    @Body() { idMatricula, dataHorario, local },
+    @Req() req,
+  ) {
+    const admin = req.admin;
+    return this.tcc1Service.adminScheduleBoard({
+      enrollmentId: idMatricula,
+      schedule: dataHorario,
+      location: local,
+      admin,
+    });
+  }
 }

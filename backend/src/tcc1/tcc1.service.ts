@@ -1232,7 +1232,7 @@ export class TCC1Service {
         pass: systemEmailKey,
         from: `${adminName} <${adminEmail}>`,
         to: members.map((member) => member.email).join(", "),
-        subject: "Banca TCC1 definida",
+        subject: `Banca TCC1 definida - ${updatedEnrollment.Aluno.nome}`,
         text:
           `Olá!\n\n` +
           `Você foi definido como membro da banca do aluno ${updatedEnrollment.Aluno.nome} (RA: ${updatedEnrollment.Aluno.ra})\n\n` +
@@ -1679,7 +1679,7 @@ export class TCC1Service {
         pass: admin.chaveEmailSistema,
         from: `${admin.nome} <${admin.emailSistema}>`,
         to: members.map((member) => member.email).join(", "),
-        subject: "Banca TCC1 definida",
+        subject: `Banca TCC1 definida - ${updatedEnrollment.Aluno.nome}`,
         text:
           `Olá!\n\n` +
           `Você foi definido como membro da banca do aluno ${updatedEnrollment.Aluno.nome} (RA: ${updatedEnrollment.Aluno.ra})\n\n` +
@@ -1692,6 +1692,154 @@ export class TCC1Service {
         };
       }
     });
+    return transaction;
+  }
+
+  async adminScheduleBoard({
+    enrollmentId,
+    schedule,
+    location,
+    admin,
+  }: {
+    enrollmentId: number;
+    schedule: Date;
+    location: string;
+    admin: { emailSistema: string; chaveEmailSistema: string };
+  }) {
+    const systemEmail = admin?.emailSistema;
+    const systemEmailKey = admin?.chaveEmailSistema;
+
+    const schema = yup.object().shape({
+      enrollmentId: yup.number().required(),
+      schedule: yup.date().required(),
+      location: yup.string().required(),
+    });
+
+    try {
+      await schema.validate({
+        enrollmentId,
+        schedule,
+        location,
+      });
+    } catch (error) {
+      throw {
+        statusCode: 400,
+        message: error.message,
+      };
+    }
+
+    const enrollment = await this.prisma.alunoMatriculado.findFirst({
+      where: {
+        id: enrollmentId,
+      },
+      include: {
+        Aluno: true,
+        Banca: {
+          include: {
+            membros: true,
+          },
+        },
+        Semestre: true,
+      },
+    });
+
+    if (
+      !enrollment ||
+      enrollment.status !== "banca_preenchida" ||
+      !enrollment.Banca.id ||
+      !enrollment.Semestre.ativo
+    ) {
+      throw {
+        statusCode: 404,
+        message: "Matrícula inválida",
+      };
+    }
+
+    const transaction = await this.prisma.$transaction(async (prisma) => {
+      const updatedBoard = await prisma.banca.update({
+        where: {
+          id: enrollment.Banca.id,
+        },
+        data: {
+          dataHorario: schedule,
+          local: location,
+        },
+      });
+
+      if (!updatedBoard) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao agendar banca",
+        };
+      }
+
+      const updatedEnrollment = await prisma.alunoMatriculado.update({
+        where: {
+          id: enrollmentId,
+        },
+        data: {
+          status: "banca_agendada",
+        },
+      });
+
+      if (!updatedEnrollment) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao atualizar matrícula",
+        };
+      }
+
+      const createHistory = await prisma.historicoAluno.create({
+        data: {
+          raAluno: enrollment.raAluno,
+          idSemestre: enrollment.idSemestre,
+          etapa: "TCC1",
+          status: "banca_agendada",
+          observacao:
+            `Agendamento de banca por administrador \n` +
+            `Data: ${schedule}\n` +
+            `Local: ${location}`,
+        },
+      });
+
+      if (!createHistory) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao criar histórico",
+        };
+      }
+
+      const members = await prisma.bancaMembro.findMany({
+        where: {
+          bancaId: enrollment.Banca.id,
+        },
+        include: {
+          professor: true,
+        },
+      });
+
+      const response = await sendEmail({
+        user: systemEmail,
+        pass: systemEmailKey,
+        from: systemEmail,
+        to: members.map((member) => member.professor.email).join(", "),
+        subject: `Banca TCC1 agendada - ${enrollment.Aluno.nome}`,
+        text:
+          `Olá!\n\n` +
+          `A banca do aluno ${enrollment.Aluno.nome} (RA: ${enrollment.Aluno.ra}) foi agendada.\n` +
+          `Data: ${new Date(schedule).toLocaleDateString()}\n` +
+          `Local: ${location}\n\n` +
+          `Para mais informações, entre em contato com o PRATCC\n\n`,
+      });
+
+      if (response.status === "error") {
+        throw {
+          statusCode: 500,
+          message: "Erro ao enviar email para membros da banca",
+        };
+      }
+    });
+
     return transaction;
   }
 }

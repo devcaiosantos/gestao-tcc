@@ -170,11 +170,7 @@ model HistoricoAluno {
 
   Aluno Aluno @relation(fields: [raAluno], references: [ra], onDelete: Cascade)
 
-<<<<<<< HEAD
   @@map("historico_aluno")
-=======
-  @@map("historico-aluno")
->>>>>>> development
 }
 
 model Banca {

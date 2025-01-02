@@ -15,6 +15,7 @@
   - Added the required column `universe_domain` to the `google_credentials` table without a default value. This is not possible if the table is not empty.
 
 */
+
 -- DropForeignKey
 ALTER TABLE "aluno-matriculado" DROP CONSTRAINT "aluno-matriculado_idCoorientador_fkey";
 
@@ -48,7 +49,7 @@ ADD COLUMN     "type" TEXT NOT NULL,
 ADD COLUMN     "universe_domain" TEXT NOT NULL;
 
 -- DropTable
-DROP TABLE "aluno-matriculado";
+DROP TABLE "aluno-matriculado" CASCADE;
 
 -- DropTable
 DROP TABLE "historico-aluno";
