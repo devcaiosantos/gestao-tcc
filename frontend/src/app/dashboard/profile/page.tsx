@@ -28,7 +28,7 @@ import ModalCreateGoogleCredentials from "@/components/ModalGoogleCredentials/Cr
 import ModalUpdateGoogleCredentials from "@/components/ModalGoogleCredentials/UpdateCredentials";
 import ModalDeleteGoogleCredentials from "@/components/ModalGoogleCredentials/DeleteCredentials";
 import { IGoogleCredentials } from "@/interfaces";
-import { FaXmark } from "react-icons/fa6";
+import { FaXmark, FaCalendar } from "react-icons/fa6";
 
 export default function Account() {
 
@@ -158,6 +158,18 @@ export default function Account() {
                     onChange={handleChange} 
                     name="systemEmailKey" />
             </InputWrapper>
+            <InputWrapper>
+                <Label>
+                    <FaCalendar/>
+                    ID Calendário Google
+                </Label>
+                <InputField 
+                    value={tempData?.calendarId}
+                    placeholder="Digite aqui o ID do calendário Google"
+                    onChange={handleChange} 
+                    name="calendarId" />
+            </InputWrapper>
+            <Divider mb={"10px"}/>
             <InputWrapper>
                 <Label>
                     <BsGoogle/>

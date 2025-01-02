@@ -3,7 +3,8 @@ export interface IAdmin {
     name: string;
     email: string;
     systemEmail?: string;
-    systemEmailKey?: string
+    systemEmailKey?: string;
+    calendarId?: string;
 }
 
 export interface ITeacher {

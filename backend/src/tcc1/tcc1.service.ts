@@ -4,6 +4,7 @@ import { JwtService } from "@nestjs/jwt";
 import { EnrollStudent, IfindEnrollmentsProps } from "./interfaces";
 import * as yup from "yup";
 import sendEmail from "src/utils/mailTransporter";
+import { createEvent } from "src/service/calendarAPI/createEvent";
 const statusOptions = [
   "todos",
   "matriculado",
@@ -1702,13 +1703,10 @@ export class TCC1Service {
     admin,
   }: {
     enrollmentId: number;
-    schedule: Date;
+    schedule: string;
     location: string;
-    admin: { emailSistema: string; chaveEmailSistema: string };
+    admin;
   }) {
-    const systemEmail = admin?.emailSistema;
-    const systemEmailKey = admin?.chaveEmailSistema;
-
     const schema = yup.object().shape({
       enrollmentId: yup.number().required(),
       schedule: yup.date().required(),
@@ -1755,6 +1753,36 @@ export class TCC1Service {
       };
     }
 
+    const adminInfo = await this.prisma.administrador.findFirst({
+      where: {
+        id: admin.id,
+      },
+      include: {
+        googleCredentials: true,
+      },
+    });
+
+    if (!adminInfo) {
+      throw {
+        statusCode: 404,
+        message: "Administrador não encontrado",
+      };
+    }
+
+    if (!adminInfo.googleCredentials) {
+      throw {
+        statusCode: 500,
+        message: "Credenciais do Google Calendar não configuradas",
+      };
+    }
+
+    if (!adminInfo.idCalendario) {
+      throw {
+        statusCode: 500,
+        message: "ID do calendário do Google não configurado",
+      };
+    }
+
     const transaction = await this.prisma.$transaction(async (prisma) => {
       const updatedBoard = await prisma.banca.update({
         where: {
@@ -1779,6 +1807,16 @@ export class TCC1Service {
         },
         data: {
           status: "banca_agendada",
+        },
+        include: {
+          Aluno: true,
+          Orientador: true,
+          Coorientador: true,
+          Banca: {
+            include: {
+              membros: true,
+            },
+          },
         },
       });
 
@@ -1818,10 +1856,35 @@ export class TCC1Service {
         },
       });
 
+      const googleCalendarEvent = await createEvent({
+        calendarId: adminInfo.idCalendario,
+        credentials: adminInfo.googleCredentials,
+        eventInfo: {
+          title:
+            enrollment.etapa == "TCC1"
+              ? `Banca TCC1 - ${updatedEnrollment.Aluno.nome}`
+              : `Banca TCC2 - ${updatedEnrollment.Aluno.nome}`,
+          description:
+            `Aluno: ${updatedEnrollment.Aluno.nome} (RA: ${enrollment.Aluno.ra})\n` +
+            `Orientador: ${updatedEnrollment.Orientador.nome}\n` +
+            `Coorientador: ${updatedEnrollment.Coorientador ? updatedEnrollment.Coorientador.nome : "Não definido"}\n` +
+            `Banca: ${members.map((member) => member.professor.nome).join(", ")}\n`,
+          dateTime: schedule,
+          location: location,
+        },
+      });
+
+      if (!googleCalendarEvent || googleCalendarEvent.status === "error") {
+        throw {
+          statusCode: 500,
+          message: googleCalendarEvent.message,
+        };
+      }
+
       const response = await sendEmail({
-        user: systemEmail,
-        pass: systemEmailKey,
-        from: systemEmail,
+        user: adminInfo.emailSistema,
+        pass: adminInfo.chaveEmailSistema,
+        from: adminInfo.emailSistema,
         to: members.map((member) => member.professor.email).join(", "),
         subject: `Banca TCC1 agendada - ${enrollment.Aluno.nome}`,
         text:
@@ -1829,6 +1892,7 @@ export class TCC1Service {
           `A banca do aluno ${enrollment.Aluno.nome} (RA: ${enrollment.Aluno.ra}) foi agendada.\n` +
           `Data: ${new Date(schedule).toLocaleDateString()}\n` +
           `Local: ${location}\n\n` +
+          `Link para o evento no Google Agenda: ${googleCalendarEvent.data.htmlLink}\n` +
           `Para mais informações, entre em contato com o PRATCC\n\n`,
       });
 

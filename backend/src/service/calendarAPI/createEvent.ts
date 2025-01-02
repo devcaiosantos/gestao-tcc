@@ -1,21 +1,39 @@
 import { google } from "googleapis";
+import { IGoogleCredentials } from "src/google-credentials/interfaces";
 const SCOPES = ["https://www.googleapis.com/auth/calendar"];
 
-export async function createEvent(
+interface IEventInfo {
+  title: string;
+  description: string;
+  dateTime: string;
+  location: string;
+}
+
+interface ICreateEvent {
+  credentials: IGoogleCredentials;
+  calendarId: string;
+  eventInfo: IEventInfo;
+}
+export async function createEvent({
   credentials,
-  calendarId: string,
-  eventInfo: any,
-): Promise<any> {
+  calendarId,
+  eventInfo,
+}: ICreateEvent): Promise<any> {
   // Criação do cliente JWT para autenticação
   const auth = new google.auth.JWT({
-    email: credentials.client_email,
-    key: credentials.private_key,
+    email: credentials.clientEmail,
+    key: credentials.privateKey,
     scopes: SCOPES,
-    // subject: 'tcc@liberato.pro.br', // Impersonar o dono do calendário
   });
 
   // Obter instância da API do Calendar
   const calendar = google.calendar({ version: "v3", auth });
+
+  //EndDate = dateTIme + 1h
+  const auxEndDate = new Date(eventInfo.dateTime);
+  auxEndDate.setHours(auxEndDate.getHours() + 1);
+  //Format: '2024-12-30T11:00:00-03:00'
+  const endDate = auxEndDate.toISOString();
 
   const event = {
     summary: eventInfo.title,
@@ -25,7 +43,7 @@ export async function createEvent(
       timeZone: "America/Sao_Paulo", // Fuso horário
     },
     end: {
-      dateTime: "2024-12-30T12:00:00-03:00", // Data e hora de término
+      dateTime: endDate, // Data e hora de término
       timeZone: "America/Sao_Paulo",
     },
     attendees: [
@@ -33,13 +51,24 @@ export async function createEvent(
     ],
   };
 
-  try {
-    const response = await calendar.events.insert({
+  const response = await calendar.events
+    .insert({
       calendarId, // ID do calendário
       requestBody: event, // Dados do evento
+    })
+    .then((res) => {
+      return {
+        status: "success",
+        message: "Evento criado com sucesso",
+        data: res.data,
+      };
+    })
+    .catch((err) => {
+      return {
+        status: "error",
+        message: err || "Erro ao agendar evento Google Calendar",
+      };
     });
-    console.log("Evento criado com sucesso:", response.data.htmlLink);
-  } catch (error) {
-    console.error("Erro ao criar evento:", error);
-  }
+
+  return response;
 }

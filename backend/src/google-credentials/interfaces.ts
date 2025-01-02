@@ -3,7 +3,7 @@ export interface IGoogleCredentials {
   projectId: string;
   privateKeyId: string;
   privateKey: string;
-  client_email: string;
+  clientEmail: string;
   clientId: string;
   authUri: string;
   tokenUri: string;

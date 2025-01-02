@@ -20,6 +20,7 @@ model Administrador {
   senha             String
   emailSistema      String?
   chaveEmailSistema String?
+  idCalendario      String?
   googleCredentials GoogleCredentials? @relation("AdminGoogleCredentials")
   dataCriacao       DateTime           @default(now())
   dataAtualizacao   DateTime           @updatedAt
