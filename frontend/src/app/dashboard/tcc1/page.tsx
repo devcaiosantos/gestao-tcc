@@ -49,6 +49,7 @@ import ModalUpdateBoard from "@/components/ModalDefineBoard/Update";
 import ModalRemoveBoard from "@/components/ModalRemoveBoard";
 import ModalScheduleBoard from "@/components/ModalScheduleBoard";
 import ModalUnscheduleBoard from "@/components/ModalUnscheduleBoard";
+import ModalShowEnrollment from "@/components/ModalShowEnrollment";
 
 import { FaUserGraduate } from "react-icons/fa";
 import useAuthContext from "@/hooks/useAuthContext";
@@ -278,6 +279,9 @@ const EnrollmentsTable = ({
                                             />
                                         }
 
+                                        <ModalShowEnrollment 
+                                            data={enrollment}
+                                        />
                                         <ModalUnenroll
                                             enrollment={enrollment}
                                             fetchEnrollments={fetchEnrollments}

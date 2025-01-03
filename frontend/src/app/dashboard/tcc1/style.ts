@@ -60,8 +60,8 @@ export const TableRow = styled.tr<TableRowProps>`
 `;
 
 export const EnrollmentInfo = styled(Text)`
-  height: 40px;
-  width: 200px;
+  //height: 40px;
+  width: 250px;
   font-size: 1.2rem;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -80,7 +80,6 @@ export const AddEnrollmentButtonContainer = styled.div`
 
 export const ActionButtonsContainer = styled.div`
   height: 40px;
-  width: 250px;
   display: flex;
   justify-content: center;
   align-items: center;

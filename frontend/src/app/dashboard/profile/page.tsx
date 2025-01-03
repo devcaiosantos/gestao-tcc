@@ -82,14 +82,12 @@ export default function Account() {
         }
         
         const response = await updateAdminInfo(tempData);
-        toast(
-            {
-                title: response.message,
-                status: response.status,
-                duration: 5000,
-                isClosable: true
-            }
-        )
+        toast({
+            title: response.message,
+            status: response.status,
+            duration: 5000,
+            isClosable: true
+        })
         
         if(response.status=="success" && response.data){
             const formattedData = {

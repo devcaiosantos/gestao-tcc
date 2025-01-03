@@ -45,6 +45,8 @@ export interface IEnrollmentStudent {
     coSupervisorName: string | null;
     members: number[];
     presidentId: number;
+    boardLocal: string | null;
+    boardDateTime: Date | null;
     createdAt: Date;
     updatedAt: Date;
 }
