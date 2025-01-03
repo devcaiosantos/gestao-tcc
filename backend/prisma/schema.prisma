@@ -178,6 +178,7 @@ model Banca {
   id                 Int       @id @default(autoincrement())
   dataHorario        DateTime? @default(now())
   local              String?
+  idEventoAgenda     String?
   nota               Float?
   dataCriacao        DateTime  @default(now())
   dataAtualizacao    DateTime  @updatedAt

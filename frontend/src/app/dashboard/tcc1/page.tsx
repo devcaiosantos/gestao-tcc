@@ -47,6 +47,8 @@ import ModalRemoveAdvisor from "@/components/ModalRemoveAdvisor";
 import ModalDefineBoard from "@/components/ModalDefineBoard/Create";
 import ModalUpdateBoard from "@/components/ModalDefineBoard/Update";
 import ModalRemoveBoard from "@/components/ModalRemoveBoard";
+import ModalScheduleBoard from "@/components/ModalScheduleBoard";
+import ModalUnscheduleBoard from "@/components/ModalUnscheduleBoard";
 
 import { FaUserGraduate } from "react-icons/fa";
 import useAuthContext from "@/hooks/useAuthContext";
@@ -261,9 +263,19 @@ const EnrollmentsTable = ({
                                                     data={enrollment}
                                                     fetchEnrollments={fetchEnrollments}
                                                  />
-                                                
+                                                 <ModalScheduleBoard
+                                                    enrollment={enrollment}
+                                                    fetchEnrollments={fetchEnrollments}
+                                                 />
                                             </>
-                                            
+                                        }
+
+                                        {
+                                            enrollment.status === "banca_agendada" &&
+                                            <ModalUnscheduleBoard
+                                                data={enrollment}
+                                                fetchEnrollments={fetchEnrollments}
+                                            />
                                         }
 
                                         <ModalUnenroll

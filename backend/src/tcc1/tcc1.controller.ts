@@ -152,4 +152,13 @@ export class TCC1Controller {
       admin,
     });
   }
+
+  @Delete("desmarcar-banca/:idMatricula")
+  unscheduleBoard(@Param("idMatricula") idMatricula: number, @Req() req) {
+    const admin = req.admin;
+    return this.tcc1Service.unscheduleBoard({
+      enrollmentId: +idMatricula,
+      admin,
+    });
+  }
 }

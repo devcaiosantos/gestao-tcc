@@ -1,4 +1,4 @@
-import { google } from "googleapis";
+import { google, calendar_v3 } from "googleapis";
 import { IGoogleCredentials } from "src/google-credentials/interfaces";
 const SCOPES = ["https://www.googleapis.com/auth/calendar"];
 
@@ -14,11 +14,27 @@ interface ICreateEvent {
   calendarId: string;
   eventInfo: IEventInfo;
 }
+
+interface ICreateEventSuccessResponse {
+  status: "success";
+  message: string;
+  data: calendar_v3.Schema$Event; // Tipo específico da API do Google Calendar
+}
+
+interface ICreateEventErrorResponse {
+  status: "error";
+  message: string;
+}
+
+type ICreateEventResponse =
+  | ICreateEventSuccessResponse
+  | ICreateEventErrorResponse;
+
 export async function createEvent({
   credentials,
   calendarId,
   eventInfo,
-}: ICreateEvent): Promise<any> {
+}: ICreateEvent): Promise<ICreateEventResponse> {
   // Criação do cliente JWT para autenticação
   const auth = new google.auth.JWT({
     email: credentials.clientEmail,
@@ -29,45 +45,44 @@ export async function createEvent({
   // Obter instância da API do Calendar
   const calendar = google.calendar({ version: "v3", auth });
 
-  //EndDate = dateTIme + 1h
+  // Calcula a data de término (início + 1 hora)
   const auxEndDate = new Date(eventInfo.dateTime);
   auxEndDate.setHours(auxEndDate.getHours() + 1);
-  //Format: '2024-12-30T11:00:00-03:00'
   const endDate = auxEndDate.toISOString();
 
-  const event = {
+  const event: calendar_v3.Schema$Event = {
     summary: eventInfo.title,
     description: eventInfo.description,
     start: {
-      dateTime: eventInfo.dateTime, // Data e hora de início
-      timeZone: "America/Sao_Paulo", // Fuso horário
+      dateTime: eventInfo.dateTime,
+      timeZone: "America/Sao_Paulo",
     },
     end: {
-      dateTime: endDate, // Data e hora de término
+      dateTime: endDate,
       timeZone: "America/Sao_Paulo",
     },
     attendees: [
-      //{ email: 'example@example.com' }, // Convidados
+      // Adicionar convidados, se necessário
     ],
   };
 
-  const response = await calendar.events
+  const response: ICreateEventResponse = await calendar.events
     .insert({
-      calendarId, // ID do calendário
-      requestBody: event, // Dados do evento
+      calendarId,
+      requestBody: event,
     })
     .then((res) => {
       return {
         status: "success",
         message: "Evento criado com sucesso",
         data: res.data,
-      };
+      } as ICreateEventSuccessResponse;
     })
     .catch((err) => {
       return {
         status: "error",
-        message: err || "Erro ao agendar evento Google Calendar",
-      };
+        message: err.message || "Erro ao agendar evento Google Calendar",
+      } as ICreateEventErrorResponse;
     });
 
   return response;
