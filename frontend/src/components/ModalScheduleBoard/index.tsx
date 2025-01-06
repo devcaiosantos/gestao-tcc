@@ -108,27 +108,26 @@ const ScheduleModal = ({enrollment, fetchEnrollments}: ModalProps) => {
                     <ModalBody>
                         <Container>
                             <Text>Aluno: {enrollment.studentName} (RA: {enrollment.studentRA})</Text>
-                        <FormControl>
-                            <FormLabel>Local</FormLabel>
-                            <Input 
-                                type="text" 
-                                placeholder="Digite o local, ex: Bloco A, Sala 101"
-                                value={formData.location}
-                                onChange={(e) => setFormData({...formData, location: e.target.value})}
-                            />
-                            {errors.location && <ErrorText>{errors.location}</ErrorText>}
-                        </FormControl>
-                        <FormControl>
-                            <FormLabel>Data/Horário</FormLabel>
-                            <Input 
-                                type="datetime-local" 
-                                placeholder="Digite a data e horário"
-                                value={formData.dateTime}
-                                onChange={(e) => setFormData({...formData, dateTime: e.target.value})}
-                            />
-                            {errors.dateTime && <ErrorText>{errors.dateTime}</ErrorText>}
-                        </FormControl>
-                        
+                            <FormControl>
+                                <FormLabel>Local</FormLabel>
+                                <Input 
+                                    type="text" 
+                                    placeholder="Digite o local, ex: Bloco A, Sala 101"
+                                    value={formData.location}
+                                    onChange={(e) => setFormData({...formData, location: e.target.value})}
+                                />
+                                {errors.location && <ErrorText>{errors.location}</ErrorText>}
+                            </FormControl>
+                            <FormControl>
+                                <FormLabel>Data/Horário</FormLabel>
+                                <Input 
+                                    type="datetime-local" 
+                                    placeholder="Digite a data e horário"
+                                    value={formData.dateTime}
+                                    onChange={(e) => setFormData({...formData, dateTime: e.target.value})}
+                                />
+                                {errors.dateTime && <ErrorText>{errors.dateTime}</ErrorText>}
+                            </FormControl>
                         </Container>
                     </ModalBody>
 

@@ -192,6 +192,18 @@ export default function ModalCreateUpdateTextTemplate({ children, data, isOpen, 
                                     <Button
                                         size="sm"
                                         variant={"outline"}
+                                        onClick={() => handleChange('content', `${tempData.content}<linkAgendarBanca>`)}
+                                        rightIcon={<FaPlus/>}
+                                    >
+                                        <Tooltip
+                                            label="Link para tela de agendamento de banca"
+                                        >
+                                            {`<linkAgendarBanca>`} 
+                                        </Tooltip>
+                                    </Button>
+                                    <Button
+                                        size="sm"
+                                        variant={"outline"}
                                         onClick={() => handleChange('content', `${tempData.content}<nomeAluno>`)}
                                         rightIcon={<FaPlus/>}
                                     >

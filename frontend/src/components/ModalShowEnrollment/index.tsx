@@ -13,7 +13,6 @@ import {
     Text
 } from '@chakra-ui/react'
 import { IEnrollmentStudent } from '@/interfaces';
-import removeBoard from '@/services/enrollment/removeBoard';
 import { Container } from './style';
 import { IoMdEye } from 'react-icons/io';
 

@@ -122,6 +122,33 @@ export class AppService {
         );
       }
 
+      if (text.includes("<linkAgendarBanca>")) {
+        if (enrollment.status != "banca_preenchida") {
+          throw {
+            message: `Não é possível gerar um 'linkAgendarBanca' para o aluno de e-mail ${enrollment.Aluno.email}.`,
+            statusCode: 400,
+          };
+        }
+
+        const enrollmentToken = await this.jwtService.signAsync(
+          {
+            id: enrollment.id,
+            student: enrollment.Aluno,
+            adminId: admin.id,
+            status: "agendar-banca",
+          },
+          {
+            secret: process.env.STUDENT_JWT_SECRET,
+            expiresIn: process.env.STUDENT_JWT_EXPIRES,
+          },
+        );
+
+        formattedText = formattedText.replace(
+          "<linkAgendarBanca>",
+          `<${process.env.FRONTEND_URL}/schedule-board?token=${enrollmentToken}>`,
+        );
+      }
+
       mailsInfo.push({
         from: systemEmail,
         to: recipient,
@@ -221,6 +248,15 @@ export class AppService {
           throw {
             statusCode: 400,
             message: "Matrícula não está no status 'orientador_definido'",
+          };
+        }
+        break;
+
+      case "agendar-banca":
+        if (enrollment.status != "banca_preenchida") {
+          throw {
+            statusCode: 400,
+            message: "Matrícula não está no status 'banca_preenchida'",
           };
         }
         break;

@@ -44,7 +44,10 @@ export const config = {
         * - _next/static (static files)
         * - _next/image (image optimization files)
         * - favicon.ico (favicon file)
+        * - define-advisor (Page route)
+        * - define-board (Page route)
+        * - schedule-board (Page route)
         */
-        '/((?!api|_next/static|_next/image|favicon.ico|define-advisor|define-board).*)',
+        '/((?!api|_next/static|_next/image|favicon.ico|define-advisor|define-board|schedule-board).*)',
     ]
 }

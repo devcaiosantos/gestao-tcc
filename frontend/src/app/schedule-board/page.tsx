@@ -4,27 +4,32 @@ import RetrieveTeachers from '../../services/teacher/findAll';
 import { ITeacher } from '@/interfaces';
 import { useSearchParams } from 'next/navigation';
 import parseJwtStudent from '@/utils/parseJwtStudent';
-import { Container, InputsContainer, Note, StudentInfo, ResponseContainer } from './style';
-import { Box, Button, useToast } from '@chakra-ui/react';
+import { Container, InputsContainer, Note, StudentInfo, ResponseContainer, ErrorText } from "./style";
+import { Box, Button, FormControl, FormLabel, Input, useToast } from '@chakra-ui/react';
 import { object, array, number, ValidationError, string } from 'yup';
 import validateStudentToken from '@/services/validateStudentToken';
-import TagsInput from '@/components/TagsInput';
-import defineBoardStudent from '@/services/enrollment/defineBoardStudent';
+import scheduleBoardStudent from '@/services/enrollment/scheduleBoardStudent';
 import { Spinner } from '@chakra-ui/react';
 import { FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
 
-interface Option {
-    id: number;
-    title: string;
+interface IFormData {
+    location: string;
+    dateTime: string;
 }
 
-function DefineBoardComponent() {
-    const [teachers, setTeachers] = useState<ITeacher[]>([]);
+function ScheduleBoardComponent() {
+    const [formData, setFormData] = useState<IFormData>({
+        location: "",
+        dateTime: "",
+    });
+    const [errors, setErrors] = useState<Record<string, string>>({
+        location: "",
+        dateTime: "",
+    });
     const [isLoading, setIsLoading] = useState(true);
     const [tokenError, setTokenError] = useState<string | null>(null);
     const [isDone, setIsDone] = useState(false);
     const searchParams = useSearchParams();
-    const [selectedTeachers, setSelectedTeachers] = useState<Option[]>([]);
     const [student, setStudent] = useState({
         id: 0,
         name: "",
@@ -57,27 +62,17 @@ function DefineBoardComponent() {
 
         async function validateToken() {
             const response = await validateStudentToken({
-                status: "definir-banca",
+                status: "agendar-banca",
                 token: token || "",
             });
 
             if (response.status === "error") {
                 setTokenError("[3] Link inválido");
             }
+            setIsLoading(false);
         }
 
         validateToken();
-
-        async function fetchData() {
-            try {
-                const response = await RetrieveTeachers();
-                if(response.data){
-                  setTeachers(response.data.filter((teacher) => teacher.active));
-                }
-            } finally {
-                setIsLoading(false);
-            }
-        }
 
         setStudent({
             id: payload.id,
@@ -85,46 +80,38 @@ function DefineBoardComponent() {
             ra: payload.student.ra,
         });
 
-        fetchData();
     }, [searchParams]);
-
-    async function handleChange(value: Option[]) {
-        setSelectedTeachers(value);
-    }
 
     async function handleClick(){
         setIsLoading(true);
 
-        const formattedData = {
-            token: searchParams.get('token') || "",
-            memberIds: selectedTeachers.map(teacher => teacher.id)
-        }
-
         const schema = object().shape({
-            memberIds:
-            array()
-            .min(3, "A banca deve ter no mínimo 3 membros").
-            of(number()).required(),
-            token: string().required()
+            location: string().required("Informe o local"),
+            dateTime: string().required("Informe a data e horário")
         });
   
         try {
-            await schema.validate(formattedData);
+            await schema.validate(formData, {abortEarly: false});
         } catch (error) {
             if (error instanceof ValidationError) {
-                toast({
-                title: error.message,
-                status: "error",
-                duration: 3000,
-                isClosable: true,
-                position: "top"
+                const yupErrors: ValidationError = error;
+                const newErrors: Record<string, string> = {};
+                yupErrors.inner.forEach((e) => {
+                    newErrors[e.path as string] = e.message;
                 });
-                setIsLoading(false);
-                return;
+                setErrors(newErrors);
             }
+            setIsLoading(false);
+            return;
+        }
+
+        const formattedData = {
+            studentToken: searchParams.get('token') || "",
+            location: formData.location,
+            dateTime: new Date(formData.dateTime)?.toISOString()
         }
   
-        const response = await defineBoardStudent(formattedData);
+        const response = await scheduleBoardStudent(formattedData);
         setIsLoading(false);
         
         if(response.status === "error"){
@@ -149,7 +136,7 @@ function DefineBoardComponent() {
             <p>
                 <FaCheckCircle color="green" size={30} />
             </p>
-            Banca definida com sucesso!
+            Banca agendada com sucesso!
         </ResponseContainer>
       </Container>
     }
@@ -179,15 +166,26 @@ function DefineBoardComponent() {
         </StudentInfo>
 
         <InputsContainer>
-          <TagsInput
-            id="tags-input"
-            label={"Membros da banca:"}
-            selectedTags={selectedTeachers}
-            placeholder='Selecione os professores'
-            onChange={handleChange}
-            options={teachers.map(teacher => ({id: teacher.id, title: teacher.name}))}
-          />
-          <Note>Selecione no mínimo 3 professores</Note>
+            <FormControl>
+                <FormLabel><b>Local:</b></FormLabel>
+                <Input 
+                    type="text" 
+                    placeholder="Digite o local, ex: Bloco A, Sala 101"
+                    value={formData.location}
+                    onChange={(e) => setFormData({...formData, location: e.target.value})}
+                />
+                {errors.location && <ErrorText>{errors.location}</ErrorText>}
+            </FormControl>
+            <FormControl>
+                <FormLabel><b>Data/Horário:</b></FormLabel>
+                <Input 
+                    type="datetime-local" 
+                    placeholder="Digite a data e horário"
+                    value={formData.dateTime}
+                    onChange={(e) => setFormData({...formData, dateTime: e.target.value})}
+                />
+                {errors.dateTime && <ErrorText>{errors.dateTime}</ErrorText>}
+            </FormControl>
         </InputsContainer>
           
         <Button
@@ -196,16 +194,16 @@ function DefineBoardComponent() {
           isLoading={isLoading}
           loadingText="Definindo banca..."
         >
-            Definir banca
+            Agendar Banca
         </Button>
       </Container>
     );
 }
 
-export default function DefineBoard() {
+export default function ScheduleBoard() {
     return (
       <Suspense fallback={<div><Spinner/></div>}>
-        <DefineBoardComponent />
+        <ScheduleBoardComponent />
       </Suspense>
     );
 }

@@ -161,4 +161,14 @@ export class TCC1Controller {
       admin,
     });
   }
+
+  @Public()
+  @Post("agendar-banca/aluno")
+  scheduleBoardByStudent(@Body() { dataHorario, local, token }) {
+    return this.tcc1Service.studentScheduleBoard({
+      schedule: dataHorario,
+      location: local,
+      studentToken: token,
+    });
+  }
 }
