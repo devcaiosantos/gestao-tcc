@@ -13,7 +13,7 @@ import {
   } from "@chakra-ui/react"
 import { Container, CredentialsDisplay } from "./style"
 import { useToast } from "@chakra-ui/react"
-import { FaTrash, FaUpload } from "react-icons/fa"
+import { FaXmark } from "react-icons/fa6"
 import { IGoogleCredentials } from "@/interfaces";
 import removeGoogleCredentials from "@/services/google-credentials/removeOne";
 
@@ -53,7 +53,7 @@ export default function ModalDeleteGoogleCredentials(
             colorScheme="red"
             variant={"outline"}
             onClick={onOpen}
-            leftIcon={<FaUpload />}
+            leftIcon={<FaXmark />}
         >
             Remover Credenciais Google
         </Button>

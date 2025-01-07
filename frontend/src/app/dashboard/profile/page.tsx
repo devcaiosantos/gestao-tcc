@@ -167,6 +167,22 @@ export default function Account() {
                     onChange={handleChange} 
                     name="calendarId" />
             </InputWrapper>
+            <SaveChangesWrapper display={tempData!=admin?"inherit":"none"}>
+                <Button
+                    colorScheme="red"
+                    variant="solid"
+                    onClick={handleUndoChanges}
+                >
+                    Desfazer
+                </Button>
+                <Button
+                    colorScheme="green"
+                    variant="solid"
+                    onClick={handleSaveChanges}
+                >
+                    Salvar Alterações
+                </Button>
+            </SaveChangesWrapper>
             <Divider mb={"10px"}/>
             <InputWrapper>
                 <Label>
@@ -202,23 +218,6 @@ export default function Account() {
                 }
                 
             </InputWrapper>
-            
-            <SaveChangesWrapper display={tempData!=admin?"inherit":"none"}>
-                <Button
-                    colorScheme="red"
-                    variant="solid"
-                    onClick={handleUndoChanges}
-                >
-                    Desfazer
-                </Button>
-                <Button
-                    colorScheme="green"
-                    variant="solid"
-                    onClick={handleSaveChanges}
-                >
-                    Salvar Alterações
-                </Button>
-            </SaveChangesWrapper>
             <Divider mb={"10px"}/>
             <ChangePasswordWrapper>
                 Deseja alterar sua senha de acesso?
