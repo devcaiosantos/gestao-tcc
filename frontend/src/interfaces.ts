@@ -47,6 +47,7 @@ export interface IEnrollmentStudent {
     presidentId: number;
     boardLocal: string | null;
     boardDateTime: Date | null;
+    boardTitle: string | null;
     createdAt: Date;
     updatedAt: Date;
 }

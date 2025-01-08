@@ -1079,13 +1079,14 @@ export class TCC1Service {
     return transaction;
   }
 
-  async adminDefineBoard({ enrollmentId, membersIds, admin }) {
+  async adminDefineBoard({ enrollmentId, membersIds, title, admin }) {
     const adminName = admin?.nome;
     const adminEmail = admin?.email;
     const systemEmail = admin?.emailSistema;
     const systemEmailKey = admin?.chaveEmailSistema;
 
     const schema = yup.object().shape({
+      title: yup.string().required(),
       enrollmentId: yup.number().required(),
       membersIds: yup
         .array()
@@ -1098,6 +1099,7 @@ export class TCC1Service {
 
     try {
       await schema.validate({
+        title,
         enrollmentId,
         membersIds,
         systemEmail: systemEmail,
@@ -1185,6 +1187,7 @@ export class TCC1Service {
       const createdBoard = await prisma.banca.create({
         data: {
           idAlunoMatriculado: enrollmentId,
+          titulo: title,
         },
       });
 
@@ -1251,13 +1254,14 @@ export class TCC1Service {
     return transaction;
   }
 
-  async adminUpdateBoard({ enrollmentId, membersIds, admin }) {
+  async adminUpdateBoard({ enrollmentId, membersIds, admin, title }) {
     const adminName = admin?.nome;
     const adminEmail = admin?.email;
     const systemEmail = admin?.emailSistema;
     const systemEmailKey = admin?.chaveEmailSistema;
 
     const schema = yup.object().shape({
+      title: yup.string().required(),
       enrollmentId: yup.number().required(),
       membersIds: yup
         .array()
@@ -1270,6 +1274,7 @@ export class TCC1Service {
 
     try {
       await schema.validate({
+        title,
         enrollmentId,
         membersIds,
         systemEmail: systemEmail,
@@ -1347,6 +1352,7 @@ export class TCC1Service {
           id: enrollment.Banca.id,
         },
         data: {
+          titulo: title,
           membros: {
             deleteMany: {},
             createMany: {
@@ -1521,8 +1527,9 @@ export class TCC1Service {
     return transaction;
   }
 
-  async studentDefineBoard({ membersIds, studentToken }) {
+  async studentDefineBoard({ membersIds, studentToken, title }) {
     const schema = yup.object().shape({
+      title: yup.string().required(),
       membersIds: yup
         .array()
         .of(yup.number())
@@ -1533,6 +1540,7 @@ export class TCC1Service {
 
     try {
       await schema.validate({
+        title: title,
         membersIds,
         studentToken: studentToken,
       });
@@ -1632,6 +1640,7 @@ export class TCC1Service {
       const createdBoard = await prisma.banca.create({
         data: {
           idAlunoMatriculado: enrollmentId,
+          titulo: title,
         },
       });
 

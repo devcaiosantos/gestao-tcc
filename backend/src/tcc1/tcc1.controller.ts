@@ -15,6 +15,7 @@ import { Public } from "../auth/constants";
 
 interface IDefineBoardByAdminBody {
   idMatricula: number;
+  titulo: string;
   idMembros: number[];
 }
 
@@ -96,13 +97,14 @@ export class TCC1Controller {
   @Post("definir-banca/admin")
   defineBoard(
     @Body()
-    { idMatricula, idMembros }: IDefineBoardByAdminBody,
+    { idMatricula, idMembros, titulo }: IDefineBoardByAdminBody,
     @Req() req,
   ) {
     const admin = req.admin;
     return this.tcc1Service.adminDefineBoard({
       enrollmentId: idMatricula,
       membersIds: idMembros,
+      title: titulo,
       admin,
     });
   }
@@ -110,11 +112,12 @@ export class TCC1Controller {
   @Put("alterar-banca/admin")
   adminUpdateBoard(
     @Body()
-    { idMatricula, idMembros }: IDefineBoardByAdminBody,
+    { idMatricula, idMembros, titulo }: IDefineBoardByAdminBody,
     @Req() req,
   ) {
     const admin = req.admin;
     return this.tcc1Service.adminUpdateBoard({
+      title: titulo,
       enrollmentId: idMatricula,
       membersIds: idMembros,
       admin,
@@ -132,10 +135,11 @@ export class TCC1Controller {
 
   @Public()
   @Put("definir-banca/aluno")
-  defineBoardByStudent(@Body() { idMembros, token }) {
+  defineBoardByStudent(@Body() { idMembros, token, titulo }) {
     return this.tcc1Service.studentDefineBoard({
       membersIds: idMembros,
       studentToken: token,
+      title: titulo,
     });
   }
 

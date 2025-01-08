@@ -2,6 +2,7 @@ import axios from 'axios';
 import { getCookie } from '@/utils/cookies';
 
 interface IDefineBoardAdminProps {
+    title: string;
     enrollmentId: number;
     memberIds: number[];
 }
@@ -20,6 +21,7 @@ const defineBoardAdmin = async (data: IDefineBoardAdminProps): Promise<IDefineBo
     }
 
     const formattedData = {
+        titulo: data.title,
         idMatricula: data.enrollmentId,
         idMembros: data.memberIds
     };

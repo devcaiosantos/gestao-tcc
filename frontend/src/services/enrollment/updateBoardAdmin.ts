@@ -2,6 +2,7 @@ import axios from 'axios';
 import { getCookie } from '@/utils/cookies';
 
 interface IUpdateBoardAdminProps {
+    title: string;
     enrollmentId: number;
     memberIds: number[];
 }
@@ -20,6 +21,7 @@ const updateBoardAdmin = async (data: IUpdateBoardAdminProps): Promise<IUpdateBo
     }
 
     const formattedData = {
+        titulo: data.title,
         idMatricula: data.enrollmentId,
         idMembros: data.memberIds
     };

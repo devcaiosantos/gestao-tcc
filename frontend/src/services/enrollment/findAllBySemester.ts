@@ -25,6 +25,8 @@ interface AlunoMatriculado {
     };
     Banca?: {
         id: number;
+        titulo: string;
+        nota: number;
         presidenteId: number;
         membros:  {professorId: number, isPresidente: boolean}[]
         local: string;
@@ -81,6 +83,7 @@ const findAllBySemester = async ({semesterId, status, term}:IFindEnrollmentsProp
                 presidentId: enrollmentStudent.Banca?.membros.find(member => member.isPresidente)?.professorId || 0,
                 boardLocal: enrollmentStudent.Banca?.local || null,
                 boardDateTime: enrollmentStudent.Banca?.dataHorario? new Date(enrollmentStudent.Banca.dataHorario): null,
+                boardTitle: enrollmentStudent.Banca?.titulo || null,
                 createdAt: new Date(enrollmentStudent.dataCriacao),
                 updatedAt: new Date(enrollmentStudent.dataAtualizacao)
             };

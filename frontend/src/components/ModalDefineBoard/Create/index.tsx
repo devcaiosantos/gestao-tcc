@@ -12,9 +12,11 @@ import {
     useDisclosure,
     useToast,
     Box,
-    Spinner
+    Spinner,
+    Input,
+    Text
 } from '@chakra-ui/react'
-import { Container } from '../style';
+import { Container, InputLabel } from '../style';
 import { IEnrollmentStudent } from '@/interfaces';
 import { GiTeacher } from "react-icons/gi";
 import defineBoardAdmin from '@/services/enrollment/defineBoardAdmin';
@@ -32,10 +34,15 @@ interface Option {
     title: string;
 }
 
+interface IFormData {
+    title: string;
+    selectedTeachers: Option[];
+}
+
 export default function ModalDefineBoard({data, fetchEnrollments}: ModalEndSemesterProps) {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [teachers, setTeachers] = useState<ITeacher[]>([]);
-    const [selectedTeachers, setSelectedTeachers] = useState<Option[]>([]);
+    const [formData, setFormData] = useState<IFormData>({} as IFormData);
     const [isLoading, setIsLoading] = useState(false);
     const toast = useToast();
 
@@ -49,7 +56,11 @@ export default function ModalDefineBoard({data, fetchEnrollments}: ModalEndSemes
         defaultSelectedTeachers.push({id: data.coSupervisorId, title: data.coSupervisorName});
       }
 
-      setSelectedTeachers(defaultSelectedTeachers);
+      setFormData({
+        title: "",
+        selectedTeachers: defaultSelectedTeachers
+      });
+
       fetchTeachers();
     }, [isOpen]);
 
@@ -69,8 +80,11 @@ export default function ModalDefineBoard({data, fetchEnrollments}: ModalEndSemes
       }
     }
 
-    async function handleInputChange(value: Option[]) {
-      setSelectedTeachers(value);
+    async function handleInputChange({key, value}: {key: string, value: string | Option[]}){
+      setFormData({
+        ...formData,
+        [key]: value
+      });
     }
 
     async function handleClick(){
@@ -79,11 +93,13 @@ export default function ModalDefineBoard({data, fetchEnrollments}: ModalEndSemes
         setIsLoading(true);
         const formattedData = {
           enrollmentId: data.id,
-          presidentId: selectedTeachers[0].id,
-          memberIds: selectedTeachers.map(teacher => teacher.id)
+          title: formData.title,
+          presidentId: formData.selectedTeachers[0].id,
+          memberIds: formData.selectedTeachers.map(teacher => teacher.id)
         }
 
         const schema = object().shape({
+          title: string().required("O título é obrigatório"),
           enrollmentId: number().required(),
           memberIds: array()
           .min(3, "A banca deve ter no mínimo 3 membros").
@@ -142,15 +158,23 @@ export default function ModalDefineBoard({data, fetchEnrollments}: ModalEndSemes
               <ModalBody>
                 <Container>
                     <Box>
+                      <InputLabel>Título do trabalho:</InputLabel>
+                      <Input
+                        id="title"
+                        placeholder="Digite o título do trabalho"
+                        value={formData.title}
+                        onChange={(e)=>handleInputChange({key: "title", value: e.target.value})}
+                      />
+                    </Box>
+                    <Box>
                         <TagsInput
                             id="tags"
                             label="Membros:"
                             placeholder="Selecione os membros da banca"
                             options={teachers.map(teacher => ({id: teacher.id, title: teacher.name}))}
-                            selectedTags={selectedTeachers}
-                            onChange={(value)=>handleInputChange(value)}
+                            selectedTags={formData.selectedTeachers}
+                            onChange={(value)=>handleInputChange({key: "selectedTeachers", value})}
                         />
-
                     </Box>
                 </Container>
               </ModalBody>

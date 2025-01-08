@@ -176,6 +176,7 @@ model HistoricoAluno {
 
 model Banca {
   id                 Int       @id @default(autoincrement())
+  titulo             String
   dataHorario        DateTime? @default(now())
   local              String?
   idEventoAgenda     String?
