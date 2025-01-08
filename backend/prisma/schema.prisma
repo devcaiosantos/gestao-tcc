@@ -14,16 +14,37 @@ datasource db {
 }
 
 model Administrador {
-  id                Int      @id @default(autoincrement())
+  id                Int                @id @default(autoincrement())
   nome              String
-  email             String   @unique
+  email             String             @unique
   senha             String
   emailSistema      String?
   chaveEmailSistema String?
-  dataCriacao       DateTime @default(now())
-  dataAtualizacao   DateTime @updatedAt
+  idCalendario      String?
+  googleCredentials GoogleCredentials? @relation("AdminGoogleCredentials")
+  dataCriacao       DateTime           @default(now())
+  dataAtualizacao   DateTime           @updatedAt
 
   @@map("administrador")
+}
+
+model GoogleCredentials {
+  id                      Int           @id @default(autoincrement())
+  type                    String
+  projectId               String
+  privateKeyId            String
+  privateKey              String
+  clientEmail            String
+  clientId                String
+  authUri                 String
+  tokenUri                String
+  authProviderX509CertUrl String
+  clientX509CertUrl       String
+  universeDomain          String
+  administradorId         Int           @unique
+  administrador           Administrador @relation("AdminGoogleCredentials", fields: [administradorId], references: [id], onDelete: Cascade)
+
+  @@map("google_credentials")
 }
 
 enum Departamento {
@@ -71,7 +92,7 @@ model ModeloTexto {
   dataCriacao     DateTime  @default(now())
   dataAtualizacao DateTime  @updatedAt
 
-  @@map("modelo-texto")
+  @@map("modelo_texto")
 }
 
 model Semestre {
@@ -136,7 +157,7 @@ model AlunoMatriculado {
 
   // Garante que a combinação de raAluno, etapa e idSemestre seja única
   @@unique([raAluno, etapa, idSemestre])
-  @@map("aluno-matriculado")
+  @@map("aluno_matriculado")
 }
 
 model HistoricoAluno {
@@ -150,13 +171,14 @@ model HistoricoAluno {
 
   Aluno Aluno @relation(fields: [raAluno], references: [ra], onDelete: Cascade)
 
-  @@map("historico-aluno")
+  @@map("historico_aluno")
 }
 
 model Banca {
   id                 Int       @id @default(autoincrement())
   dataHorario        DateTime? @default(now())
   local              String?
+  idEventoAgenda     String?
   nota               Float?
   dataCriacao        DateTime  @default(now())
   dataAtualizacao    DateTime  @updatedAt

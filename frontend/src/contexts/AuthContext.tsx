@@ -53,13 +53,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
                 if(response.status === "success" && response.data ){
                     setConnectionError({});
-                    registerAdmin({
-                        id: response.data.id,
-                        name: response.data.nome,
-                        email: response.data.email,
-                        systemEmail: response.data.emailSistema,
-                        systemEmailKey: response.data.chaveEmailSistema
-                    });
+                    registerAdmin(response.data);
                 }
             }
         }
@@ -83,13 +77,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
 
     function registerAdmin(admin: IAdmin) {
-        setAdmin({
-            id: admin.id,
-            name: admin.name,
-            email: admin.email,
-            systemEmail: admin.systemEmail,
-            systemEmailKey: admin.systemEmailKey
-        });
+        setAdmin(admin);
     }
 
     function clearAdmin() {

@@ -13,11 +13,6 @@ import defineBoardStudent from '@/services/enrollment/defineBoardStudent';
 import { Spinner } from '@chakra-ui/react';
 import { FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
 
-interface IFormData {
-    advisorId: number;
-    coadvisorId?: number;
-}
-
 interface Option {
     id: number;
     title: string;

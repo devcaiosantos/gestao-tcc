@@ -27,6 +27,8 @@ interface AlunoMatriculado {
         id: number;
         presidenteId: number;
         membros:  {professorId: number, isPresidente: boolean}[]
+        local: string;
+        dataHorario: string;
     }
 }
 
@@ -77,6 +79,8 @@ const findAllBySemester = async ({semesterId, status, term}:IFindEnrollmentsProp
                 coSupervisorName: enrollmentStudent.Coorientador?.nome,
                 members: enrollmentStudent.Banca?.membros.map(member => member.professorId) || [],
                 presidentId: enrollmentStudent.Banca?.membros.find(member => member.isPresidente)?.professorId || 0,
+                boardLocal: enrollmentStudent.Banca?.local || null,
+                boardDateTime: enrollmentStudent.Banca?.dataHorario? new Date(enrollmentStudent.Banca.dataHorario): null,
                 createdAt: new Date(enrollmentStudent.dataCriacao),
                 updatedAt: new Date(enrollmentStudent.dataAtualizacao)
             };

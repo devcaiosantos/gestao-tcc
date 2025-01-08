@@ -138,4 +138,37 @@ export class TCC1Controller {
       studentToken: token,
     });
   }
+
+  @Post("agendar-banca/admin")
+  scheduleBoardByAdmin(
+    @Body() { idMatricula, dataHorario, local },
+    @Req() req,
+  ) {
+    const admin = req.admin;
+    return this.tcc1Service.adminScheduleBoard({
+      enrollmentId: idMatricula,
+      schedule: dataHorario,
+      location: local,
+      admin,
+    });
+  }
+
+  @Delete("desmarcar-banca/:idMatricula")
+  unscheduleBoard(@Param("idMatricula") idMatricula: number, @Req() req) {
+    const admin = req.admin;
+    return this.tcc1Service.unscheduleBoard({
+      enrollmentId: +idMatricula,
+      admin,
+    });
+  }
+
+  @Public()
+  @Post("agendar-banca/aluno")
+  scheduleBoardByStudent(@Body() { dataHorario, local, token }) {
+    return this.tcc1Service.studentScheduleBoard({
+      schedule: dataHorario,
+      location: local,
+      studentToken: token,
+    });
+  }
 }

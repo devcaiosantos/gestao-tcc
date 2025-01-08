@@ -2,6 +2,11 @@ name: Deploy to Server
 
 on:
   workflow_dispatch:  # Permite iniciar o workflow manualmente
+    inputs:
+      branch:
+        description: 'Branch para o deploy'
+        required: true
+        default: 'main'                     
 
 jobs:
   # Job para build do backend

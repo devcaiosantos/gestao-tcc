@@ -4,6 +4,8 @@ import { JwtService } from "@nestjs/jwt";
 import { EnrollStudent, IfindEnrollmentsProps } from "./interfaces";
 import * as yup from "yup";
 import sendEmail from "src/utils/mailTransporter";
+import { createEvent } from "src/service/calendarAPI/createEvent";
+import { removeEvent } from "src/service/calendarAPI/removeEvent";
 const statusOptions = [
   "todos",
   "matriculado",
@@ -1232,7 +1234,7 @@ export class TCC1Service {
         pass: systemEmailKey,
         from: `${adminName} <${adminEmail}>`,
         to: members.map((member) => member.email).join(", "),
-        subject: "Banca TCC1 definida",
+        subject: `Banca TCC1 definida - ${updatedEnrollment.Aluno.nome}`,
         text:
           `Olá!\n\n` +
           `Você foi definido como membro da banca do aluno ${updatedEnrollment.Aluno.nome} (RA: ${updatedEnrollment.Aluno.ra})\n\n` +
@@ -1679,7 +1681,7 @@ export class TCC1Service {
         pass: admin.chaveEmailSistema,
         from: `${admin.nome} <${admin.emailSistema}>`,
         to: members.map((member) => member.email).join(", "),
-        subject: "Banca TCC1 definida",
+        subject: `Banca TCC1 definida - ${updatedEnrollment.Aluno.nome}`,
         text:
           `Olá!\n\n` +
           `Você foi definido como membro da banca do aluno ${updatedEnrollment.Aluno.nome} (RA: ${updatedEnrollment.Aluno.ra})\n\n` +
@@ -1692,6 +1694,611 @@ export class TCC1Service {
         };
       }
     });
+    return transaction;
+  }
+
+  async adminScheduleBoard({
+    enrollmentId,
+    schedule,
+    location,
+    admin,
+  }: {
+    enrollmentId: number;
+    schedule: string;
+    location: string;
+    admin;
+  }) {
+    const schema = yup.object().shape({
+      enrollmentId: yup.number().required(),
+      schedule: yup.date().required(),
+      location: yup.string().required(),
+    });
+
+    try {
+      await schema.validate({
+        enrollmentId,
+        schedule,
+        location,
+      });
+    } catch (error) {
+      throw {
+        statusCode: 400,
+        message: error.message,
+      };
+    }
+
+    const enrollment = await this.prisma.alunoMatriculado.findFirst({
+      where: {
+        id: enrollmentId,
+      },
+      include: {
+        Aluno: true,
+        Banca: {
+          include: {
+            membros: true,
+          },
+        },
+        Semestre: true,
+        Orientador: true,
+        Coorientador: true,
+      },
+    });
+
+    if (
+      !enrollment ||
+      enrollment.status !== "banca_preenchida" ||
+      !enrollment.Banca.id ||
+      !enrollment.Semestre.ativo
+    ) {
+      throw {
+        statusCode: 404,
+        message: "Matrícula inválida",
+      };
+    }
+
+    const adminInfo = await this.prisma.administrador.findFirst({
+      where: {
+        id: admin.id,
+      },
+      include: {
+        googleCredentials: true,
+      },
+    });
+
+    if (!adminInfo) {
+      throw {
+        statusCode: 404,
+        message: "Administrador não encontrado",
+      };
+    }
+
+    if (!adminInfo.googleCredentials) {
+      throw {
+        statusCode: 500,
+        message: "Credenciais do Google Calendar não configuradas",
+      };
+    }
+
+    if (!adminInfo.idCalendario) {
+      throw {
+        statusCode: 500,
+        message: "ID do calendário do Google não configurado",
+      };
+    }
+
+    const members = await this.prisma.bancaMembro.findMany({
+      where: {
+        bancaId: enrollment.Banca.id,
+      },
+      include: {
+        professor: true,
+      },
+    });
+
+    if (!members) {
+      throw {
+        statusCode: 500,
+        message: "Erro ao buscar membros da banca",
+      };
+    }
+
+    const transaction = await this.prisma.$transaction(async (prisma) => {
+      const googleCalendarEvent = await createEvent({
+        calendarId: adminInfo.idCalendario,
+        credentials: adminInfo.googleCredentials,
+        eventInfo: {
+          title:
+            enrollment.etapa == "TCC1"
+              ? `Banca TCC1 - ${enrollment.Aluno.nome}`
+              : `Banca TCC2 - ${enrollment.Aluno.nome}`,
+          description:
+            `Aluno: ${enrollment.Aluno.nome} (RA: ${enrollment.Aluno.ra})\n` +
+            `Orientador: ${enrollment.Orientador.nome}\n` +
+            `Coorientador: ${enrollment.Coorientador ? enrollment.Coorientador.nome : "Não definido"}\n` +
+            `Banca: ${members.map((member) => member.professor.nome).join(", ")}\n`,
+          dateTime: schedule,
+          location: location,
+        },
+      });
+
+      if (!googleCalendarEvent || googleCalendarEvent.status === "error") {
+        throw {
+          statusCode: 500,
+          message: googleCalendarEvent.message,
+        };
+      }
+
+      const updatedBoard = await prisma.banca.update({
+        where: {
+          id: enrollment.Banca.id,
+        },
+        data: {
+          dataHorario: schedule,
+          local: location,
+          idEventoAgenda: googleCalendarEvent.data.id,
+        },
+      });
+
+      if (!updatedBoard) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao agendar banca",
+        };
+      }
+
+      const updatedEnrollment = await prisma.alunoMatriculado.update({
+        where: {
+          id: enrollmentId,
+        },
+        data: {
+          status: "banca_agendada",
+        },
+      });
+
+      if (!updatedEnrollment) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao atualizar matrícula",
+        };
+      }
+
+      const createHistory = await prisma.historicoAluno.create({
+        data: {
+          raAluno: enrollment.raAluno,
+          idSemestre: enrollment.idSemestre,
+          etapa: "TCC1",
+          status: "banca_agendada",
+          observacao:
+            `Agendamento de banca por administrador \n` +
+            `Data: ${schedule}\n` +
+            `Local: ${location}`,
+        },
+      });
+
+      if (!createHistory) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao criar histórico",
+        };
+      }
+
+      const response = await sendEmail({
+        user: adminInfo.emailSistema,
+        pass: adminInfo.chaveEmailSistema,
+        from: adminInfo.emailSistema,
+        to: members.map((member) => member.professor.email).join(", "),
+        subject: `Banca TCC1 agendada - ${enrollment.Aluno.nome}`,
+        text:
+          `Olá!\n\n` +
+          `A banca do aluno ${enrollment.Aluno.nome} (RA: ${enrollment.Aluno.ra}) foi agendada.\n` +
+          `Data: ${new Date(schedule).toLocaleDateString()}\n` +
+          `Local: ${location}\n\n` +
+          `Para mais informações, entre em contato com o PRATCC\n\n`,
+      });
+
+      if (response.status === "error") {
+        throw {
+          statusCode: 500,
+          message: "Erro ao enviar email para membros da banca",
+        };
+      }
+    });
+
+    return transaction;
+  }
+
+  async unscheduleBoard({ enrollmentId, admin }) {
+    if (!enrollmentId) {
+      throw {
+        statusCode: 400,
+        message: "IdMatricula não informado",
+      };
+    }
+
+    const enrollment = await this.prisma.alunoMatriculado.findFirst({
+      where: {
+        id: enrollmentId,
+      },
+      include: {
+        Banca: {
+          include: {
+            membros: true,
+          },
+        },
+        Aluno: true,
+        Semestre: true,
+      },
+    });
+
+    if (!enrollment) {
+      throw {
+        statusCode: 404,
+        message: "Matrícula não encontrada",
+      };
+    }
+
+    if (enrollment.status !== "banca_agendada") {
+      throw {
+        statusCode: 400,
+        message: "O status do aluno não permite o cancelamento da banca",
+      };
+    }
+
+    if (!enrollment.Banca.id) {
+      throw {
+        statusCode: 404,
+        message: "Banca não encontrada",
+      };
+    }
+
+    if (!enrollment.Semestre.ativo) {
+      throw {
+        statusCode: 404,
+        message: "Semestre não ativo",
+      };
+    }
+
+    const adminInfo = await this.prisma.administrador.findFirst({
+      where: {
+        id: admin.id,
+      },
+      include: {
+        googleCredentials: true,
+      },
+    });
+
+    if (!adminInfo) {
+      throw {
+        statusCode: 404,
+        message: "Administrador não encontrado",
+      };
+    }
+
+    if (!adminInfo.googleCredentials) {
+      throw {
+        statusCode: 500,
+        message: "Credenciais do Google Calendar não configuradas",
+      };
+    }
+
+    if (!adminInfo.idCalendario) {
+      throw {
+        statusCode: 500,
+        message: "ID do calendário do Google não configurado",
+      };
+    }
+
+    const transaction = await this.prisma.$transaction(async (prisma) => {
+      const unscheduleBoard = await prisma.banca.update({
+        where: {
+          id: enrollment.Banca.id,
+        },
+        data: {
+          dataHorario: null,
+          local: null,
+        },
+      });
+
+      if (!unscheduleBoard) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao desmarcar banca",
+        };
+      }
+
+      const updatedEnrollment = await prisma.alunoMatriculado.update({
+        where: {
+          id: enrollmentId,
+        },
+        data: {
+          status: "banca_preenchida",
+        },
+        include: {
+          Aluno: true,
+          Orientador: true,
+          Coorientador: true,
+          Banca: {
+            include: {
+              membros: true,
+            },
+          },
+        },
+      });
+
+      if (!updatedEnrollment) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao atualizar matrícula",
+        };
+      }
+
+      const createHistory = await prisma.historicoAluno.create({
+        data: {
+          raAluno: enrollment.raAluno,
+          idSemestre: enrollment.idSemestre,
+          etapa: "TCC1",
+          status: "banca_preenchida",
+          observacao: `Banca desmarcada por administrador`,
+        },
+      });
+
+      if (!createHistory) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao criar histórico",
+        };
+      }
+
+      const googleCalendarEvent = await removeEvent({
+        calendarId: adminInfo.idCalendario,
+        credentials: adminInfo.googleCredentials,
+        eventId: unscheduleBoard.idEventoAgenda,
+      });
+
+      if (!googleCalendarEvent || googleCalendarEvent.status === "error") {
+        throw {
+          statusCode: 500,
+          message: googleCalendarEvent.message,
+        };
+      }
+    });
+
+    return transaction;
+  }
+
+  async studentScheduleBoard({ schedule, location, studentToken }) {
+    const schema = yup.object().shape({
+      schedule: yup.date().required(),
+      location: yup.string().required(),
+      studentToken: yup.string().required(),
+    });
+
+    try {
+      await schema.validate({
+        schedule,
+        location,
+        studentToken: studentToken,
+      });
+    } catch (error) {
+      throw {
+        statusCode: 400,
+        message: error.message,
+      };
+    }
+
+    const payload = await this.jwtService
+      .verifyAsync(studentToken, {
+        secret: process.env.STUDENT_JWT_SECRET,
+      })
+      .then((payload) => payload)
+      .catch((err) => {
+        throw {
+          statusCode: 401,
+          message: "[1] Token inválido " + err,
+        };
+      });
+
+    const enrollmentId = payload.id;
+    const status = payload.status;
+    const adminId = payload.adminId;
+
+    if (status != "agendar-banca") {
+      throw {
+        statusCode: 401,
+        message: "[2] Token Inválido",
+      };
+    }
+
+    const enrollment = await this.prisma.alunoMatriculado.findFirst({
+      where: {
+        id: enrollmentId,
+      },
+      include: {
+        Aluno: true,
+        Banca: {
+          include: {
+            membros: true,
+          },
+        },
+        Semestre: true,
+        Orientador: true,
+        Coorientador: true,
+      },
+    });
+
+    if (
+      !enrollment ||
+      enrollment.status !== "banca_preenchida" ||
+      !enrollment.Banca.id ||
+      !enrollment.Semestre.ativo
+    ) {
+      throw {
+        statusCode: 400,
+        message: "Matrícula inválida",
+      };
+    }
+
+    const admin = await this.prisma.administrador.findFirst({
+      where: {
+        id: adminId,
+      },
+    });
+
+    if (!admin) {
+      throw {
+        statusCode: 404,
+        message: "Administrador não encontrado",
+      };
+    }
+
+    const adminInfo = await this.prisma.administrador.findFirst({
+      where: {
+        id: adminId,
+      },
+      include: {
+        googleCredentials: true,
+      },
+    });
+
+    if (!adminInfo) {
+      throw {
+        statusCode: 404,
+        message: "Administrador não encontrado",
+      };
+    }
+
+    if (!adminInfo.googleCredentials) {
+      throw {
+        statusCode: 500,
+        message: "Credenciais do Google Calendar não configuradas",
+      };
+    }
+
+    if (!adminInfo.idCalendario) {
+      throw {
+        statusCode: 500,
+        message: "ID do calendário do Google não configurado",
+      };
+    }
+
+    const members = await this.prisma.bancaMembro.findMany({
+      where: {
+        bancaId: enrollment.Banca.id,
+      },
+      include: {
+        professor: true,
+      },
+    });
+
+    if (!members) {
+      throw {
+        statusCode: 500,
+        message: "Erro ao buscar membros da banca",
+      };
+    }
+
+    const transaction = await this.prisma.$transaction(async (prisma) => {
+      const googleCalendarEvent = await createEvent({
+        calendarId: adminInfo.idCalendario,
+        credentials: adminInfo.googleCredentials,
+        eventInfo: {
+          title:
+            enrollment.etapa == "TCC1"
+              ? `Banca TCC1 - ${enrollment.Aluno.nome}`
+              : `Banca TCC2 - ${enrollment.Aluno.nome}`,
+          description:
+            `Aluno: ${enrollment.Aluno.nome} (RA: ${enrollment.Aluno.ra})\n` +
+            `Orientador: ${enrollment.Orientador.nome}\n` +
+            `Coorientador: ${enrollment.Coorientador ? enrollment.Coorientador.nome : "Não definido"}\n` +
+            `Banca: ${members.map((member) => member.professor.nome).join(", ")}\n`,
+          dateTime: schedule,
+          location: location,
+        },
+      });
+
+      if (!googleCalendarEvent || googleCalendarEvent.status === "error") {
+        throw {
+          statusCode: 500,
+          message: googleCalendarEvent.message,
+        };
+      }
+
+      const updatedBoard = await prisma.banca.update({
+        where: {
+          id: enrollment.Banca.id,
+        },
+        data: {
+          dataHorario: schedule,
+          local: location,
+          idEventoAgenda: googleCalendarEvent.data.id,
+        },
+      });
+
+      if (!updatedBoard) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao agendar banca",
+        };
+      }
+
+      const updatedEnrollment = await prisma.alunoMatriculado.update({
+        where: {
+          id: enrollmentId,
+        },
+        data: {
+          status: "banca_agendada",
+        },
+      });
+
+      if (!updatedEnrollment) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao atualizar matrícula",
+        };
+      }
+
+      const createHistory = await prisma.historicoAluno.create({
+        data: {
+          raAluno: enrollment.raAluno,
+          idSemestre: enrollment.idSemestre,
+          etapa: "TCC1",
+          status: "banca_agendada",
+          observacao:
+            `Agendamento de banca por aluno \n` +
+            `Data: ${schedule}\n` +
+            `Local: ${location}`,
+        },
+      });
+
+      if (!createHistory) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao criar histórico",
+        };
+      }
+
+      const response = await sendEmail({
+        user: adminInfo.emailSistema,
+        pass: adminInfo.chaveEmailSistema,
+        from: adminInfo.emailSistema,
+        to: members.map((member) => member.professor.email).join(", "),
+        subject: `Banca TCC1 agendada - ${enrollment.Aluno.nome}`,
+        text:
+          `Olá!\n\n` +
+          `A banca do aluno ${enrollment.Aluno.nome} (RA: ${enrollment.Aluno.ra}) foi agendada.\n` +
+          `Data: ${new Date(schedule).toLocaleDateString()}\n` +
+          `Local: ${location}\n\n` +
+          `Para mais informações, entre em contato com o PRATCC\n\n`,
+      });
+
+      if (response.status === "error") {
+        throw {
+          statusCode: 500,
+          message: "Erro ao enviar email para membros da banca",
+        };
+      }
+    });
+
     return transaction;
   }
 }
