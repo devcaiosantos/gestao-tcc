@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     Modal,
     ModalOverlay,
@@ -34,6 +34,7 @@ const ModalGenerateATA = ({data}:ModalGenerateATAProps) => {
     const [selectedTemplate, setSelectedTemplate] = useState<ITextTemplate | null>(null);
     const [content, setContent] = useState<string>("");	
     const [copied, setCopied] = useState(false);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
     const toast = useToast();
 
     useEffect(() => {
@@ -110,9 +111,24 @@ const ModalGenerateATA = ({data}:ModalGenerateATAProps) => {
         }
     }
 
+    const selectText = () => {
+        if (textareaRef.current) {
+          const textarea = textareaRef.current;
+          textarea.focus(); // Garante que o textarea está ativo
+          textarea.setSelectionRange(0, textarea.value.length); // Seleciona do início ao fim
+        }
+    };
+
     function copyToClipboard() {
-        navigator.clipboard.writeText(content);
-        setCopied(true);
+        try{
+            navigator.clipboard.writeText(content);
+            setCopied(true);
+        } catch (err) {
+            selectText();
+            document.execCommand("copy");
+            setCopied(true);
+        }
+        
     }
 
 
@@ -161,6 +177,7 @@ const ModalGenerateATA = ({data}:ModalGenerateATAProps) => {
                             </Box>
                             <Box>
                                 <Textarea 
+                                    ref={textareaRef}
                                     value={content}
                                     onChange={(e) => setContent(e.target.value)}
                                     placeholder="Digite o conteúdo da ata"
