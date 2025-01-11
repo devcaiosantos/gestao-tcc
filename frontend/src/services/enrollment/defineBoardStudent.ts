@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 interface IDefineBoardStudentProps {
+    title: string;
     token: string;
     memberIds: number[];
 }
@@ -19,6 +20,7 @@ const defineBoardStudent = async (data: IDefineBoardStudentProps): Promise<IDefi
     }
 
     const formattedData = {
+        titulo: data.title,
         idMembros: data.memberIds,
         token: data.token
     };

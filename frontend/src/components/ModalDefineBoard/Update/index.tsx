@@ -12,12 +12,10 @@ import {
     useDisclosure,
     useToast,
     Box,
-    FormControl,
-    FormLabel,
     Input,
     Spinner
 } from '@chakra-ui/react'
-import { Container } from '../style';
+import { Container, InputLabel } from '../style';
 import { IEnrollmentStudent } from '@/interfaces';
 import { GiTeacher } from "react-icons/gi";
 import updateBoardAdmin from '@/services/enrollment/updateBoardAdmin';
@@ -36,13 +34,18 @@ interface Option {
     id: number;
     title: string;
 }
+interface IFormData {
+    title: string;
+    selectedTeachers: Option[];
+}
 
 export default function ModalUpdateBoard({data, fetchEnrollments}: ModalEndSemesterProps) {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [teachers, setTeachers] = useState<ITeacher[]>([]);
-    const [selectedTeachers, setSelectedTeachers] = useState<Option[]>([]);
+    const [formData, setFormData] = useState<IFormData>({} as IFormData);
     const [isLoading, setIsLoading] = useState(false);
     const toast = useToast();
+
     useEffect(() => {
       fetchTeachers();
     }, [isOpen]);
@@ -57,7 +60,10 @@ export default function ModalUpdateBoard({data, fetchEnrollments}: ModalEndSemes
           const teacher = teachers.find(teacher => teacher.id === member);
           return {id: teacher?.id || 0, title: teacher?.name || ""};
         });
-        setSelectedTeachers(defaultSelectedTeachers);
+        setFormData({
+          title: data.boardTitle || "",
+          selectedTeachers: defaultSelectedTeachers
+        });
       }
     },[teachers])
 
@@ -77,8 +83,11 @@ export default function ModalUpdateBoard({data, fetchEnrollments}: ModalEndSemes
       }
     }
 
-    async function handleInputChange(value: Option[]) {
-      setSelectedTeachers(value);
+    async function handleInputChange({key, value}: {key: string, value: string | Option[]}){
+      setFormData({
+        ...formData,
+        [key]: value
+      });
     }
 
     async function handleClick(){
@@ -86,11 +95,13 @@ export default function ModalUpdateBoard({data, fetchEnrollments}: ModalEndSemes
       if(data){
         setIsLoading(true);
         const formattedData = {
+          title: formData.title,
           enrollmentId: data.id,
-          memberIds: selectedTeachers.map(teacher => teacher.id)
+          memberIds: formData.selectedTeachers.map(teacher => teacher.id)
         }
-
+        
         const schema = object().shape({
+          title: string().required("O título é obrigatório"),
           enrollmentId: number().required(),
           memberIds: array()
           .min(3, "A banca deve ter no mínimo 3 membros").
@@ -101,13 +112,6 @@ export default function ModalUpdateBoard({data, fetchEnrollments}: ModalEndSemes
           await schema.validate(formattedData);
         } catch (error) {
           if (error instanceof ValidationError) {
-            toast({
-              title: error.message,
-              status: "error",
-              duration: 3000,
-              isClosable: true,
-              position: "top"
-            });
             setIsLoading(false);
             return;
           }
@@ -130,17 +134,15 @@ export default function ModalUpdateBoard({data, fetchEnrollments}: ModalEndSemes
     
     return (
         <>
-            <Tooltip label="Alterar Banca" aria-label="A tooltip">
-                <Button
-                    onClick={onOpen}
-                    colorScheme="cyan"
-                    variant={"outline"}
-                >
-                    <GiTeacher/>
-                </Button>
-            </Tooltip>
-          
-
+          <Tooltip label="Alterar Banca" aria-label="A tooltip">
+              <Button
+                  onClick={onOpen}
+                  colorScheme="cyan"
+                  variant={"outline"}
+              >
+                  <GiTeacher/>
+              </Button>
+          </Tooltip>
           <Modal isOpen={isOpen} onClose={onClose}>
             <ModalOverlay />
             <ModalContent>
@@ -149,15 +151,21 @@ export default function ModalUpdateBoard({data, fetchEnrollments}: ModalEndSemes
               <ModalBody>
                 <Container>
                     <Box>
+                        <InputLabel>Título do trabalho:</InputLabel>
+                        <Input 
+                            value={formData.title}
+                            onChange={(e) => handleInputChange({key: "title", value: e.target.value})}
+                        />
+                    </Box>
+                    <Box>
                         <TagsInput
                             id="tags"
                             label="Membros:"
                             placeholder="Selecione os membros da banca"
                             options={teachers.map(teacher => ({id: teacher.id, title: teacher.name}))}
-                            selectedTags={selectedTeachers}
-                            onChange={(value)=>handleInputChange(value)}
+                            selectedTags={formData.selectedTeachers}
+                            onChange={(selectedTeachers) => handleInputChange({key: "selectedTeachers", value: selectedTeachers})}
                         />
-
                     </Box>
                 </Container>
               </ModalBody>

@@ -7,3 +7,9 @@ export const Container = styled.div`
     width: 100%;
     height: 100%;
 `;
+
+export const InputLabel = styled.p`
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 5px;
+`

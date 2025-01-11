@@ -4,8 +4,8 @@ import RetrieveTeachers from '../../services/teacher/findAll';
 import { ITeacher } from '@/interfaces';
 import { useSearchParams } from 'next/navigation';
 import parseJwtStudent from '@/utils/parseJwtStudent';
-import { Container, InputsContainer, Note, StudentInfo, ResponseContainer } from './style';
-import { Box, Button, useToast } from '@chakra-ui/react';
+import { Container, InputsContainer, Note, StudentInfo, ResponseContainer, InputLabel, InputBox } from './style';
+import { Box, Button, Input, useToast } from '@chakra-ui/react';
 import { object, array, number, ValidationError, string } from 'yup';
 import validateStudentToken from '@/services/validateStudentToken';
 import TagsInput from '@/components/TagsInput';
@@ -18,13 +18,18 @@ interface Option {
     title: string;
 }
 
+interface IFormData {
+    title: string;
+    selectedTeachers: Option[];
+}
+
 function DefineBoardComponent() {
     const [teachers, setTeachers] = useState<ITeacher[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [tokenError, setTokenError] = useState<string | null>(null);
     const [isDone, setIsDone] = useState(false);
     const searchParams = useSearchParams();
-    const [selectedTeachers, setSelectedTeachers] = useState<Option[]>([]);
+    const [formData, setFormData] = useState<IFormData>({} as IFormData);
     const [student, setStudent] = useState({
         id: 0,
         name: "",
@@ -88,19 +93,24 @@ function DefineBoardComponent() {
         fetchData();
     }, [searchParams]);
 
-    async function handleChange(value: Option[]) {
-        setSelectedTeachers(value);
+    async function handleChange({key, value}: {key: string, value: string | Option[]}){ 
+        setFormData({
+            ...formData,
+            [key]: value
+        });
     }
 
     async function handleClick(){
         setIsLoading(true);
 
         const formattedData = {
+            title: formData.title,
             token: searchParams.get('token') || "",
-            memberIds: selectedTeachers.map(teacher => teacher.id)
+            memberIds: formData.selectedTeachers.map(teacher => teacher.id)
         }
 
         const schema = object().shape({
+            title: string().required("O título é obrigatório"),
             memberIds:
             array()
             .min(3, "A banca deve ter no mínimo 3 membros").
@@ -179,15 +189,26 @@ function DefineBoardComponent() {
         </StudentInfo>
 
         <InputsContainer>
-          <TagsInput
-            id="tags-input"
-            label={"Membros da banca:"}
-            selectedTags={selectedTeachers}
-            placeholder='Selecione os professores'
-            onChange={handleChange}
-            options={teachers.map(teacher => ({id: teacher.id, title: teacher.name}))}
-          />
-          <Note>Selecione no mínimo 3 professores</Note>
+            <InputBox>
+                <InputLabel>Título do trabalho:</InputLabel>
+                <Input
+                    id="title"
+                    placeholder="Digite o título do trabalho"
+                    value={formData.title}
+                    onChange={(e) => handleChange({key: "title", value: e.target.value})}
+                />
+            </InputBox>
+            <InputBox>
+                <TagsInput
+                    id="tags-input"
+                    label={"Membros da banca:"}
+                    selectedTags={formData.selectedTeachers}
+                    placeholder='Selecione os professores'
+                    onChange={(e)=>handleChange({key: "selectedTeachers", value: e})}
+                    options={teachers.map(teacher => ({id: teacher.id, title: teacher.name}))}
+                />
+                <Note>Selecione no mínimo 3 professores</Note>
+            </InputBox>
         </InputsContainer>
           
         <Button

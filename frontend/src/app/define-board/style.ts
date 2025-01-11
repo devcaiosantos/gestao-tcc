@@ -35,3 +35,16 @@ export const ResponseContainer = styled.div`
     justify-content: center;
     gap: 20px;
 `;
+
+export const InputLabel = styled.p`
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 5px;
+`
+
+export const InputBox = styled.div`
+    margin: 5px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+`;
