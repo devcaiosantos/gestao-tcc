@@ -2310,4 +2310,193 @@ export class TCC1Service {
 
     return transaction;
   }
+
+  async assignGrade({ enrollmentId, grade }) {
+    const schema = yup.object().shape({
+      enrollmentId: yup.number().required(),
+      grade: yup.number().min(0).max(10).required(),
+    });
+
+    try {
+      await schema.validate({
+        enrollmentId,
+        grade,
+      });
+    } catch (error) {
+      throw {
+        statusCode: 400,
+        message: error.message,
+      };
+    }
+
+    const enrollment = await this.prisma.alunoMatriculado.findFirst({
+      where: {
+        id: enrollmentId,
+      },
+      include: {
+        Aluno: true,
+        Banca: {
+          include: {
+            membros: true,
+          },
+        },
+        Semestre: true,
+      },
+    });
+
+    if (
+      !enrollment ||
+      enrollment.status !== "banca_agendada" ||
+      !enrollment.Banca.id ||
+      !enrollment.Semestre.ativo
+    ) {
+      throw {
+        statusCode: 400,
+        message: "Matrícula inválida",
+      };
+    }
+
+    const NEW_STATUS = grade >= 6 ? "aprovado" : "reprovado";
+
+    const transaction = await this.prisma.$transaction(async (prisma) => {
+      const updatedEnrollment = await prisma.alunoMatriculado.update({
+        where: {
+          id: enrollmentId,
+        },
+        data: {
+          status: NEW_STATUS,
+        },
+      });
+
+      if (!updatedEnrollment) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao atualizar matrícula",
+        };
+      }
+
+      const updatedBoard = await prisma.banca.update({
+        where: {
+          id: enrollment.Banca.id,
+        },
+        data: {
+          nota: grade,
+        },
+      });
+
+      if (!updatedBoard) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao atribuir nota",
+        };
+      }
+
+      const createHistory = await prisma.historicoAluno.create({
+        data: {
+          raAluno: enrollment.raAluno,
+          idSemestre: enrollment.idSemestre,
+          etapa: enrollment.etapa,
+          status: NEW_STATUS,
+          observacao: `Nota atribuída: ${grade}, ${NEW_STATUS}`,
+        },
+      });
+
+      if (!createHistory) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao criar histórico",
+        };
+      }
+    });
+
+    return transaction;
+  }
+
+  async removeGrade(enrollmentId: number) {
+    if (!enrollmentId) {
+      throw {
+        statusCode: 400,
+        message: "IdMatricula não informado",
+      };
+    }
+
+    const enrollment = await this.prisma.alunoMatriculado.findFirst({
+      where: {
+        id: enrollmentId,
+      },
+      include: {
+        Banca: {
+          include: {
+            membros: true,
+          },
+        },
+        Aluno: true,
+        Semestre: true,
+      },
+    });
+
+    if (
+      !enrollment ||
+      (enrollment.status !== "aprovado" && enrollment.status !== "reprovado") ||
+      !enrollment.Semestre.ativo
+    ) {
+      throw {
+        statusCode: 404,
+        message: "Matrícula inválida",
+      };
+    }
+
+    const transaction = await this.prisma.$transaction(async (prisma) => {
+      const updatedEnrollment = await prisma.alunoMatriculado.update({
+        where: {
+          id: enrollmentId,
+        },
+        data: {
+          status: "banca_agendada",
+        },
+      });
+
+      if (!updatedEnrollment) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao atualizar matrícula",
+        };
+      }
+
+      const updatedBoard = await prisma.banca.update({
+        where: {
+          id: enrollment.Banca.id,
+        },
+        data: {
+          nota: null,
+        },
+      });
+
+      if (!updatedBoard) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao remover nota",
+        };
+      }
+
+      const createHistory = await prisma.historicoAluno.create({
+        data: {
+          raAluno: enrollment.raAluno,
+          idSemestre: enrollment.idSemestre,
+          etapa: enrollment.etapa,
+          status: "banca_agendada",
+          observacao: `Nota removida por administrador`,
+        },
+      });
+
+      if (!createHistory) {
+        throw {
+          statusCode: 500,
+          message: "Erro ao criar histórico",
+        };
+      }
+    });
+
+    return transaction;
+  }
 }
