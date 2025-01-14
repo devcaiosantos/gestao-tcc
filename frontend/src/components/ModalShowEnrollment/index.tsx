@@ -73,7 +73,7 @@ export default function ModalShowEnrollment({ data }: ModalShowEnrollmentProps) 
                     {data?.boardLocal && <Text> <b>Local:</b> {data?.boardLocal}</Text> } 
                     {data?.boardDateTime && <Text><b>Data e Hora:</b> {new Date(data?.boardDateTime).toLocaleString()}</Text>}
                     {data?.members && <Text><b>Membros banca:</b> {boardMembers}</Text>}
-                    {data?.boardGrade && <Text><b>Nota:</b> {data?.boardGrade}</Text>}
+                    {data?.boardGrade && <Text><b>Nota:</b> {data?.boardGrade.toFixed(1).replace(/\./g, ",")}</Text>}
                 </Container>
               
               </ModalBody>

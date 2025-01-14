@@ -36,7 +36,25 @@ const ModalAssignGrade = ({ data, fetchEnrollments }: ModalAssignGradeProps) => 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const toast = useToast();
 
-    const formatGrade = (grade: string) => grade.replace(/[^0-9.]/g, "");
+    const formatGrade = (grade: string) => {
+        // Remove qualquer caractere que não seja número ou vírgula
+        let formatted = grade.replace(/[^0-9,]/g, "");
+    
+        // Substituir todas as vírgulas por pontos para facilitar a manipulação de números
+        formatted = formatted.replace(/,/g, ".");
+    
+        // Permitir apenas uma vírgula/ponto decimal e uma casa decimal
+        const decimalIndex = formatted.indexOf(".");
+        if (decimalIndex !== -1) {
+            formatted = formatted.substring(0, decimalIndex + 2);
+        }
+    
+        // Voltar a usar a vírgula como separador decimal
+        formatted = formatted.replace(/\./g, ",");
+    
+        return formatted;
+    };
+    
 
     const handleChangeGrade = (input: string) => {
         const formatted = formatGrade(input);
@@ -44,16 +62,17 @@ const ModalAssignGrade = ({ data, fetchEnrollments }: ModalAssignGradeProps) => 
     };
 
     const validGrade = () => {
-        const gradeFloat = parseFloat(grade);
+        // Substituir vírgula por ponto para validação numérica
+        const gradeFloat = parseFloat(grade.replace(/,/g, "."));
         return !isNaN(gradeFloat) && gradeFloat >= 0 && gradeFloat <= 10;
-    }
+    };
 
     const handleSave = async () => {
         setIsLoading(true);
 
         if(!validGrade()) {
             toast({
-                title: "Nota deve ser um número entre 0.0 e 10.0",
+                title: "Nota deve ser um número entre 0,0 e 10,0",
                 status: "error",
                 duration: 5000,
                 isClosable: true,
@@ -64,7 +83,7 @@ const ModalAssignGrade = ({ data, fetchEnrollments }: ModalAssignGradeProps) => 
 
         const response = await assignGrade({
             enrollmentId: data.id,
-            grade: parseFloat(grade)
+            grade: parseFloat(grade.replace(/,/g, "."))
         });
 
         if (response.status === "error") {
@@ -112,7 +131,7 @@ const ModalAssignGrade = ({ data, fetchEnrollments }: ModalAssignGradeProps) => 
                             />
                             {grade && !validGrade() &&(
                                 <Text color="red.500" fontSize="sm">
-                                    A nota deve estar entre 0.0 e 10.0
+                                    A nota deve estar entre 0,0 e 10,0
                                 </Text>
                             )}
                         </FormControl>
