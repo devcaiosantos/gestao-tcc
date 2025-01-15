@@ -30,7 +30,8 @@ import {
     ActionButtonsContainer
 } from "./style";
 
-import { FaSearch, FaFilter } from "react-icons/fa";
+import { FaSearch, FaFilter, FaHistory } from "react-icons/fa";
+
 import { 
     InputGroup,
     InputLeftElement,
@@ -238,6 +239,7 @@ const EnrollmentsTable = ({
                                                 fetchEnrollments={fetchEnrollments}
                                             />
                                         }
+                                        
                                         <ModalUnenroll
                                             enrollment={enrollment}
                                             fetchEnrollments={fetchEnrollments}

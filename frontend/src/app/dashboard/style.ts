@@ -23,7 +23,7 @@ export const TitlePage = styled.h1`
     gap: 10px;
     font-size: 2rem;
     font-weight: 700;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     @media (max-width: 768px) {
         font-size: 1.5rem;
         flex-direction: column;
