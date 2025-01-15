@@ -175,4 +175,17 @@ export class TCC1Controller {
       studentToken: token,
     });
   }
+
+  @Post("atribuir-nota")
+  grade(@Body() { idMatricula, nota }) {
+    return this.tcc1Service.assignGrade({
+      enrollmentId: idMatricula,
+      grade: nota,
+    });
+  }
+
+  @Delete("remover-nota/:idMatricula")
+  removeGrade(@Param("idMatricula") idMatricula: number) {
+    return this.tcc1Service.removeGrade(+idMatricula);
+  }
 }

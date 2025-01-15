@@ -51,6 +51,8 @@ import ModalScheduleBoard from "@/components/ModalScheduleBoard";
 import ModalUnscheduleBoard from "@/components/ModalUnscheduleBoard";
 import ModalShowEnrollment from "@/components/ModalShowEnrollment";
 import ModalGenerateATA from "@/components/ModalGenerateATA";
+import ModalAssignGrade from "@/components/ModalAssignGrade";
+import ModalRemoveGrade from "@/components/ModalRemoveGrade";
 
 import { FaUserGraduate } from "react-icons/fa";
 import useAuthContext from "@/hooks/useAuthContext";
@@ -282,8 +284,23 @@ const EnrollmentsTable = ({
                                                 <ModalGenerateATA 
                                                     data={enrollment}
                                                 />
+                                                <ModalAssignGrade
+                                                    data={enrollment}
+                                                    fetchEnrollments={fetchEnrollments}
+                                                />
                                             </>
-                                            
+                                        }
+
+                                        {
+                                            (
+                                                enrollment.status === "aprovado" ||
+                                                enrollment.status === "reprovado"  
+                                            )
+                                             &&
+                                            <ModalRemoveGrade 
+                                                data={enrollment}
+                                                fetchEnrollments={fetchEnrollments}
+                                            />
                                         }
 
                                         <ModalShowEnrollment 

@@ -48,6 +48,7 @@ export interface IEnrollmentStudent {
     boardLocal: string | null;
     boardDateTime: Date | null;
     boardTitle: string | null;
+    boardGrade: number | null;
     createdAt: Date;
     updatedAt: Date;
 }

@@ -84,6 +84,7 @@ const findAllBySemester = async ({semesterId, status, term}:IFindEnrollmentsProp
                 boardLocal: enrollmentStudent.Banca?.local || null,
                 boardDateTime: enrollmentStudent.Banca?.dataHorario? new Date(enrollmentStudent.Banca.dataHorario): null,
                 boardTitle: enrollmentStudent.Banca?.titulo || null,
+                boardGrade: enrollmentStudent.Banca?.nota || null,
                 createdAt: new Date(enrollmentStudent.dataCriacao),
                 updatedAt: new Date(enrollmentStudent.dataAtualizacao)
             };
