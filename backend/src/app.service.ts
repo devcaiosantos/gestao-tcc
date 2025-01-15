@@ -82,7 +82,7 @@ export class AppService {
           {
             id: enrollment.id,
             adminId: admin.id,
-            step: "tcc1",
+            student: enrollment.Aluno,
             status: "definir-orientador",
           },
           {
@@ -106,8 +106,9 @@ export class AppService {
         const enrollmentToken = await this.jwtService.signAsync(
           {
             id: enrollment.id,
-            ra: enrollment.Aluno.ra,
-            tipo: "definir-banca",
+            student: enrollment.Aluno,
+            adminId: admin.id,
+            status: "definir-banca",
           },
           {
             secret: process.env.STUDENT_JWT_SECRET,
@@ -117,7 +118,34 @@ export class AppService {
 
         formattedText = formattedText.replace(
           "<linkDefinirBanca>",
-          `<${process.env.FRONTEND_URL}/definir-banca?token=${enrollmentToken}>`,
+          `<${process.env.FRONTEND_URL}/define-board?token=${enrollmentToken}>`,
+        );
+      }
+
+      if (text.includes("<linkAgendarBanca>")) {
+        if (enrollment.status != "banca_preenchida") {
+          throw {
+            message: `Não é possível gerar um 'linkAgendarBanca' para o aluno de e-mail ${enrollment.Aluno.email}.`,
+            statusCode: 400,
+          };
+        }
+
+        const enrollmentToken = await this.jwtService.signAsync(
+          {
+            id: enrollment.id,
+            student: enrollment.Aluno,
+            adminId: admin.id,
+            status: "agendar-banca",
+          },
+          {
+            secret: process.env.STUDENT_JWT_SECRET,
+            expiresIn: process.env.STUDENT_JWT_EXPIRES,
+          },
+        );
+
+        formattedText = formattedText.replace(
+          "<linkAgendarBanca>",
+          `<${process.env.FRONTEND_URL}/schedule-board?token=${enrollmentToken}>`,
         );
       }
 
@@ -183,7 +211,6 @@ export class AppService {
 
     const enrollmentId = payload.id;
     const adminId = payload.adminId;
-
     if (payload.status != status) {
       throw {
         statusCode: 401,
@@ -221,6 +248,15 @@ export class AppService {
           throw {
             statusCode: 400,
             message: "Matrícula não está no status 'orientador_definido'",
+          };
+        }
+        break;
+
+      case "agendar-banca":
+        if (enrollment.status != "banca_preenchida") {
+          throw {
+            statusCode: 400,
+            message: "Matrícula não está no status 'banca_preenchida'",
           };
         }
         break;

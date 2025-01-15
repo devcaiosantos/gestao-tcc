@@ -45,6 +45,15 @@ import ModalImportEnrollments from "@/components/ModalImportEnrollments";
 import ModalDefineAdvisorAdmin from "@/components/ModalDefineAdvisorAdmin";
 import ModalSendEmails from "@/components/ModalSendEmails";
 import ModalRemoveAdvisor from "@/components/ModalRemoveAdvisor";
+import ModalDefineBoard from "@/components/ModalDefineBoard/Create";
+import ModalUpdateBoard from "@/components/ModalDefineBoard/Update";
+import ModalRemoveBoard from "@/components/ModalRemoveBoard";
+import ModalScheduleBoard from "@/components/ModalScheduleBoard";
+import ModalUnscheduleBoard from "@/components/ModalUnscheduleBoard";
+import ModalShowEnrollment from "@/components/ModalShowEnrollment";
+import ModalGenerateATA from "@/components/ModalGenerateATA";
+import ModalAssignGrade from "@/components/ModalAssignGrade";
+import ModalRemoveGrade from "@/components/ModalRemoveGrade";
 
 import { FaUserGraduate } from "react-icons/fa";
 import useAuthContext from "@/hooks/useAuthContext";
@@ -239,7 +248,65 @@ const EnrollmentsTable = ({
                                                 fetchEnrollments={fetchEnrollments}
                                             />
                                         }
-                                        
+
+                                        {
+                                            enrollment.status === "orientador_definido" &&
+                                            <ModalDefineBoard
+                                                data={enrollment}
+                                                fetchEnrollments={fetchEnrollments}
+                                            />
+                                        }
+                                            
+                                        {
+                                            enrollment.status === "banca_preenchida" &&
+                                            <>
+                                                <ModalRemoveBoard
+                                                    data={enrollment}
+                                                    fetchEnrollments={fetchEnrollments}
+                                                />
+                                                <ModalUpdateBoard
+                                                    data={enrollment}
+                                                    fetchEnrollments={fetchEnrollments}
+                                                 />
+                                                 <ModalScheduleBoard
+                                                    enrollment={enrollment}
+                                                    fetchEnrollments={fetchEnrollments}
+                                                 />
+                                            </>
+                                        }
+
+                                        {
+                                            enrollment.status === "banca_agendada" &&
+                                            <>
+                                                <ModalUnscheduleBoard
+                                                    data={enrollment}
+                                                    fetchEnrollments={fetchEnrollments}
+                                                />
+                                                <ModalGenerateATA 
+                                                    data={enrollment}
+                                                />
+                                                <ModalAssignGrade
+                                                    data={enrollment}
+                                                    fetchEnrollments={fetchEnrollments}
+                                                />
+                                            </>
+                                        }
+
+                                        {
+                                            (
+                                                enrollment.status === "aprovado" ||
+                                                enrollment.status === "reprovado"  
+                                            )
+                                             &&
+                                            <ModalRemoveGrade 
+                                                data={enrollment}
+                                                fetchEnrollments={fetchEnrollments}
+                                            />
+                                        }
+
+                                        <ModalShowEnrollment 
+                                            data={enrollment}
+                                        />
                                         <ModalUnenroll
                                             enrollment={enrollment}
                                             fetchEnrollments={fetchEnrollments}

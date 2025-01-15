@@ -127,7 +127,7 @@ export default function ModalCreateUpdateTextTemplate({ children, data, isOpen, 
     return (
         <>
             {children}
-            <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+            <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} size={"2xl"}>
                 <ModalOverlay />
                 <ModalContent>
                     <ModalHeader>{data && data.id ? 'Editar Modelo de Texto' : 'Criar Novo Modelo de Texto'}</ModalHeader>
@@ -165,43 +165,27 @@ export default function ModalCreateUpdateTextTemplate({ children, data, isOpen, 
                                     <Text>
                                         Tags disponíveis: 
                                     </Text>
-                                    <Button
-                                        size="sm"
-                                        variant={"outline"}
-                                        onClick={() => handleChange('content', `${tempData.content}<linkDefinirOrientador>`)}
-                                        rightIcon={<FaPlus/>}
-                                    >
-                                        <Tooltip
-                                            label="Link para tela de definição de orientador"
-                                        >
-                                            {`<linkDefinirOrientador>`} 
-                                        </Tooltip>
-                                    </Button>
-                                    <Button
-                                        size="sm"
-                                        variant={"outline"}
-                                        onClick={() => handleChange('content', `${tempData.content}<linkDefinirBanca>`)}
-                                        rightIcon={<FaPlus/>}
-                                    >
-                                        <Tooltip
-                                            label="Link para tela de definição de banca"
-                                        >
-                                            {`<linkDefinirBanca>`} 
-                                        </Tooltip>
-                                    </Button>
-                                    <Button
-                                        size="sm"
-                                        variant={"outline"}
-                                        onClick={() => handleChange('content', `${tempData.content}<nomeAluno>`)}
-                                        rightIcon={<FaPlus/>}
-                                    >
-                                        <Tooltip
-                                            label="Nome do aluno"
-                                        >
-                                            {`<nomeAluno>`} 
-                                        </Tooltip>
-                                    </Button>
-
+                                    {
+                                    
+                                        tempData.type &&
+                                        (tempData.type === "ATA" || tempData.type === "EMAIL" || tempData.type === "DECLARACAO") 
+                                        &&
+                                        TagsList[tempData.type].map(tag => (
+                                            <Button
+                                                key={tag.tag}
+                                                size="sm"
+                                                variant={"outline"}
+                                                onClick={() => handleChange('content', `${tempData.content}${tag.tag}`)}
+                                                rightIcon={<FaPlus/>}
+                                            >
+                                                <Tooltip
+                                                    label={tag.label}
+                                                >
+                                                    {tag.tag} 
+                                                </Tooltip>
+                                            </Button>
+                                        ))
+                                    }
                                 </TagsContainer>
                             </Box>
                         </Container>
@@ -218,4 +202,57 @@ export default function ModalCreateUpdateTextTemplate({ children, data, isOpen, 
             </Modal>
         </>
     );
+}
+
+
+const TagsList = {
+    EMAIL:[
+        {
+            tag: "<linkDefinirOrientador>",
+            label: "Link para tela de definição de orientador",
+        },
+        {
+            tag: "<linkDefinirBanca>",
+            label: "Link para tela de definição de banca",
+        },
+        {
+            tag: "<linkAgendarBanca>",
+            label: "Link para tela de agendamento de banca",
+        },
+        {
+            tag: "<nomeAluno>",
+            label: "Nome do aluno",
+        },
+    ],
+    ATA: [
+        {
+            tag: "<dataHora>",
+            label: "Data e hora",
+        },
+        {
+            tag: "<local>",
+            label: "Local",
+        },
+        {
+            tag:"<nomeAluno>",
+            label: "Nome do aluno",
+        },
+        {
+            tag: "<tituloTrabalho>",
+            label: "Título do trabalho",
+        },
+        {
+            tag: "<orientador>",
+            label: "Orientador",
+        },
+        {
+            tag: "<coorientador>",
+            label: "Coorientador",
+        },
+        {
+            tag: "<membrosBanca>",
+            label: "Membros da banca 1",
+        },
+    ],
+    DECLARACAO: []
 }

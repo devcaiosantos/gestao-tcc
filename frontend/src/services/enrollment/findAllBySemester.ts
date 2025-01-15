@@ -2,6 +2,7 @@ import axios from 'axios';
 import { getCookie } from '@/utils/cookies';
 import { IEnrollmentStudent } from '@/interfaces';
 import { EnrollmentStatus } from '@/interfaces';
+
 interface AlunoMatriculado {
     id: number;
     raAluno: string;
@@ -22,6 +23,15 @@ interface AlunoMatriculado {
     Coorientador: {
         nome: string;
     };
+    Banca?: {
+        id: number;
+        titulo: string;
+        nota: number;
+        presidenteId: number;
+        membros:  {professorId: number, isPresidente: boolean}[]
+        local: string;
+        dataHorario: string;
+    }
 }
 
 interface IGetAllEnrollmentStudentsBySemesterResponse {
@@ -69,6 +79,12 @@ const findAllBySemester = async ({semesterId, status, term}:IFindEnrollmentsProp
                 supervisorName: enrollmentStudent.Orientador?.nome,
                 coSupervisorId: enrollmentStudent.idCoorientador,
                 coSupervisorName: enrollmentStudent.Coorientador?.nome,
+                members: enrollmentStudent.Banca?.membros.map(member => member.professorId) || [],
+                presidentId: enrollmentStudent.Banca?.membros.find(member => member.isPresidente)?.professorId || 0,
+                boardLocal: enrollmentStudent.Banca?.local || null,
+                boardDateTime: enrollmentStudent.Banca?.dataHorario? new Date(enrollmentStudent.Banca.dataHorario): null,
+                boardTitle: enrollmentStudent.Banca?.titulo || null,
+                boardGrade: enrollmentStudent.Banca?.nota || null,
                 createdAt: new Date(enrollmentStudent.dataCriacao),
                 updatedAt: new Date(enrollmentStudent.dataAtualizacao)
             };

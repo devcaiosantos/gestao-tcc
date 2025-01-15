@@ -45,9 +45,9 @@ export default function ModalRemoveAdvisor({data, fetchEnrollments}: ModalRemove
               onClick={onOpen}
               variant={"outline"}
               colorScheme="red"
-              leftIcon={<MdGroupRemove/>}
               fontSize={"lg"}
             >
+              <MdGroupRemove/>
             </Button>
           </Tooltip>
           

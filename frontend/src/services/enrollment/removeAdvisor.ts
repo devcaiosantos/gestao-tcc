@@ -22,7 +22,7 @@ const removeAdvisor = async (enrollmentId: number): Promise<IRemoveAdvisorRespon
             'Authorization': `Bearer ${getCookie("tcc-token")}`
         },
         url: URL + `/tcc1/remover-orientador/${enrollmentId}`,
-        method: 'put',
+        method: 'delete',
     };
 
     try {

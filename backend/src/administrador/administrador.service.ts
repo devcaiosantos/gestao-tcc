@@ -17,6 +17,7 @@ export class AdministradorService {
         senha: string().min(8).required(),
         emailSistema: string().email(),
         chaveEmailSistema: string(),
+        idCalendario: string(),
       });
       await createAdministradorSchema.validate(administrador);
     } catch (error) {
@@ -48,6 +49,7 @@ export class AdministradorService {
         senha: hash,
         emailSistema: administrador.emailSistema,
         chaveEmailSistema: administrador.chaveEmailSistema,
+        idCalendario: administrador.idCalendario,
       },
     });
     if (!createdAdministrador) {
@@ -86,6 +88,7 @@ export class AdministradorService {
       email: existingAdministrador.email,
       emailSistema: existingAdministrador.emailSistema,
       chaveEmailSistema: existingAdministrador.chaveEmailSistema,
+      idCalendario: existingAdministrador.idCalendario,
     };
   }
 
@@ -107,6 +110,7 @@ export class AdministradorService {
         email: string().email().required(),
         emailSistema: string().email(),
         chaveEmailSistema: string(),
+        idCalendario: string(),
       });
       await updateAdministradorSchema.validate(newAdministrador);
     } catch (error) {
@@ -123,6 +127,7 @@ export class AdministradorService {
         email: newAdministrador.email,
         emailSistema: newAdministrador.emailSistema,
         chaveEmailSistema: newAdministrador.chaveEmailSistema,
+        idCalendario: newAdministrador.idCalendario,
       },
     });
 
@@ -139,6 +144,7 @@ export class AdministradorService {
       email: updatedAdministrador.email,
       emailSistema: updatedAdministrador.emailSistema,
       chaveEmailSistema: updatedAdministrador.chaveEmailSistema,
+      idCalendario: updatedAdministrador.idCalendario,
     };
   }
 

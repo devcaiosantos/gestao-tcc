@@ -8,6 +8,7 @@ interface IUpdateAdminProps {
     email: string;
     systemEmail?: string;
     systemEmailKey?: string;
+    calendarId?: string;
 }
 
 interface SuccessResponse {
@@ -16,6 +17,7 @@ interface SuccessResponse {
     email: string;
     emailSistema: string;
     chaveEmailSistema: string;
+    idCalendario: string;
 }
 
 interface IUpdateAdminResponse {
@@ -36,7 +38,8 @@ const updateAdminInfo = async (data: IUpdateAdminProps): Promise<IUpdateAdminRes
         nome: data.name,
         email: data.email,
         emailSistema: data.systemEmail,
-        chaveEmailSistema: data.systemEmailKey
+        chaveEmailSistema: data.systemEmailKey,
+        idCalendario: data.calendarId
     };
 
     const config = {

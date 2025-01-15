@@ -4,6 +4,7 @@ export interface createAdministradorProps {
   senha: string;
   emailSistema: string;
   chaveEmailSistema: string;
+  idCalendario: string;
 }
 export interface resetPasswordProps {
   senha: string;

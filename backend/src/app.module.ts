@@ -17,6 +17,7 @@ import { SemestreModule } from "./semestre/semestre.module";
 import { TCC1Module } from "./tcc1/tcc1.module";
 import { HistoricoModule } from "./historico/historico.module";
 import { AlunoModule } from "./aluno/aluno.module";
+import { GoogleCredentialsModule } from "./google-credentials/google-credentials.module";
 import * as moment from "moment-timezone";
 
 // Definindo o fuso horário para o Brasil
@@ -60,6 +61,10 @@ moment.tz.setDefault("America/Sao_Paulo");
             path: "/",
             module: AlunoModule,
           },
+          {
+            path: "/",
+            module: GoogleCredentialsModule,
+          },
         ],
       },
     ]),
@@ -74,6 +79,7 @@ moment.tz.setDefault("America/Sao_Paulo");
     TCC1Module,
     HistoricoModule,
     AlunoModule,
+    GoogleCredentialsModule,
   ],
   controllers: [AppController, AuthController],
   providers: [
