@@ -80,8 +80,9 @@ export const AddEnrollmentButtonContainer = styled.div`
 
 export const ActionButtonsContainer = styled.div`
   height: 40px;
+  width: 100%;
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
   gap: 10px;  
 `;
@@ -124,4 +125,15 @@ export const FilterStatusContainer = styled(Flex)`
 `;
 
 export const StatusFilterSelect = styled(Select)`
+`;
+
+
+export const StatusBoxValue = styled.div<{ $bgColor: string }>`
+  background-color: transparent;
+  border: 1px solid ${({$bgColor})=>$bgColor};
+  border-radius: 5px;
+  width: max-content;
+  padding: 5px;
+  color: ${({$bgColor})=>$bgColor};
+  font-weight: 600;
 `;

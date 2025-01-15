@@ -13,6 +13,7 @@ import findStudentByRA from "@/services/student/findByRa";
 import { IHistory } from "@/interfaces";
 import { useSearchParams } from "next/navigation";
 import { IStudent } from "@/interfaces";
+import { statusOptions } from "@/utils/statusOptions";
 
 export default function Page(){
     const [history, setHistory] = useState<IHistory[]>([]);
@@ -86,14 +87,16 @@ export default function Page(){
                     <p>No history found.</p>
                 ) : (
                     history.map((item) => (
-                        <HistoryItem key={item.id}>
+                        <HistoryItem key={item.id}
+                          statusColor={statusOptions.find((status) => status.value === item.status)?.colorScheme || "gray" }
+                        >
                             <div className="status">
                                 <strong>Status:</strong> {item.status.replace("_", " ").toUpperCase()}
                             </div>
                             <div className="stage">
                                 <strong>Etapa:</strong> {item.stage}
                             </div>
-                            <Observation>
+                            <Observation statusColor={statusOptions.find((status) => status.value === item.status)?.colorScheme || "gray" }>
                                 <strong>Observação:</strong> {item.observation || "Nenhuma observação"}
                             </Observation>
                             <div className="date">
