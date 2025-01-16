@@ -9,6 +9,7 @@ import {
     Tr,
     Td,
     Button,
+    Tooltip
 } from "@chakra-ui/react";
 import { TitlePage } from "../style";
 import getAllEnrollments from "@/services/enrollment/findAllBySemester";
@@ -27,10 +28,12 @@ import {
     Toolbar1,
     Toolbar2,
     Container, 
-    ActionButtonsContainer
+    ActionButtonsContainer,
+    StatusBoxValue
 } from "./style";
 
-import { FaSearch, FaFilter } from "react-icons/fa";
+import { FaSearch, FaFilter, FaHistory } from "react-icons/fa";
+
 import { 
     InputGroup,
     InputLeftElement,
@@ -224,8 +227,12 @@ const EnrollmentsTable = ({
                                         {enrollment.studentName}
                                     </EnrollmentInfo>
                                 </Td>
-                                <Td>
-                                    {enrollment.status?.toUpperCase().replace("_", " ")}
+                                <Td >
+                                    <StatusBoxValue 
+                                    $bgColor={statusOptions.find((status) => status.value === enrollment.status)?.colorScheme || "gray"}
+                                    >
+                                        {enrollment.status?.toUpperCase().replace("_", "_")}
+                                    </StatusBoxValue>
                                 </Td>
                                 <Td>
                                     {enrollment.supervisorName?.toUpperCase()}
@@ -306,6 +313,17 @@ const EnrollmentsTable = ({
                                         <ModalShowEnrollment 
                                             data={enrollment}
                                         />
+                                        <Tooltip label="Histórico Aluno">
+                                            <Button
+                                                colorScheme="blue"
+                                                variant={"outline"}
+                                                onClick={() => {
+                                                    window.location.href = `/dashboard/history?ra=${enrollment.studentRA}`;
+                                                }}
+                                            >
+                                                <FaHistory/>
+                                            </Button>
+                                        </Tooltip>
                                         <ModalUnenroll
                                             enrollment={enrollment}
                                             fetchEnrollments={fetchEnrollments}

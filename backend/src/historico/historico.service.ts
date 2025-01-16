@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
-export class HistoricService {
+export class HistoricoService {
   constructor(private prisma: PrismaService) {}
   async findByRA(ra: string) {
     if (!ra) {

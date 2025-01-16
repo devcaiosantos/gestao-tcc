@@ -67,6 +67,16 @@ export type EnrollmentStatus =
      "aprovado" | 
      "reprovado" | 
      "nao_finalizado";
+
+export interface IHistory {
+    id: number;
+    studentRA: string;
+    semesterId: number;
+    status: EnrollmentStatus;
+    stage: string;
+    observation: string;
+    createdAt: Date;
+}
 export interface IGoogleCredentials {
     type: string;
     projectId: string;
