@@ -126,7 +126,7 @@ const ModalAssignGrade = ({ data, fetchEnrollments }: ModalAssignGradeProps) => 
                                 variant="flushed"
                                 value={grade}
                                 onChange={(e) => handleChangeGrade(e.target.value)}
-                                placeholder="0.0 à 10.0"
+                                placeholder="0,0 à 10,0"
                                 maxLength={4}
                             />
                             {grade && !validGrade() &&(

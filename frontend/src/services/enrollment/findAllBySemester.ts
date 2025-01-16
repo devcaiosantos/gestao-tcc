@@ -43,12 +43,13 @@ interface IGetAllEnrollmentStudentsBySemesterResponse {
 export type Status = "success" | "error";
 
 interface IFindEnrollmentsProps {
+    stage: "TCC1" | "TCC2";
     semesterId: number;
     term: string;
     status:EnrollmentStatus | "todos";
 }
 
-const findAllBySemester = async ({semesterId, status, term}:IFindEnrollmentsProps): Promise<IGetAllEnrollmentStudentsBySemesterResponse> => {
+const findAllBySemester = async ({stage, semesterId, status, term}:IFindEnrollmentsProps): Promise<IGetAllEnrollmentStudentsBySemesterResponse> => {
     const URL = process.env.NEXT_PUBLIC_API_URL;
     if (!URL) {
         throw new Error('Variável de ambiente não configurada');
@@ -59,7 +60,7 @@ const findAllBySemester = async ({semesterId, status, term}:IFindEnrollmentsProp
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${getCookie("tcc-token")}`
         },
-        url: URL + `/tcc1?idSemester=${semesterId}&status=${status}&term=${term}`,
+        url: URL + `/tcc/${stage}?idSemester=${semesterId}&status=${status}&term=${term}`,
         method: 'get'
     };
 
