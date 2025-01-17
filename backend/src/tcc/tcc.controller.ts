@@ -1,4 +1,4 @@
-import { Controller, Body, Post, Get, Param, Query } from "@nestjs/common";
+import { Controller, Body, Post, Get, Param, Query, Put } from "@nestjs/common";
 import { EnrollmentService } from "./enrollment.service";
 import { EnrollStudent, Stage, Status } from "./interfaces";
 
@@ -39,5 +39,24 @@ export class TccController {
     if (stage === "TCC2") {
       return this.enrollmentService.enrollBatchTCC2(students);
     }
+  }
+
+  @Put("finalizar-semestre/:stage/:semesterId")
+  finishSemester(
+    @Param("stage") stage: Stage,
+    @Param("semesterId") id: number,
+  ) {
+    return this.enrollmentService.finishSemester({ stage, semesterId: +id });
+  }
+
+  @Put("importar-matriculas/:stage/:semesterId")
+  importEnrollmentsFromSemester(
+    @Param("stage") stage: Stage,
+    @Param("semesterId") idSemester: number,
+  ) {
+    return this.enrollmentService.importEnrollmentsFromSemester({
+      stage,
+      semesterId: +idSemester,
+    });
   }
 }

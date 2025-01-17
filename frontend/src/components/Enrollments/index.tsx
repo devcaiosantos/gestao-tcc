@@ -127,6 +127,7 @@ export default function Enrollments({stage}: {stage: "TCC1" | "TCC2"}) {
                 <FaUserGraduate/>
                 Matrículas {stage} - {activeSemester?.year}/{activeSemester?.number}
                 <ModalEndSemester
+                    stage={stage}
                     data={activeSemester}
                     fetchEnrollments={fetchEnrollments}
                 />
@@ -138,7 +139,7 @@ export default function Enrollments({stage}: {stage: "TCC1" | "TCC2"}) {
                     <ModalCreateBatchEnrollments stage={stage} fetchEnrollments={fetchEnrollments}/>
                 </AddEnrollmentButtonContainer>
                 <AddEnrollmentButtonContainer>
-                    <ModalImportEnrollments fetchEnrollments={fetchEnrollments}/>
+                    <ModalImportEnrollments stage={stage} fetchEnrollments={fetchEnrollments}/>
                     <ModalSendEmails />
                 </AddEnrollmentButtonContainer>
             </Toolbar1>
