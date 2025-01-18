@@ -14,7 +14,6 @@ import { ProfessorModule } from "./professor/professor.module";
 import { AdministradorModule } from "./administrador/administrador.module";
 import { ModeloTextoModule } from "./modelo-texto/modelo-texto.module";
 import { SemestreModule } from "./semestre/semestre.module";
-import { TCC1Module } from "./tcc1/tcc1.module";
 import { HistoricoModule } from "./historico/historico.module";
 import { AlunoModule } from "./aluno/aluno.module";
 import { GoogleCredentialsModule } from "./google-credentials/google-credentials.module";
@@ -52,10 +51,6 @@ moment.tz.setDefault("America/Sao_Paulo");
           },
           {
             path: "/",
-            module: TCC1Module,
-          },
-          {
-            path: "/",
             module: HistoricoModule,
           },
           {
@@ -81,7 +76,6 @@ moment.tz.setDefault("America/Sao_Paulo");
     AdministradorModule,
     ModeloTextoModule,
     SemestreModule,
-    TCC1Module,
     HistoricoModule,
     AlunoModule,
     GoogleCredentialsModule,
