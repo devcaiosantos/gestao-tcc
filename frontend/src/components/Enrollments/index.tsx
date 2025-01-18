@@ -140,7 +140,7 @@ export default function Enrollments({stage}: {stage: "TCC1" | "TCC2"}) {
                 </AddEnrollmentButtonContainer>
                 <AddEnrollmentButtonContainer>
                     <ModalImportEnrollments stage={stage} fetchEnrollments={fetchEnrollments}/>
-                    <ModalSendEmails />
+                    <ModalSendEmails stage={stage}/>
                 </AddEnrollmentButtonContainer>
             </Toolbar1>
             <Toolbar2>
@@ -319,15 +319,14 @@ const EnrollmentsTable = ({
                                             data={enrollment}
                                         />
                                         <Tooltip label="Histórico Aluno">
+                                          <a href={`/dashboard/history?ra=${enrollment.studentRA}`} target="_blank">
                                             <Button
-                                                colorScheme="blue"
-                                                variant={"outline"}
-                                                onClick={() => {
-                                                    window.location.href = `/dashboard/history?ra=${enrollment.studentRA}`;
-                                                }}
+                                                    colorScheme="blue"
+                                                    variant={"outline"}
                                             >
                                                 <FaHistory/>
                                             </Button>
+                                          </a>
                                         </Tooltip>
                                         <ModalUnenroll
                                             enrollment={enrollment}

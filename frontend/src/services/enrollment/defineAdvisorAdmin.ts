@@ -22,7 +22,7 @@ const defineAdvisorAdmin = async (data: IDefineAdvisorAdminProps): Promise<IDefi
 
     const formattedData = {
         idOrientador: data.advisorId,
-        idCoOrientador: data?.coAdvisorId,
+        idCoorientador: data?.coAdvisorId,
         idMatricula: data.enrollmentId
     };
 
@@ -31,7 +31,7 @@ const defineAdvisorAdmin = async (data: IDefineAdvisorAdminProps): Promise<IDefi
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${getCookie("tcc-token")}`
         },
-        url: URL + `/tcc1/definir-orientador/admin`,
+        url: URL + `/tcc/definir-orientador/admin`,
         method: 'post',
         data: formattedData
     };

@@ -19,7 +19,7 @@ interface IDefineBoardByAdminBody {
   idMembros: number[];
 }
 
-@Controller("tcc1")
+@Controller("tcc1123123")
 export class TCC1Controller {
   constructor(private readonly tcc1Service: TCC1Service) {}
 

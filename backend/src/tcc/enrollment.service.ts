@@ -710,7 +710,7 @@ export class EnrollmentService {
         data: {
           raAluno: existingAlunoMatriculado.raAluno,
           idSemestre: existingAlunoMatriculado.idSemestre,
-          etapa: "TCC1",
+          etapa: deletedEnrollment.etapa,
           status: "desmatriculado",
           observacao: "Aluno desmatriculado",
         },

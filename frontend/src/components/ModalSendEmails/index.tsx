@@ -45,7 +45,7 @@ const defaultFormData:IFormData  = {
     text: ""
 }
 
-export default function ModalSendEmails() {
+export default function ModalSendEmails({stage}:{stage:"TCC1"|"TCC2"}) {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [textTemplates, setTextTemplates] = useState<ITextTemplate[]>([]);
     const [formData, setFormData] = useState<IFormData>(defaultFormData);
@@ -70,6 +70,7 @@ export default function ModalSendEmails() {
     async function loadRecipientsByStatus(status: EnrollmentStatus | "todos"){
         if(activeSemester){
             const response = await RetrieveEnrollments({
+                stage: stage,
                 semesterId: activeSemester.id,
                 status: status,
                 term: ""

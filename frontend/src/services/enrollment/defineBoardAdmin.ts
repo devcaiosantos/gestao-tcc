@@ -31,7 +31,7 @@ const defineBoardAdmin = async (data: IDefineBoardAdminProps): Promise<IDefineBo
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${getCookie("tcc-token")}`
         },
-        url: URL + `/tcc1/definir-banca/admin`,
+        url: URL + `/tcc/definir-banca/admin`,
         method: 'post',
         data: formattedData
     };
