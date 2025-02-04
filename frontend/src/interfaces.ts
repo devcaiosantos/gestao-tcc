@@ -3,7 +3,8 @@ export interface IAdmin {
     name: string;
     email: string;
     systemEmail?: string;
-    systemEmailKey?: string
+    systemEmailKey?: string;
+    calendarId?: string;
 }
 
 export interface ITeacher {
@@ -42,6 +43,12 @@ export interface IEnrollmentStudent {
     supervisorName: string | null;
     coSupervisorId: number | null;
     coSupervisorName: string | null;
+    members: number[];
+    presidentId: number;
+    boardLocal: string | null;
+    boardDateTime: Date | null;
+    boardTitle: string | null;
+    boardGrade: number | null;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -60,3 +67,27 @@ export type EnrollmentStatus =
      "aprovado" | 
      "reprovado" | 
      "nao_finalizado";
+
+export interface IHistory {
+    id: number;
+    studentRA: string;
+    semesterId: number;
+    status: EnrollmentStatus;
+    stage: string;
+    observation: string;
+    createdAt: Date;
+}
+export interface IGoogleCredentials {
+    type: string;
+    projectId: string;
+    privateKeyId: string;
+    privateKey: string;
+    client_email: string;
+    clientId: string;
+    authUri: string;
+    tokenUri: string;
+    authProviderX509CertUrl: string;
+    clientX509CertUrl: string;
+}
+
+      

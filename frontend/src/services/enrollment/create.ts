@@ -6,6 +6,7 @@ interface ICreateEnrollmentProps {
     name: string;
     email: string;
     ra: string;
+    stage: "TCC1" | "TCC2";
 }
 
 interface ICreateEnrollmentResponse {
@@ -33,7 +34,7 @@ const createEnrollment = async (data: ICreateEnrollmentProps): Promise<ICreateEn
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${getCookie("tcc-token")}`
         },
-        url: URL + `/tcc1/matricular`,
+        url: URL + `/tcc/${data.stage}/matricular`,
         method: 'post',
         data: formattedData
     };

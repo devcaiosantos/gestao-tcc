@@ -19,11 +19,12 @@ import findAllSemesters from '@/services/semester/findAll';
 import useAuthContext from '@/hooks/useAuthContext';
 
 interface ModalImportEnrollmentsProps {
+    stage: "TCC1" | "TCC2";
     fetchEnrollments: () => void;
 }
 
 
-export default function ModalImportEnrollments({ fetchEnrollments }: ModalImportEnrollmentsProps) {
+export default function ModalImportEnrollments({ stage, fetchEnrollments }: ModalImportEnrollmentsProps) {
     const [semesters, setSemesters] = useState<ISemester[]>([]);
     const [selectedSemesterId, setSelectedSemesterId] = useState<string>("");
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -36,8 +37,9 @@ export default function ModalImportEnrollments({ fetchEnrollments }: ModalImport
         }
         return s.year == activeSemester?.year && s.number == activeSemester?.number - 1;
     })
-
     useEffect(() => {
+        
+        
         if(!isOpen){
             setSelectedSemesterId("");
         }
@@ -75,7 +77,10 @@ export default function ModalImportEnrollments({ fetchEnrollments }: ModalImport
             return;
         }
         
-        const response = await importEnrollmentsFromSemester(Number(lastSemester?.id));
+        const response = await importEnrollmentsFromSemester({
+            stage: stage,
+            semesterId: Number(lastSemester.id)
+        });
         toast({
             title: response.message,
             status: response.status,

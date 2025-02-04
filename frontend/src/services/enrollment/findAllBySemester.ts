@@ -2,6 +2,7 @@ import axios from 'axios';
 import { getCookie } from '@/utils/cookies';
 import { IEnrollmentStudent } from '@/interfaces';
 import { EnrollmentStatus } from '@/interfaces';
+
 interface AlunoMatriculado {
     id: number;
     raAluno: string;
@@ -22,6 +23,15 @@ interface AlunoMatriculado {
     Coorientador: {
         nome: string;
     };
+    Banca?: {
+        id: number;
+        titulo: string;
+        nota: number;
+        presidenteId: number;
+        membros:  {professorId: number, isPresidente: boolean}[]
+        local: string;
+        dataHorario: string;
+    }
 }
 
 interface IGetAllEnrollmentStudentsBySemesterResponse {
@@ -33,12 +43,13 @@ interface IGetAllEnrollmentStudentsBySemesterResponse {
 export type Status = "success" | "error";
 
 interface IFindEnrollmentsProps {
+    stage: "TCC1" | "TCC2";
     semesterId: number;
     term: string;
     status:EnrollmentStatus | "todos";
 }
 
-const findAllBySemester = async ({semesterId, status, term}:IFindEnrollmentsProps): Promise<IGetAllEnrollmentStudentsBySemesterResponse> => {
+const findAllBySemester = async ({stage, semesterId, status, term}:IFindEnrollmentsProps): Promise<IGetAllEnrollmentStudentsBySemesterResponse> => {
     const URL = process.env.NEXT_PUBLIC_API_URL;
     if (!URL) {
         throw new Error('Variável de ambiente não configurada');
@@ -49,7 +60,7 @@ const findAllBySemester = async ({semesterId, status, term}:IFindEnrollmentsProp
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${getCookie("tcc-token")}`
         },
-        url: URL + `/tcc1?idSemester=${semesterId}&status=${status}&term=${term}`,
+        url: URL + `/tcc/${stage}?idSemester=${semesterId}&status=${status}&term=${term}`,
         method: 'get'
     };
 
@@ -69,6 +80,12 @@ const findAllBySemester = async ({semesterId, status, term}:IFindEnrollmentsProp
                 supervisorName: enrollmentStudent.Orientador?.nome,
                 coSupervisorId: enrollmentStudent.idCoorientador,
                 coSupervisorName: enrollmentStudent.Coorientador?.nome,
+                members: enrollmentStudent.Banca?.membros.map(member => member.professorId) || [],
+                presidentId: enrollmentStudent.Banca?.membros.find(member => member.isPresidente)?.professorId || 0,
+                boardLocal: enrollmentStudent.Banca?.local || null,
+                boardDateTime: enrollmentStudent.Banca?.dataHorario? new Date(enrollmentStudent.Banca.dataHorario): null,
+                boardTitle: enrollmentStudent.Banca?.titulo || null,
+                boardGrade: enrollmentStudent.Banca?.nota || null,
                 createdAt: new Date(enrollmentStudent.dataCriacao),
                 updatedAt: new Date(enrollmentStudent.dataAtualizacao)
             };

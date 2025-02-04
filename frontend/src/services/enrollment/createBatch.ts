@@ -3,9 +3,12 @@ import { getCookie } from '@/utils/cookies';
 import { IEnrollmentStudent } from '@/interfaces';
 
 interface ICreateBatchEnrollmentProps {
-    name: string;
-    email: string;
-    ra: string;
+    stage: "TCC1" | "TCC2";
+    data: {
+        name: string;
+        email: string;
+        ra: string;
+    }[];
 }
 
 interface ICreateBatchEnrollmentResponse {
@@ -16,7 +19,7 @@ interface ICreateBatchEnrollmentResponse {
 
 export type Status = "success" | "error";
 
-const createBatchEnrollment = async (data: ICreateBatchEnrollmentProps[]): Promise<ICreateBatchEnrollmentResponse> => {
+const createBatchEnrollment = async ({stage, data}:ICreateBatchEnrollmentProps): Promise<ICreateBatchEnrollmentResponse> => {
     const URL = process.env.NEXT_PUBLIC_API_URL;
     if (!URL) {
         throw new Error('Variável de ambiente não configurada');
@@ -35,7 +38,7 @@ const createBatchEnrollment = async (data: ICreateBatchEnrollmentProps[]): Promi
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${getCookie("tcc-token")}`
         },
-        url: URL + `/tcc1/matricular-lote`,
+        url: URL + `/tcc/${stage}/matricular-lote`,
         method: 'post',
         data: formattedData
     };

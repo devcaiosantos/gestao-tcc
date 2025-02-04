@@ -8,7 +8,10 @@ interface IImportFromSemesterResponse {
     message: string;
 }
 
-const importEnrollmentsFromSemester = async (idSemester: number): Promise<IImportFromSemesterResponse> => {
+const importEnrollmentsFromSemester = async ({stage, semesterId}:{
+    stage: "TCC1" | "TCC2",
+    semesterId: number
+}): Promise<IImportFromSemesterResponse> => {
     const URL = process.env.NEXT_PUBLIC_API_URL;
     if (!URL) {
         throw new Error('Variável de ambiente não configurada');
@@ -19,7 +22,7 @@ const importEnrollmentsFromSemester = async (idSemester: number): Promise<IImpor
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${getCookie("tcc-token")}`
         },
-        url: URL + `/tcc1/importar-matriculas/${idSemester}`,
+        url: URL + `/tcc/importar-matriculas/${stage}/${semesterId}`,
         method: 'put'
     };
 
