@@ -1,17 +1,19 @@
 import {
   Controller,
-  Post,
   Body,
+  Post,
   Get,
   Param,
-  Delete,
   Query,
   Put,
+  Delete,
   Req,
 } from "@nestjs/common";
-import { TCC1Service } from "./tcc1.service";
-import { EnrollStudent, Status } from "./interfaces";
-import { Public } from "../auth/constants";
+import { EnrollmentService } from "./enrollment.service";
+import { AdvisorService } from "./advisor.service";
+import { BoardService } from "./board.service";
+import { EnrollStudent, Stage, Status } from "./interfaces";
+import { Public } from "src/auth/constants";
 
 interface IDefineBoardByAdminBody {
   idMatricula: number;
@@ -19,46 +21,71 @@ interface IDefineBoardByAdminBody {
   idMembros: number[];
 }
 
-@Controller("tcc1")
-export class TCC1Controller {
-  constructor(private readonly tcc1Service: TCC1Service) {}
+@Controller("tcc")
+export class TccController {
+  constructor(
+    private readonly enrollmentService: EnrollmentService,
+    private readonly advisorService: AdvisorService,
+    private readonly boardService: BoardService,
+  ) {}
 
-  @Get("")
+  @Get("/:stage")
   findEnrollmentsByIdSemester(
+    @Param("stage") stage: Stage,
     @Query("idSemester") idSemester: string,
     @Query("status") status: string,
     @Query("term") term: string,
   ) {
-    return this.tcc1Service.findEnrollmentsByIdSemester({
+    return this.enrollmentService.findEnrollmentsByIdSemester({
+      stage,
       idSemester: +idSemester,
       status: status as Status,
       term,
     });
   }
 
-  @Post("matricular")
-  enroll(@Body() student: EnrollStudent) {
-    return this.tcc1Service.enroll(student);
+  @Post("/:stage/matricular")
+  enroll(@Param("stage") stage: Stage, @Body() student: EnrollStudent) {
+    if (stage === "TCC1") {
+      return this.enrollmentService.enrollTCC1({ stage, student });
+    }
+    if (stage === "TCC2") {
+      return this.enrollmentService.enrollTCC2({ stage, student });
+    }
   }
 
-  @Post("matricular-lote")
-  enrollBatch(@Body() students: EnrollStudent[]) {
-    return this.tcc1Service.enrollBatch(students);
+  @Post("/:stage/matricular-lote")
+  enrollBatch(@Param("stage") stage: Stage, @Body() students: EnrollStudent[]) {
+    if (stage === "TCC1") {
+      return this.enrollmentService.enrollBatchTCC1(students);
+    }
+    if (stage === "TCC2") {
+      return this.enrollmentService.enrollBatchTCC2(students);
+    }
   }
 
   @Delete("desmatricular/:id")
   unenroll(@Param("id") id: string) {
-    return this.tcc1Service.unenroll(+id);
+    return this.enrollmentService.unenroll(+id);
   }
 
-  @Put("finalizar-semestre/:idSemestre")
-  finishSemester(@Param("idSemestre") id: number) {
-    return this.tcc1Service.finishSemester(+id);
+  @Put("finalizar-semestre/:stage/:semesterId")
+  finishSemester(
+    @Param("stage") stage: Stage,
+    @Param("semesterId") id: number,
+  ) {
+    return this.enrollmentService.finishSemester({ stage, semesterId: +id });
   }
 
-  @Put("importar-matriculas/:idSemestre")
-  importEnrollments(@Param("idSemestre") id: number) {
-    return this.tcc1Service.importEnrollmentsFromSemester(+id);
+  @Put("importar-matriculas/:stage/:semesterId")
+  importEnrollmentsFromSemester(
+    @Param("stage") stage: Stage,
+    @Param("semesterId") idSemester: number,
+  ) {
+    return this.enrollmentService.importEnrollmentsFromSemester({
+      stage,
+      semesterId: +idSemester,
+    });
   }
 
   @Post("definir-orientador/admin")
@@ -67,10 +94,10 @@ export class TCC1Controller {
     @Req() req,
   ) {
     const admin = req.admin;
-    return this.tcc1Service.adminDefineAdvisor({
+    return this.advisorService.adminDefineAdvisor({
       enrollmentId: +idMatricula,
       advisorId: +idOrientador,
-      coAdvisorId: idCoorientador,
+      coAdvisorId: +idCoorientador,
       admin,
     });
   }
@@ -78,7 +105,7 @@ export class TCC1Controller {
   @Public()
   @Post("definir-orientador/aluno")
   defineAdvisorByStudent(@Body() { idOrientador, idCoorientador, token }) {
-    return this.tcc1Service.studentDefineAdvisor({
+    return this.advisorService.studentDefineAdvisor({
       advisorId: idOrientador,
       coAdvisorId: idCoorientador,
       studentToken: token,
@@ -88,7 +115,7 @@ export class TCC1Controller {
   @Delete("remover-orientador/:idMatricula")
   removeAdvisor(@Param("idMatricula") idMatricula: number, @Req() req) {
     const admin = req.admin;
-    return this.tcc1Service.removeAdvisor({
+    return this.advisorService.removeAdvisor({
       enrollmentId: +idMatricula,
       adminName: admin.nome,
     });
@@ -101,7 +128,7 @@ export class TCC1Controller {
     @Req() req,
   ) {
     const admin = req.admin;
-    return this.tcc1Service.adminDefineBoard({
+    return this.boardService.adminDefineBoard({
       enrollmentId: idMatricula,
       membersIds: idMembros,
       title: titulo,
@@ -116,7 +143,7 @@ export class TCC1Controller {
     @Req() req,
   ) {
     const admin = req.admin;
-    return this.tcc1Service.adminUpdateBoard({
+    return this.boardService.adminUpdateBoard({
       title: titulo,
       enrollmentId: idMatricula,
       membersIds: idMembros,
@@ -127,7 +154,7 @@ export class TCC1Controller {
   @Delete("remover-banca/:idMatricula")
   removeBoard(@Param("idMatricula") idMatricula: number, @Req() req) {
     const admin = req.admin;
-    return this.tcc1Service.removeBoard({
+    return this.boardService.removeBoard({
       enrollmentId: +idMatricula,
       admin,
     });
@@ -136,7 +163,7 @@ export class TCC1Controller {
   @Public()
   @Put("definir-banca/aluno")
   defineBoardByStudent(@Body() { idMembros, token, titulo }) {
-    return this.tcc1Service.studentDefineBoard({
+    return this.boardService.studentDefineBoard({
       membersIds: idMembros,
       studentToken: token,
       title: titulo,
@@ -149,7 +176,7 @@ export class TCC1Controller {
     @Req() req,
   ) {
     const admin = req.admin;
-    return this.tcc1Service.adminScheduleBoard({
+    return this.boardService.adminScheduleBoard({
       enrollmentId: idMatricula,
       schedule: dataHorario,
       location: local,
@@ -160,7 +187,7 @@ export class TCC1Controller {
   @Delete("desmarcar-banca/:idMatricula")
   unscheduleBoard(@Param("idMatricula") idMatricula: number, @Req() req) {
     const admin = req.admin;
-    return this.tcc1Service.unscheduleBoard({
+    return this.boardService.unscheduleBoard({
       enrollmentId: +idMatricula,
       admin,
     });
@@ -169,7 +196,7 @@ export class TCC1Controller {
   @Public()
   @Post("agendar-banca/aluno")
   scheduleBoardByStudent(@Body() { dataHorario, local, token }) {
-    return this.tcc1Service.studentScheduleBoard({
+    return this.boardService.studentScheduleBoard({
       schedule: dataHorario,
       location: local,
       studentToken: token,
@@ -178,7 +205,7 @@ export class TCC1Controller {
 
   @Post("atribuir-nota")
   grade(@Body() { idMatricula, nota }) {
-    return this.tcc1Service.assignGrade({
+    return this.boardService.assignGrade({
       enrollmentId: idMatricula,
       grade: nota,
     });
@@ -186,6 +213,6 @@ export class TCC1Controller {
 
   @Delete("remover-nota/:idMatricula")
   removeGrade(@Param("idMatricula") idMatricula: number) {
-    return this.tcc1Service.removeGrade(+idMatricula);
+    return this.boardService.removeGrade(+idMatricula);
   }
 }

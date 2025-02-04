@@ -29,7 +29,7 @@ const defineBoardStudent = async (data: IDefineBoardStudentProps): Promise<IDefi
         headers: {
             'Content-Type': 'application/json',
         },
-        url: URL + `/tcc1/definir-banca/aluno`,
+        url: URL + `/tcc/definir-banca/aluno`,
         method: 'put',
         data: formattedData
     };

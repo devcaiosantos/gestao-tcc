@@ -8,7 +8,10 @@ interface IEndSemesterResponse {
     message: string;
 }
 
-const endSemester = async (id: number): Promise<IEndSemesterResponse> => {
+const endSemester = async ({semesterId, stage}: {
+    semesterId: number,
+    stage: "TCC1" | "TCC2"
+}): Promise<IEndSemesterResponse> => {
     const URL = process.env.NEXT_PUBLIC_API_URL;
     if (!URL) {
         throw new Error('Variável de ambiente não configurada');
@@ -19,7 +22,7 @@ const endSemester = async (id: number): Promise<IEndSemesterResponse> => {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${getCookie("tcc-token")}`
         },
-        url: URL + `/tcc1/finalizar-semestre/${id}`,
+        url: URL + `/tcc/finalizar-semestre/${stage}/${semesterId}`,
         method: 'put'
     };
 

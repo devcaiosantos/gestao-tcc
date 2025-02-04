@@ -19,7 +19,7 @@ const removeBoard = async (enrollmentId: number): Promise<IRemoveBoardResponse> 
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${getCookie("tcc-token")}`
         },
-        url: URL + `/tcc1/remover-banca/${enrollmentId}`,
+        url: URL + `/tcc/remover-banca/${enrollmentId}`,
         method: 'delete',
     };
 

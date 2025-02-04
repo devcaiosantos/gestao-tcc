@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { getCookie } from '@/utils/cookies';
 
 interface IDefineAdvisorStudentProps {
     advisorId: number;
@@ -23,14 +22,14 @@ const defineAdvisorStudent= async (data: IDefineAdvisorStudentProps): Promise<ID
     const formattedData = {
         token: data.token,
         idOrientador: data.advisorId,
-        idCoOrientador: data?.coAdvisorId,
+        idCoorientador: data?.coAdvisorId,
     };
 
     const config = {
         headers: {
             'Content-Type': 'application/json',
         },
-        url: URL + `/tcc1/definir-orientador/aluno`,
+        url: URL + `/tcc/definir-orientador/aluno`,
         method: 'post',
         data: formattedData
     };

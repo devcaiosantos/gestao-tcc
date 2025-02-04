@@ -22,6 +22,7 @@ import { FaUserPlus } from 'react-icons/fa';
 import useDebounce from "@/hooks/useDebounce";
 
 interface ModalCreateEnrollmentProps {
+    stage: "TCC1" | "TCC2";
     fetchEnrollments: () => void;
 }
 
@@ -36,7 +37,7 @@ const defaultData = {
     ra: ''
 }
 
-export default function ModalCreateEnrollment({fetchEnrollments}: ModalCreateEnrollmentProps) {
+export default function ModalCreateEnrollment({stage, fetchEnrollments}: ModalCreateEnrollmentProps) {
     
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [tempData, setTempData] = useState<TempDataProps>(defaultData);
@@ -89,7 +90,7 @@ export default function ModalCreateEnrollment({fetchEnrollments}: ModalCreateEnr
     }
 
     async function handleCreateEnrollment(){
-        const response = await createEnrollment(tempData);
+        const response = await createEnrollment({stage: stage, ...tempData});
         toast({
             title: response.message,
             status: response.status,

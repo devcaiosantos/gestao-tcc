@@ -106,7 +106,6 @@ interface SidebarProps extends BoxProps {
 }
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
-  const router = useRouter();
   const {activeSemester} = useAuthContext();
   return (
     <Box
@@ -189,6 +188,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
       </Accordion>
 
       <NavItem icon={TbHexagonNumber1} path={"/dashboard/tcc1"}>TCC 1</NavItem>
+      <NavItem icon={TbHexagonNumber2} path={"/dashboard/tcc2"}>TCC 2</NavItem>
     </Box>
   );
 };

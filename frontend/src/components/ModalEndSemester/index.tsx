@@ -15,15 +15,16 @@ import { FaExclamationCircle } from 'react-icons/fa';
 import endSemester from '@/services/enrollment/endSemester';
 
 interface ModalEndSemesterProps {
+    stage: "TCC1" | "TCC2";
     data?: ISemester
     fetchEnrollments: () => void;
 }
-export default function ModalEndSemester({data, fetchEnrollments}: ModalEndSemesterProps) {
+export default function ModalEndSemester({stage, data, fetchEnrollments}: ModalEndSemesterProps) {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const toast = useToast();
     async function handleClick(){
       if(data){
-        const response = await endSemester(data.id);
+        const response = await endSemester({semesterId: data.id, stage});
         toast({
             title: response.message,
             status: response.status,

@@ -31,7 +31,7 @@ const scheduleBoardAdmin = async (data:IScheduleBoardAdminResponseProps): Promis
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${getCookie("tcc-token")}`
         },
-        url: URL + `/tcc1/agendar-banca/admin`,
+        url: URL + `/tcc/agendar-banca/admin`,
         method: 'post',
         data: formattedData
     };

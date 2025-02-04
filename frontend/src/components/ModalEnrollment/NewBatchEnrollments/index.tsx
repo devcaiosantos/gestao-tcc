@@ -18,6 +18,7 @@ import createBatchEnrollment from '@/services/enrollment/createBatch';
 import { FaUsers } from 'react-icons/fa';
 
 interface ModalCreateEnrollmentProps {
+    stage: "TCC1" | "TCC2";
     fetchEnrollments: () => void;
 }
 
@@ -27,7 +28,7 @@ const placeholderEnrollments = ""
 + "\n987654, José, jose@gmail.com"
 
 
-export default function ModalCreateBatchEnrollments({fetchEnrollments}: ModalCreateEnrollmentProps) {
+export default function ModalCreateBatchEnrollments({stage, fetchEnrollments}: ModalCreateEnrollmentProps) {
     
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [inputValue, setInputValue] = useState("");
@@ -77,7 +78,7 @@ export default function ModalCreateBatchEnrollments({fetchEnrollments}: ModalCre
             enrollments.push(formattedEnrollment);
         }
     
-        const response = await createBatchEnrollment(enrollments);
+        const response = await createBatchEnrollment({stage: stage, data: enrollments});
         toast({
             title: response.message,
             status: response.status,

@@ -67,6 +67,7 @@ export default function ModalShowEnrollment({ data }: ModalShowEnrollmentProps) 
                 <Container>
                     <Text><b>Aluno:</b> {data?.studentName} </Text>
                     <Text><b>RA:</b> {data?.studentRA}</Text>
+                    <Text><b>E-mail:</b> {data?.studentEmail}</Text>
                     {data?.boardTitle && <Text><b>Titulo do Trabalho:</b> {data?.boardTitle}</Text>}
                     {data?.supervisorName && <Text> <b>Orientador:</b> {data?.supervisorName}</Text>}
                     {data?.coSupervisorName && <Text><b>Coorientador:</b> {data?.coSupervisorName}</Text>}

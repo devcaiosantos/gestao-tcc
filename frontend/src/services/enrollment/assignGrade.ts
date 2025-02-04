@@ -29,7 +29,7 @@ const assignGrade = async (data:IAssignGradeProps): Promise<IAssignGradeResponse
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${getCookie("tcc-token")}`
         },
-        url: URL + `/tcc1/atribuir-nota`,
+        url: URL + `/tcc/atribuir-nota`,
         method: 'post',
         data: formattedData
     };

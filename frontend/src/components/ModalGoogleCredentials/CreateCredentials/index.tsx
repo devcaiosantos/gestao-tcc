@@ -75,7 +75,6 @@ export default function ModalCreateGoogleCredentials({
                 setTmpGoogleCredentials(formattedData);
                 
             } catch (error) {
-                console.error("Erro ao processar o arquivo JSON:", error);
                 toast({
                     title: "Erro ao processar o arquivo",
                     description: "Certifique-se de que o arquivo é um JSON válido.",

@@ -19,7 +19,7 @@ const unscheduleBoard = async (enrollmentId: number): Promise<IRemoveBoardRespon
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${getCookie("tcc-token")}`
         },
-        url: URL + `/tcc1/desmarcar-banca/${enrollmentId}`,
+        url: URL + `/tcc/desmarcar-banca/${enrollmentId}`,
         method: 'delete',
     };
 

@@ -31,7 +31,7 @@ const updateBoardAdmin = async (data: IUpdateBoardAdminProps): Promise<IUpdateBo
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${getCookie("tcc-token")}`
         },
-        url: URL + `/tcc1/alterar-banca/admin`,
+        url: URL + `/tcc/alterar-banca/admin`,
         method: 'put',
         data: formattedData
     };

@@ -19,7 +19,7 @@ const removeGrade = async (id: number): Promise<IRemoveGradeResponse> => {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${getCookie("tcc-token")}`
         },
-        url: URL + `/tcc1/remover-nota/${id}`,
+        url: URL + `/tcc/remover-nota/${id}`,
         method: 'delete'
     };
 

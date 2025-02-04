@@ -19,7 +19,7 @@ const unenrollStudent = async (id: number): Promise<IUnenrollResponse> => {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${getCookie("tcc-token")}`
         },
-        url: URL + `/tcc1/desmatricular/${id}`,
+        url: URL + `/tcc/desmatricular/${id}`,
         method: 'delete'
     };
 

@@ -31,7 +31,7 @@ const scheduleBoardStudent = async (data:IScheduleBoardStudentProps): Promise<IS
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${getCookie("tcc-token")}`
         },
-        url: URL + `/tcc1/agendar-banca/aluno`,
+        url: URL + `/tcc/agendar-banca/aluno`,
         method: 'post',
         data: formattedData
     };
