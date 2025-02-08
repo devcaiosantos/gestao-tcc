@@ -14,15 +14,16 @@ import { AdvisorService } from "./advisor.service";
 import { BoardService } from "./board.service";
 import { Stage, Status } from "./interfaces";
 import { Public } from "src/auth/constants";
-import { ApiResponse } from "@nestjs/swagger";
+import { ApiBody, ApiResponse } from "@nestjs/swagger";
 import { EnrollmentDto } from "./dto/enrollment.dto";
 import { CreateEnrollmentDto } from "./dto/create-enrollment.dto";
-
-interface IDefineBoardByAdminBody {
-  idMatricula: number;
-  titulo: string;
-  idMembros: number[];
-}
+import { DefineAdvisorDTO } from "./dto/define-advisor.dto";
+import { StudentDefineAdvisorDTO } from "./dto/student-define-advisor.dto";
+import { DefineBoardDTO } from "./dto/define-board.dto";
+import { StudentDefineBoardDTO } from "./dto/student-define-board.dto";
+import { ScheduleBoardDTO } from "./dto/schedule-board.dto";
+import { StudentScheduleBoardDTO } from "./dto/student-schedule-board.dto";
+import { AssignGradeDTO } from "./dto/assign-grade.dto";
 
 @Controller("tcc")
 export class TccController {
@@ -72,6 +73,10 @@ export class TccController {
     description: "Matrículas realizadas com sucesso",
     type: [EnrollmentDto],
   })
+  @ApiBody({
+    type: [CreateEnrollmentDto],
+    description: "Lista de alunos a serem matriculados",
+  })
   @Post("/:etapa/matricular-lote")
   enrollBatch(
     @Param("etapa") etapa: Stage,
@@ -97,7 +102,7 @@ export class TccController {
 
   @ApiResponse({
     status: 200,
-    description: "Semente finalizado com sucesso",
+    description: "Semestre finalizado com sucesso",
   })
   @Put("finalizar-semestre/:etapa/:idSemestre")
   finishSemester(
@@ -125,9 +130,13 @@ export class TccController {
     });
   }
 
+  @ApiResponse({
+    status: 200,
+    description: "Orientador definido com sucesso",
+  })
   @Post("definir-orientador/admin")
   defineAdvisor(
-    @Body() { idMatricula, idOrientador, idCoorientador },
+    @Body() { idMatricula, idOrientador, idCoorientador }: DefineAdvisorDTO,
     @Req() req,
   ) {
     const admin = req.admin;
@@ -139,9 +148,15 @@ export class TccController {
     });
   }
 
+  @ApiResponse({
+    status: 200,
+    description: "Orientador definido com sucesso",
+  })
   @Public()
   @Post("definir-orientador/aluno")
-  defineAdvisorByStudent(@Body() { idOrientador, idCoorientador, token }) {
+  defineAdvisorByStudent(
+    @Body() { idOrientador, idCoorientador, token }: StudentDefineAdvisorDTO,
+  ) {
     return this.advisorService.studentDefineAdvisor({
       advisorId: idOrientador,
       coAdvisorId: idCoorientador,
@@ -149,6 +164,10 @@ export class TccController {
     });
   }
 
+  @ApiResponse({
+    status: 200,
+    description: "Orientador removido com sucesso",
+  })
   @Delete("remover-orientador/:idMatricula")
   removeAdvisor(@Param("idMatricula") idMatricula: number, @Req() req) {
     const admin = req.admin;
@@ -158,10 +177,14 @@ export class TccController {
     });
   }
 
+  @ApiResponse({
+    status: 200,
+    description: "Banca definida com sucesso",
+  })
   @Post("definir-banca/admin")
   defineBoard(
     @Body()
-    { idMatricula, idMembros, titulo }: IDefineBoardByAdminBody,
+    { idMatricula, idMembros, titulo }: DefineBoardDTO,
     @Req() req,
   ) {
     const admin = req.admin;
@@ -173,10 +196,14 @@ export class TccController {
     });
   }
 
+  @ApiResponse({
+    status: 200,
+    description: "Banca alterada com sucesso",
+  })
   @Put("alterar-banca/admin")
   adminUpdateBoard(
     @Body()
-    { idMatricula, idMembros, titulo }: IDefineBoardByAdminBody,
+    { idMatricula, idMembros, titulo }: DefineBoardDTO,
     @Req() req,
   ) {
     const admin = req.admin;
@@ -188,6 +215,10 @@ export class TccController {
     });
   }
 
+  @ApiResponse({
+    status: 200,
+    description: "Banca removida com sucesso",
+  })
   @Delete("remover-banca/:idMatricula")
   removeBoard(@Param("idMatricula") idMatricula: number, @Req() req) {
     const admin = req.admin;
@@ -197,9 +228,15 @@ export class TccController {
     });
   }
 
+  @ApiResponse({
+    status: 200,
+    description: "Banca definida com sucesso",
+  })
   @Public()
   @Put("definir-banca/aluno")
-  defineBoardByStudent(@Body() { idMembros, token, titulo }) {
+  defineBoardByStudent(
+    @Body() { idMembros, token, titulo }: StudentDefineBoardDTO,
+  ) {
     return this.boardService.studentDefineBoard({
       membersIds: idMembros,
       studentToken: token,
@@ -207,9 +244,13 @@ export class TccController {
     });
   }
 
+  @ApiResponse({
+    status: 200,
+    description: "Banca agendada com sucesso",
+  })
   @Post("agendar-banca/admin")
   scheduleBoardByAdmin(
-    @Body() { idMatricula, dataHorario, local },
+    @Body() { idMatricula, dataHorario, local }: ScheduleBoardDTO,
     @Req() req,
   ) {
     const admin = req.admin;
@@ -221,6 +262,10 @@ export class TccController {
     });
   }
 
+  @ApiResponse({
+    status: 200,
+    description: "Banca desmarcada com sucesso",
+  })
   @Delete("desmarcar-banca/:idMatricula")
   unscheduleBoard(@Param("idMatricula") idMatricula: number, @Req() req) {
     const admin = req.admin;
@@ -230,9 +275,15 @@ export class TccController {
     });
   }
 
+  @ApiResponse({
+    status: 200,
+    description: "Banca agendada com sucesso",
+  })
   @Public()
   @Post("agendar-banca/aluno")
-  scheduleBoardByStudent(@Body() { dataHorario, local, token }) {
+  scheduleBoardByStudent(
+    @Body() { dataHorario, local, token }: StudentScheduleBoardDTO,
+  ) {
     return this.boardService.studentScheduleBoard({
       schedule: dataHorario,
       location: local,
@@ -240,14 +291,22 @@ export class TccController {
     });
   }
 
+  @ApiResponse({
+    status: 200,
+    description: "Nota atribuída com sucesso",
+  })
   @Post("atribuir-nota")
-  grade(@Body() { idMatricula, nota }) {
+  grade(@Body() { idMatricula, nota }: AssignGradeDTO) {
     return this.boardService.assignGrade({
       enrollmentId: idMatricula,
       grade: nota,
     });
   }
 
+  @ApiResponse({
+    status: 200,
+    description: "Nota removida com sucesso",
+  })
   @Delete("remover-nota/:idMatricula")
   removeGrade(@Param("idMatricula") idMatricula: number) {
     return this.boardService.removeGrade(+idMatricula);

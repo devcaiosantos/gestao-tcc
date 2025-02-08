@@ -1,19 +1,12 @@
+import { ApiProperty } from "@nestjs/swagger";
+
 export class CreateEnrollmentDto {
-  /**
-   * RA do aluno
-   * @example 123456
-   */
+  @ApiProperty({ example: "123456" })
   ra: string;
 
-  /**
-   * Nome do aluno
-   * @example Fulano de Tal
-   */
+  @ApiProperty({ example: "Fulano de Tal" })
   nome: string;
 
-  /**
-   * Email do aluno
-   * @example fulano@tal
-   */
+  @ApiProperty({ example: "fulano@tal.com" })
   email: string;
 }
