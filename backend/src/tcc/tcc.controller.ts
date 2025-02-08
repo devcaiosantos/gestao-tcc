@@ -12,8 +12,11 @@ import {
 import { EnrollmentService } from "./enrollment.service";
 import { AdvisorService } from "./advisor.service";
 import { BoardService } from "./board.service";
-import { EnrollStudent, Stage, Status } from "./interfaces";
+import { Stage, Status } from "./interfaces";
 import { Public } from "src/auth/constants";
+import { ApiResponse } from "@nestjs/swagger";
+import { EnrollmentDto } from "./dto/enrollment.dto";
+import { CreateEnrollmentDto } from "./dto/create-enrollment.dto";
 
 interface IDefineBoardByAdminBody {
   idMatricula: number;
@@ -29,62 +32,96 @@ export class TccController {
     private readonly boardService: BoardService,
   ) {}
 
-  @Get("/:stage")
+  @ApiResponse({
+    status: 200,
+    description: "Lista de matrículas",
+    type: [EnrollmentDto],
+  })
+  @Get("/:etapa")
   findEnrollmentsByIdSemester(
-    @Param("stage") stage: Stage,
+    @Param("etapa") etapa: Stage,
     @Query("idSemester") idSemester: string,
     @Query("status") status: string,
     @Query("term") term: string,
   ) {
     return this.enrollmentService.findEnrollmentsByIdSemester({
-      stage,
+      stage: etapa,
       idSemester: +idSemester,
       status: status as Status,
       term,
     });
   }
 
-  @Post("/:stage/matricular")
-  enroll(@Param("stage") stage: Stage, @Body() student: EnrollStudent) {
-    if (stage === "TCC1") {
-      return this.enrollmentService.enrollTCC1({ stage, student });
+  @ApiResponse({
+    status: 200,
+    description: "Matrícula realizada com sucesso",
+    type: EnrollmentDto,
+  })
+  @Post("/:etapa/matricular")
+  enroll(@Param("etapa") etapa: Stage, @Body() student: CreateEnrollmentDto) {
+    if (etapa === "TCC1") {
+      return this.enrollmentService.enrollTCC1({ stage: etapa, student });
     }
-    if (stage === "TCC2") {
-      return this.enrollmentService.enrollTCC2({ stage, student });
+    if (etapa === "TCC2") {
+      return this.enrollmentService.enrollTCC2({ stage: etapa, student });
     }
   }
 
-  @Post("/:stage/matricular-lote")
-  enrollBatch(@Param("stage") stage: Stage, @Body() students: EnrollStudent[]) {
-    if (stage === "TCC1") {
+  @ApiResponse({
+    status: 200,
+    description: "Matrículas realizadas com sucesso",
+    type: [EnrollmentDto],
+  })
+  @Post("/:etapa/matricular-lote")
+  enrollBatch(
+    @Param("etapa") etapa: Stage,
+    @Body() students: CreateEnrollmentDto[],
+  ) {
+    if (etapa === "TCC1") {
       return this.enrollmentService.enrollBatchTCC1(students);
     }
-    if (stage === "TCC2") {
+    if (etapa === "TCC2") {
       return this.enrollmentService.enrollBatchTCC2(students);
     }
   }
 
+  @ApiResponse({
+    status: 200,
+    description: "Matrícula deletada com sucesso",
+    type: EnrollmentDto,
+  })
   @Delete("desmatricular/:id")
   unenroll(@Param("id") id: string) {
     return this.enrollmentService.unenroll(+id);
   }
 
-  @Put("finalizar-semestre/:stage/:semesterId")
+  @ApiResponse({
+    status: 200,
+    description: "Semente finalizado com sucesso",
+  })
+  @Put("finalizar-semestre/:etapa/:idSemestre")
   finishSemester(
-    @Param("stage") stage: Stage,
-    @Param("semesterId") id: number,
+    @Param("etapa") etapa: Stage,
+    @Param("idSemestre") id: number,
   ) {
-    return this.enrollmentService.finishSemester({ stage, semesterId: +id });
+    return this.enrollmentService.finishSemester({
+      stage: etapa,
+      semesterId: +id,
+    });
   }
 
-  @Put("importar-matriculas/:stage/:semesterId")
+  @ApiResponse({
+    status: 200,
+    description: "Matrículas importadas com sucesso",
+  })
+  @Put("importar-matriculas/:etapa/:idSemestre")
   importEnrollmentsFromSemester(
-    @Param("stage") stage: Stage,
-    @Param("semesterId") idSemester: number,
+    @Param("etapa") stage: Stage,
+    @Param("idSemestre") semesterId: number,
   ) {
     return this.enrollmentService.importEnrollmentsFromSemester({
       stage,
-      semesterId: +idSemester,
+      semesterId,
     });
   }
 

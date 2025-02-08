@@ -5,5 +5,9 @@ export class LoginDataDTO {
    */
   email: string;
 
+  /**
+   * Senha do usuário
+   * @example 123456teste
+   */
   senha: string;
 }
