@@ -12,7 +12,8 @@ import { ProfessorService } from "./professor.service";
 import { Public } from "src/auth/constants";
 import { CreateProfessorDto } from "./dto/create-professor.dto";
 import { ProfessorDTO } from "./dto/professor.dto";
-import { ApiResponse } from "@nestjs/swagger";
+import { ApiResponse, ApiTags } from "@nestjs/swagger";
+@ApiTags("Professor")
 @Controller("professor")
 export class ProfessorController {
   constructor(private readonly professorService: ProfessorService) {}

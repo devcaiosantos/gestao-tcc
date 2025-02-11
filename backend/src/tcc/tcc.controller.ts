@@ -14,7 +14,13 @@ import { AdvisorService } from "./advisor.service";
 import { BoardService } from "./board.service";
 import { Stage, Status } from "./interfaces";
 import { Public } from "src/auth/constants";
-import { ApiBody, ApiResponse } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from "@nestjs/swagger";
 import { EnrollmentDto } from "./dto/enrollment.dto";
 import { CreateEnrollmentDto } from "./dto/create-enrollment.dto";
 import { DefineAdvisorDTO } from "./dto/define-advisor.dto";
@@ -25,6 +31,8 @@ import { ScheduleBoardDTO } from "./dto/schedule-board.dto";
 import { StudentScheduleBoardDTO } from "./dto/student-schedule-board.dto";
 import { AssignGradeDTO } from "./dto/assign-grade.dto";
 
+@ApiTags("TCC")
+@ApiBearerAuth()
 @Controller("tcc")
 export class TccController {
   constructor(
@@ -38,6 +46,7 @@ export class TccController {
     description: "Lista de matrículas",
     type: [EnrollmentDto],
   })
+  @ApiQuery({ name: "term", required: false })
   @Get("/:etapa")
   findEnrollmentsByIdSemester(
     @Param("etapa") etapa: Stage,
@@ -66,6 +75,11 @@ export class TccController {
     if (etapa === "TCC2") {
       return this.enrollmentService.enrollTCC2({ stage: etapa, student });
     }
+
+    throw {
+      statusCode: 400,
+      message: "Etapa inválida",
+    };
   }
 
   @ApiResponse({
@@ -126,7 +140,7 @@ export class TccController {
   ) {
     return this.enrollmentService.importEnrollmentsFromSemester({
       stage,
-      semesterId,
+      semesterId: +semesterId,
     });
   }
 

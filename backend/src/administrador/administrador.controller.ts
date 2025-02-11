@@ -10,10 +10,11 @@ import {
 } from "@nestjs/common";
 import { AdministradorService } from "./administrador.service";
 import { Public } from "src/auth/constants";
-import { ApiResponse } from "@nestjs/swagger";
+import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CreateAdministradorDto } from "./dto/create-administrador.dto";
 import { AdministradorDto } from "./dto/administrador.dto";
 import { ResetPasswordDTO } from "./dto/reset-password.dto";
+@ApiTags("Administrador")
 @Controller("administrador")
 export class AdministradorController {
   constructor(private readonly administradorService: AdministradorService) {}

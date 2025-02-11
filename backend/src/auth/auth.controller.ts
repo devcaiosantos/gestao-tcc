@@ -3,7 +3,8 @@ import { AuthService } from "./auth.service";
 import { Public } from "./constants";
 import { LoginDataDTO } from "./dto/login-data.dto";
 import { AuthDataDTO } from "./dto/auth-data.dto";
-import { ApiResponse } from "@nestjs/swagger";
+import { ApiResponse, ApiTags } from "@nestjs/swagger";
+@ApiTags("Autenticação")
 @Controller("auth")
 export class AuthController {
   constructor(private readonly authService: AuthService) {}

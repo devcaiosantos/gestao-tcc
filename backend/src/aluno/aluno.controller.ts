@@ -1,8 +1,9 @@
 import { Controller, Get, Param, Query } from "@nestjs/common";
 import { AlunoService } from "./aluno.service";
-import { ApiResponse } from "@nestjs/swagger";
+import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { AlunoDTO } from "./dto/aluno.dto";
 
+@ApiTags("Aluno")
 @Controller("aluno")
 export class AlunoController {
   constructor(private readonly alunoService: AlunoService) {}

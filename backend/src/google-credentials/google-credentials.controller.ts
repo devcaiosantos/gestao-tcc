@@ -1,7 +1,8 @@
 import { Controller, Post, Body, Req, Get, Delete, Put } from "@nestjs/common";
 import { GoogleCredentialsService } from "./google-credentials.service";
-import { ApiResponse } from "@nestjs/swagger";
+import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { GoogleCredentialsDTO } from "./dto/google-credentials.dto";
+@ApiTags("Credenciais Google")
 @Controller("google-credentials")
 export class GoogleCredentialsController {
   constructor(private readonly googleAuthService: GoogleCredentialsService) {}

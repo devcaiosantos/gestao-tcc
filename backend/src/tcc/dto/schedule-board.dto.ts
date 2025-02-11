@@ -1,5 +1,3 @@
-// { idMatricula, dataHorario, local }
-
 export class ScheduleBoardDTO {
   /**
    * ID da matrícula

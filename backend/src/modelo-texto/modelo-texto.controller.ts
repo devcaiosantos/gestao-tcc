@@ -10,9 +10,9 @@ import {
 } from "@nestjs/common";
 import { ModeloTextoService } from "./modelo-texto.service";
 import { CreateModeloTextoDTO } from "./dto/create-modelo-texto.dto";
-import { ApiResponse } from "@nestjs/swagger";
+import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { ModeloTextoDTO } from "./dto/modelo-texto.dto";
-
+@ApiTags("Modelo de texto")
 @Controller("modelo-texto")
 export class ModeloTextoController {
   constructor(private readonly modeloTextoService: ModeloTextoService) {}

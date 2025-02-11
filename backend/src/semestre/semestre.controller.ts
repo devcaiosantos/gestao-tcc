@@ -9,9 +9,9 @@ import {
 } from "@nestjs/common";
 import { SemestreService } from "./semestre.service";
 import { CreateSemestreDto } from "./dto/create-semestre.dto";
-import { ApiResponse } from "@nestjs/swagger";
+import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { SemestreDTO } from "./dto/semestre.dto";
-
+@ApiTags("Semestre")
 @Controller("semestre")
 export class SemestreController {
   constructor(private readonly semestreService: SemestreService) {}

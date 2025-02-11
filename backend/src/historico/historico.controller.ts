@@ -1,7 +1,8 @@
 import { Controller, Get, Param } from "@nestjs/common";
 import { HistoricoService } from "./historico.service";
 import { HistoricoDTO } from "./dto/historico.dto";
-import { ApiResponse } from "@nestjs/swagger";
+import { ApiResponse, ApiTags } from "@nestjs/swagger";
+@ApiTags("Histórico")
 @Controller("historico")
 export class HistoricoController {
   constructor(private readonly historicoService: HistoricoService) {}
