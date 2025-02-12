@@ -39,24 +39,14 @@ export class AuthService {
       };
     }
 
-    const payload = {
-      email: administrador.email,
-      nome: administrador.nome,
-      id: administrador.id,
-      emailSistema: administrador.emailSistema,
-      chaveEmailSistema: administrador.chaveEmailSistema,
-    };
+    const payload = { ...administrador, senha: undefined };
 
     const jwt = await this.jwtService.signAsync(payload, {
       secret: process.env.JWT_SECRET,
       expiresIn: process.env.JWT_EXPIRES,
     });
     return {
-      id: administrador.id,
-      email: administrador.email,
-      nome: administrador.nome,
-      emailSistema: administrador.emailSistema,
-      chaveEmailSistema: administrador.chaveEmailSistema,
+      ...payload,
       access_token: jwt,
       expires_in: Number(process.env.JWT_EXPIRES),
     };

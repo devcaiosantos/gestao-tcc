@@ -65,9 +65,10 @@ export default function Login() {
             name: response.data.nome,
             email: response.data.email,
             systemEmail: response.data.emailSistema,
-            systemEmailKey: response.data.chaveEmailSistema
+            systemEmailKey: response.data.chaveEmailSistema,
+            calendarId: response.data.idCalendario
           });
-          setCookie({
+          setCookie({ 
             name: "tcc-token",
             value: response.data.access_token,
             days: 1

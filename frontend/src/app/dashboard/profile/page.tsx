@@ -95,7 +95,8 @@ export default function Account() {
                 name: response.data.nome,
                 email: response.data.email,
                 systemEmail: response.data.emailSistema,
-                systemEmailKey: response.data.chaveEmailSistema
+                systemEmailKey: response.data.chaveEmailSistema,
+                calendarId: response.data.idCalendario
            }
            registerAdmin(formattedData);
         }
