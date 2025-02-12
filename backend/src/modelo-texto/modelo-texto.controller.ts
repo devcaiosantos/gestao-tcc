@@ -12,6 +12,9 @@ import { ModeloTextoService } from "./modelo-texto.service";
 import { CreateModeloTextoDTO } from "./dto/create-modelo-texto.dto";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { ModeloTextoDTO } from "./dto/modelo-texto.dto";
+import { ApiBearerAuth } from "@nestjs/swagger";
+
+@ApiBearerAuth()
 @ApiTags("Modelo de texto")
 @Controller("modelo-texto")
 export class ModeloTextoController {

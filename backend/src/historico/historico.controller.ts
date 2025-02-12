@@ -2,6 +2,9 @@ import { Controller, Get, Param } from "@nestjs/common";
 import { HistoricoService } from "./historico.service";
 import { HistoricoDTO } from "./dto/historico.dto";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth } from "@nestjs/swagger";
+
+@ApiBearerAuth()
 @ApiTags("Histórico")
 @Controller("historico")
 export class HistoricoController {

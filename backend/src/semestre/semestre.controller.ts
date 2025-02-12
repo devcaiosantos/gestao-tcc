@@ -11,6 +11,9 @@ import { SemestreService } from "./semestre.service";
 import { CreateSemestreDto } from "./dto/create-semestre.dto";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { SemestreDTO } from "./dto/semestre.dto";
+import { ApiBearerAuth } from "@nestjs/swagger";
+
+@ApiBearerAuth()
 @ApiTags("Semestre")
 @Controller("semestre")
 export class SemestreController {

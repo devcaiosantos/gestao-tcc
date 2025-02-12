@@ -2,6 +2,9 @@ import { Controller, Post, Body, Req, Get, Delete, Put } from "@nestjs/common";
 import { GoogleCredentialsService } from "./google-credentials.service";
 import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { GoogleCredentialsDTO } from "./dto/google-credentials.dto";
+import { ApiBearerAuth } from "@nestjs/swagger";
+
+@ApiBearerAuth()
 @ApiTags("Credenciais Google")
 @Controller("google-credentials")
 export class GoogleCredentialsController {

@@ -12,7 +12,9 @@ import { ProfessorService } from "./professor.service";
 import { Public } from "src/auth/constants";
 import { CreateProfessorDto } from "./dto/create-professor.dto";
 import { ProfessorDTO } from "./dto/professor.dto";
-import { ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiResponse, ApiTags } from "@nestjs/swagger";
+
+@ApiBearerAuth()
 @ApiTags("Professor")
 @Controller("professor")
 export class ProfessorController {

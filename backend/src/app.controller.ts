@@ -4,6 +4,7 @@ import { Public } from "./auth/constants";
 import { ApiExcludeEndpoint, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { ValidateStudentTokenDTO } from "./dto/validate-student-token.dto";
 import { SendDirectMailDto } from "./dto/send-direct-mail.dto";
+import { ApiBearerAuth } from "@nestjs/swagger";
 
 @Controller()
 export class AppController {
@@ -14,6 +15,7 @@ export class AppController {
     return this.appService.getHello();
   }
 
+  @ApiBearerAuth()
   @ApiTags("E-mail")
   @ApiResponse({
     status: 200,

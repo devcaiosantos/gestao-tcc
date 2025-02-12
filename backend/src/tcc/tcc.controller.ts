@@ -32,7 +32,6 @@ import { StudentScheduleBoardDTO } from "./dto/student-schedule-board.dto";
 import { AssignGradeDTO } from "./dto/assign-grade.dto";
 
 @ApiTags("TCC")
-@ApiBearerAuth()
 @Controller("tcc")
 export class TccController {
   constructor(
@@ -41,6 +40,7 @@ export class TccController {
     private readonly boardService: BoardService,
   ) {}
 
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: "Lista de matrículas",
@@ -62,6 +62,7 @@ export class TccController {
     });
   }
 
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: "Matrícula realizada com sucesso",
@@ -82,6 +83,7 @@ export class TccController {
     };
   }
 
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: "Matrículas realizadas com sucesso",
@@ -104,6 +106,7 @@ export class TccController {
     }
   }
 
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: "Matrícula deletada com sucesso",
@@ -114,6 +117,7 @@ export class TccController {
     return this.enrollmentService.unenroll(+id);
   }
 
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: "Semestre finalizado com sucesso",
@@ -129,6 +133,7 @@ export class TccController {
     });
   }
 
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: "Matrículas importadas com sucesso",
@@ -144,6 +149,7 @@ export class TccController {
     });
   }
 
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: "Orientador definido com sucesso",
@@ -178,6 +184,7 @@ export class TccController {
     });
   }
 
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: "Orientador removido com sucesso",
@@ -191,6 +198,7 @@ export class TccController {
     });
   }
 
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: "Banca definida com sucesso",
@@ -210,6 +218,7 @@ export class TccController {
     });
   }
 
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: "Banca alterada com sucesso",
@@ -229,6 +238,7 @@ export class TccController {
     });
   }
 
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: "Banca removida com sucesso",
@@ -258,6 +268,7 @@ export class TccController {
     });
   }
 
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: "Banca agendada com sucesso",
@@ -276,6 +287,7 @@ export class TccController {
     });
   }
 
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: "Banca desmarcada com sucesso",
@@ -305,6 +317,7 @@ export class TccController {
     });
   }
 
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: "Nota atribuída com sucesso",
@@ -317,6 +330,7 @@ export class TccController {
     });
   }
 
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: "Nota removida com sucesso",

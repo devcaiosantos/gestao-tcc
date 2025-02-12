@@ -10,10 +10,11 @@ import {
 } from "@nestjs/common";
 import { AdministradorService } from "./administrador.service";
 import { Public } from "src/auth/constants";
-import { ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { CreateAdministradorDto } from "./dto/create-administrador.dto";
 import { AdministradorDto } from "./dto/administrador.dto";
 import { ResetPasswordDTO } from "./dto/reset-password.dto";
+
 @ApiTags("Administrador")
 @Controller("administrador")
 export class AdministradorController {
@@ -39,6 +40,7 @@ export class AdministradorController {
     return this.administradorService.create(adminstrador);
   }
 
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: "Retorna o administrador",
@@ -49,6 +51,7 @@ export class AdministradorController {
     return this.administradorService.findOne(+id);
   }
 
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: "Atualiza o administrador",
@@ -62,6 +65,7 @@ export class AdministradorController {
     return this.administradorService.update(+id, adminstrador);
   }
 
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: "Reseta a senha do administrador",
@@ -75,6 +79,7 @@ export class AdministradorController {
     return this.administradorService.resetPassword(+id, adminstrador);
   }
 
+  @ApiBearerAuth()
   @ApiResponse({
     status: 200,
     description: "Remove o administrador",

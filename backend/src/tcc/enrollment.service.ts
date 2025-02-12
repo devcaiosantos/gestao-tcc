@@ -428,9 +428,16 @@ export class EnrollmentService {
           }
 
           // Verifica se o aluno já está cadastrado
-          const registeredStudent = await prisma.aluno.findFirst({
+          const registeredStudent = await this.prisma.aluno.findFirst({
             where: {
-              ra: student.ra,
+              OR: [
+                {
+                  ra: student.ra,
+                },
+                {
+                  email: student.email,
+                },
+              ],
             },
           });
 
@@ -450,6 +457,17 @@ export class EnrollmentService {
                 message: `Falha interna ao cadastrar aluno ${student.nome} (RA: ${student.ra})`,
               };
             }
+          }
+
+          if (
+            registeredStudent &&
+            (student.email == registeredStudent.email ||
+              student.ra != registeredStudent.ra)
+          ) {
+            throw {
+              statusCode: 400,
+              message: `E-mail ${student.email} já está cadastrado com outro RA (${registeredStudent.ra})`,
+            };
           }
 
           if (

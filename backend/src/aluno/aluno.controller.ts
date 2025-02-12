@@ -1,8 +1,9 @@
 import { Controller, Get, Param, Query } from "@nestjs/common";
 import { AlunoService } from "./aluno.service";
-import { ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { AlunoDTO } from "./dto/aluno.dto";
 
+@ApiBearerAuth()
 @ApiTags("Aluno")
 @Controller("aluno")
 export class AlunoController {
