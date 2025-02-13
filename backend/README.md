@@ -86,7 +86,7 @@ O e-mail do sistema é utilizado para envios massivos a alunos e orientadores. P
 ### 📅 Configuração da API do Google Calendar
 A integração com o Google Calendar é necessária para o agendamento da banca. Para configurar, siga o tutorial:
 
-📄 [Configuração da API do Google Calendar](./CALENDAR_API_CONFIG.md)
+📄 [Configuração da API do Google Calendar](./config-calendar-api.md)
 
 Agora o backend do **Gestão TCC** está pronto para uso! 🚀
 
