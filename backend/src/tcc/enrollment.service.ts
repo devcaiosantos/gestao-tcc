@@ -26,6 +26,7 @@ export class EnrollmentService {
       idSemester: yup.number().required(),
       term: yup.string().notRequired(),
       status: yup.mixed().oneOf(statusOptions).notRequired(),
+      stage: yup.mixed().oneOf(["TCC1", "TCC2"]).required(),
     });
 
     try {
@@ -33,6 +34,7 @@ export class EnrollmentService {
         idSemester,
         term,
         status,
+        stage,
       });
     } catch (error) {
       throw {
@@ -141,7 +143,14 @@ export class EnrollmentService {
 
     const registeredStudent = await this.prisma.aluno.findFirst({
       where: {
-        ra: student.ra,
+        OR: [
+          {
+            ra: student.ra,
+          },
+          {
+            email: student.email,
+          },
+        ],
       },
     });
 
@@ -160,6 +169,17 @@ export class EnrollmentService {
           message: "Erro ao cadastrar aluno",
         };
       }
+    }
+
+    if (
+      registeredStudent &&
+      (student.email == registeredStudent.email ||
+        student.ra != registeredStudent.ra)
+    ) {
+      throw {
+        statusCode: 400,
+        message: `E-mail já está cadastrado com outro RA (${registeredStudent.ra})`,
+      };
     }
 
     if (
@@ -408,9 +428,16 @@ export class EnrollmentService {
           }
 
           // Verifica se o aluno já está cadastrado
-          const registeredStudent = await prisma.aluno.findFirst({
+          const registeredStudent = await this.prisma.aluno.findFirst({
             where: {
-              ra: student.ra,
+              OR: [
+                {
+                  ra: student.ra,
+                },
+                {
+                  email: student.email,
+                },
+              ],
             },
           });
 
@@ -430,6 +457,17 @@ export class EnrollmentService {
                 message: `Falha interna ao cadastrar aluno ${student.nome} (RA: ${student.ra})`,
               };
             }
+          }
+
+          if (
+            registeredStudent &&
+            (student.email == registeredStudent.email ||
+              student.ra != registeredStudent.ra)
+          ) {
+            throw {
+              statusCode: 400,
+              message: `E-mail ${student.email} já está cadastrado com outro RA (${registeredStudent.ra})`,
+            };
           }
 
           if (
@@ -740,6 +778,13 @@ export class EnrollmentService {
       };
     }
 
+    if (stage !== "TCC1" && stage !== "TCC2") {
+      throw {
+        statusCode: 400,
+        message: "Etapa inválida",
+      };
+    }
+
     const existingSemester = await this.prisma.semestre.findFirst({
       where: {
         id: semesterId,
@@ -758,18 +803,9 @@ export class EnrollmentService {
         where: {
           idSemestre: semesterId,
           etapa: stage,
-          OR: [
-            {
-              status: {
-                not: "aprovado",
-              },
-            },
-            {
-              status: {
-                not: "reprovado",
-              },
-            },
-          ],
+          status: {
+            notIn: ["aprovado", "reprovado"],
+          },
         },
         data: {
           status: "nao_finalizado",
@@ -832,6 +868,13 @@ export class EnrollmentService {
       throw {
         statusCode: 400,
         message: "ID do semestre não foi informado",
+      };
+    }
+
+    if (stage !== "TCC1" && stage !== "TCC2") {
+      throw {
+        statusCode: 400,
+        message: "Etapa inválida",
       };
     }
 

@@ -11,6 +11,7 @@ interface SuccessResponse {
     nome: string;
     emailSistema?: string;
     chaveEmailSistema?: string;
+    idCalendario?: string;
     access_token: string;
     expires_in: number;
 }

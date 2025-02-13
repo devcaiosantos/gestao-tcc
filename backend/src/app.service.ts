@@ -57,6 +57,9 @@ export class AppService {
           Aluno: true,
           Semestre: true,
         },
+        orderBy: {
+          id: "desc",
+        },
       });
 
       if (!enrollment) {
