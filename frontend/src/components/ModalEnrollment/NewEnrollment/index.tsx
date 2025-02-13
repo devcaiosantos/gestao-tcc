@@ -62,7 +62,11 @@ export default function ModalCreateEnrollment({stage, fetchEnrollments}: ModalCr
     }
 
     function handleChange(key:string, value:string | boolean){
-        setTempData({...tempData, [key]: value});
+        let formattedValue = value;
+        if(key === "ra"){
+            formattedValue = value.toString().replace(/\D/g, '');
+        }
+        setTempData({...tempData, [key]: formattedValue});
     }
 
     async function handleSubmit(){

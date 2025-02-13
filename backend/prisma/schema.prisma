@@ -112,7 +112,7 @@ model Semestre {
 model Aluno {
   ra              String   @id
   nome            String
-  email           String
+  email           String   @unique
   dataCriacao     DateTime @default(now())
   dataAtualizacao DateTime @updatedAt
 
