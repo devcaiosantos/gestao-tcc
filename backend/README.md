@@ -1,73 +1,93 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🛠 Guia de Instalação e Configuração do Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-  
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Este documento fornece um passo a passo para instalar e configurar o backend do projeto **Gestão TCC**.
 
-## Description
+## 📌 Pré-requisitos
+Antes de iniciar a instalação, certifique-se de ter instalado:
+- [Node.js](https://nodejs.org/) (versão recomendada: 18 ou superior)
+- [PostgreSQL](https://www.postgresql.org/) (ou outro banco de dados compatível)
+- [Docker](https://www.docker.com/) (opcional, para execução em container)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 🚀 Instalação
+Siga os passos abaixo para instalar o backend:
 
-## Installation
-
+### 1️⃣ Clone o repositório
 ```bash
-$ npm install
+git clone https://github.com/devcaiosantos/gestao-tcc.git
+cd gestao-tcc/backend
 ```
 
-## Running the app
-
+### 2️⃣ Instale as dependências
+Com npm:
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install
+```
+Ou com Yarn:
+```bash
+yarn install
 ```
 
-## Test
-
+## ⚙️ Configuração
+As variáveis de ambiente estão definidas no arquivo `.env.example`. Para configurá-las, copie este arquivo e renomeie para `.env`:
 ```bash
-# unit tests
-$ npm run test
+cp .env.example .env
+```
+Altere os valores de variáveis de acordo com seu ambiente.
+Certifique-se de que o PostgreSQL está rodando e configurado corretamente.
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+### 3️⃣ Executar as migrações do Prisma
+Antes de iniciar o backend, execute as migrações para configurar o banco de dados:
+```bash
+npx prisma migrate dev
+```
+Ou, para produção:
+```bash
+npx prisma migrate deploy
 ```
 
-## Support
+## ▶️ Executando o Backend
+Para rodar o backend em ambiente de desenvolvimento:
+```bash
+npm run start:dev  # ou yarn start:dev
+```
+O backend estará disponível em `http://localhost:5000`.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## 🏗 Build para Produção
+Para gerar uma build otimizada:
+```bash
+npm run build  # ou yarn build
+```
+E para iniciar a aplicação em produção:
+```bash
+npm start  # ou yarn start
+```
 
-## Stay in touch
+## 🔐 Configuração do Administrador
+O administrador é o usuário principal do sistema e deve ser criado manualmente via API.
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+1. Acesse a documentação Swagger em:
+   ```plaintext
+   http://localhost:5000/docs
+   ```
+2. Utilize a rota `POST /api/administrador` para criar um novo administrador.
+3. Após uma requisição bem-sucedida, você poderá acessar o sistema com esse usuário.
 
-## License
+Agora o backend do **Gestão TCC** está pronto para uso! 🚀
 
-  Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## 📌 Configuração Pós-Login
+
+Após acessar o sistema pela primeira vez, algumas configurações adicionais são essenciais para o funcionamento completo:
+
+### 📧 Configuração do E-mail do Sistema
+O e-mail do sistema é utilizado para envios massivos a alunos e orientadores. Para configurá-lo, siga as instruções detalhadas no guia abaixo:
+
+📄 [Configuração do E-mail do Sistema](./config-email-key.md)
+
+### 📅 Configuração da API do Google Calendar
+A integração com o Google Calendar é necessária para o agendamento da banca. Para configurar, siga o tutorial:
+
+📄 [Configuração da API do Google Calendar](./CALENDAR_API_CONFIG.md)
+
+Agora o backend do **Gestão TCC** está pronto para uso! 🚀
+
+
